@@ -37,7 +37,7 @@ public class CompositeEntry extends Composite {
 		new CompositeActionTab(this);
 		mCompositeRecordTable = new CompositeRecordTable(this);
 		new CompositeSummaryTable(this);
-//		System.onut.println(System.currentTimeMillis() - wTime);
+//		System.out.println(System.currentTimeMillis() - wTime);
 		
 	}
 

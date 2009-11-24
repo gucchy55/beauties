@@ -173,12 +173,15 @@ public class DbUtil {
 				+ mItemTable + "." + mItemNameCol + ", " + mItemTable + "."
 				+ mCategoryIdCol + ", " + mGroupIdCol + ", " + mActIncomeCol
 				+ ", " + mActExpenseCol + ", " + mActFreqCol + ", "
-				+ mNoteNameCol + " from " + mActTable + " inner join "
-				+ mItemTable + " on " + mActTable + "." + mItemIdCol + " = "
-				+ mItemTable + "." + mItemIdCol + " where " + mActDtCol
+				+ mNoteNameCol + " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable + " where "
+				+ mItemTable + "." + mItemIdCol + " = " + mActTable + "." + mItemIdCol + " and "
+				+ mItemTable + "." + mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol + " and " + mActDtCol
 				+ " between " + wStart + " and " + wEnd + " and " + mActTable
 				+ "." + mDelFlgCol + " = b'0' " + wMoveFlgWhere + " and "
-				+ wBookWhere + " order by " + mActDtCol;
+				+ wBookWhere + " order by " + mActDtCol + ", "
+				+ mCategoryTable + "." + mCategoryRexpCol + ", "
+				+ mCategoryTable + "." + mSortKeyCol + ", " + mItemTable + "."
+				+ mSortKeyCol;
 
 		// System.out.println(wQuery);
 
