@@ -336,19 +336,23 @@ public class CompositeRecord extends Composite {
 	}
 
 	private void updateNoteCombo() {
-		mNoteCombo.setItems(DbUtil.getNotes(mItemId));
 		String wNote = mNoteCombo.getText();
-		if ("".equals(wNote)) {
+		mNoteCombo.setItems(DbUtil.getNotes(mItemId));
+//		if ("".equals(wNote)) {
 			mNoteCombo.add(wNote, 0);
 			mNoteCombo.select(0);
-		}
+//		}
 
 	}
 
 	public void updateForNextInput() {
 		updateCategoryCombo();
 		updateItemCombo();
+		
+		mNoteCombo.setItem(0,"");
+		mNoteCombo.select(0);
 		updateNoteCombo();
+		
 		mValueSpinner.setSelection(0);
 		mFrequencySpinner.setSelection(0);
 	}

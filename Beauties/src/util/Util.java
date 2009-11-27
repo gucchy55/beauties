@@ -1,8 +1,10 @@
 package util;
 
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import model.SystemData;
 
@@ -101,5 +103,42 @@ public class Util {
 		return wDates;
 
 	}
+
+	public static Date[][] getDatePairs(Date pStartDate, Date pEndDate) {
+		List<Date[]> wDateList = new ArrayList<Date[]>();
+		for (int i = 0;; i++) {
+			Date[] wDates = getPeriod(getAdjusentMonth(pStartDate, i));
+			if (wDates[1].after(pEndDate)) {
+				break;
+			} else {
+				wDateList.add(wDates);
+			}
+		}
+
+		return (Date[][]) wDateList.toArray(new Date[0][]);
+	}
+
+	// 過去pMonths分を返す
+	public static Date[][] getDatePairs(Date pDate, int pMonths) {
+		List<Date[]> wDateList = new ArrayList<Date[]>();
+		for (int i = 0; i < pMonths; i++) {
+			Date[] wDates = getPeriod(getAdjusentMonth(pDate, -(pMonths - i - 1)));
+			wDateList.add(wDates);
+		}
+
+		return (Date[][]) wDateList.toArray(new Date[0][]);
+	}
+
+//	public static void main(String[] args) {
+//		SystemData.init();
+//		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+//		Date wStartDate = (new GregorianCalendar(2009, 0, 1)).getTime();
+//		Date wEndDate = new Date();
+//		Date[][] wDatePairs = getDatePairs(wEndDate, 25);
+//		for (Date[] wDates : wDatePairs) {
+//			System.out.println(df.format(wDates[0]) + " -- "
+//					+ df.format(wDates[1]));
+//		}
+//	}
 
 }

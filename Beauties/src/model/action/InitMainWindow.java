@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Control;
 import view.CompositeRight2;
 import view.CompositeRightMain;
 import view.MainJfaceWindow;
+import view.annual.CompositeAnnualMain;
 import view.entry.CompositeEntry;
 
 public class InitMainWindow extends Action {
@@ -47,6 +48,12 @@ public class InitMainWindow extends Action {
 				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(true);
 				SystemData.init();
 				new CompositeEntry(wRightComposite);
+				break;
+				
+			case Anual:
+				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(false);
+				SystemData.init();
+				new CompositeAnnualMain(wRightComposite);
 				break;
 				
 			default: 

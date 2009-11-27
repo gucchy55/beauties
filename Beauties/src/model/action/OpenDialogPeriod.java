@@ -21,12 +21,12 @@ public class OpenDialogPeriod extends Action {
 		int wRet = wDialogPeriod.open();
 
 		if (wRet == IDialogConstants.OK_ID) { // Updated
-			if (wDialogPeriod.getEndDate().after(wDialogPeriod.getStartDate())) {
+//			if (wDialogPeriod.getEndDate().after(wDialogPeriod.getStartDate())) {
 				SystemData.setStartDate(wDialogPeriod.getStartDate());
 				SystemData.setEndDate(wDialogPeriod.getEndDate());
 				SystemData.setMonthPeriod(false);
 				new UpdateEntry(SystemData.getCompositeRightMain()).run();
-			}
+//			}
 		}
 	}
 }

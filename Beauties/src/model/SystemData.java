@@ -11,7 +11,6 @@ import view.CompositeRightMain;
 public class SystemData {
 
 	private static RightType mRightType;
-	
 
 	private static final int mUndefined = -1;
 	private static final int mAllBook = 0;
@@ -23,17 +22,16 @@ public class SystemData {
 	private static Date mEndDate = null;
 
 	private static boolean isMonthPeriod = true;
-	private static int mItemId = mUndefined; 
+	private static int mItemId = mUndefined;
 	private static int mCategoryId = mUndefined;
 	private static boolean mAllIncome = false;
 	private static boolean mAllExpense = false;
 
-	
 	private static CompositeRightMain mCompositeRightMain;
 
 	private SystemData() {
 	}
-	
+
 	public static void init() {
 		// RightType変更時に初期化
 		mStartDate = null;
@@ -43,21 +41,31 @@ public class SystemData {
 		mCategoryId = mUndefined;
 		mAllIncome = false;
 		mAllExpense = false;
-		
+
 		// System設定変更後のみ更新で充分
 		mCutOff = DbUtil.getCutOff();
 		mBookMap = DbUtil.getBookNameMap();
-		mBookId = mBookMap.keySet().iterator().next();
+		switch (mRightType) {
+		case Main:
+			mBookId = mBookMap.keySet().iterator().next();
+			break;
+		case Anual:
+			mBookId = mAllBook;
+			mEndDate = new Date();
+			break;
+		default:
+			break;
+		}
 	}
 
 	public static boolean isBookIdAll() {
-		return (mBookId == mAllBook); 
+		return (mBookId == mAllBook);
 	}
-	
+
 	public static int getAllBookInt() {
 		return mAllBook;
 	}
-	
+
 	public static int getUndefinedInt() {
 		return mUndefined;
 	}
@@ -75,7 +83,7 @@ public class SystemData {
 	public static void setBookId(int pBookId) {
 		mBookId = pBookId;
 	}
-	
+
 	public static int getBookId() {
 		return mBookId;
 	}
@@ -92,7 +100,7 @@ public class SystemData {
 	public static void setEndDate(Date pEndDate) {
 		mEndDate = pEndDate;
 	}
-	
+
 	public static Date getEndDate() {
 		return mEndDate;
 	}
@@ -105,12 +113,13 @@ public class SystemData {
 	public static boolean isMonthPeriod() {
 		return isMonthPeriod;
 	}
-	
+
 	// CompositeRightMain
-	public static void setCompositeRightMain(CompositeRightMain pCompositeRightMain) {
+	public static void setCompositeRightMain(
+			CompositeRightMain pCompositeRightMain) {
 		mCompositeRightMain = pCompositeRightMain;
 	}
-	
+
 	public static CompositeRightMain getCompositeRightMain() {
 		return mCompositeRightMain;
 	}
@@ -119,7 +128,7 @@ public class SystemData {
 	public static void setItemId(int pItemId) {
 		mItemId = pItemId;
 	}
-	
+
 	public static int getItemId() {
 		return mItemId;
 	}
@@ -136,7 +145,7 @@ public class SystemData {
 	public static void setAllExpense(boolean pAllExpense) {
 		mAllExpense = pAllExpense;
 	}
-	
+
 	public static boolean isAllExpense() {
 		return mAllExpense;
 	}
@@ -154,11 +163,11 @@ public class SystemData {
 	public static int getCutOff() {
 		return mCutOff;
 	}
-	
+
 	// BookMap (getter only)
 	public static Map<Integer, String> getBookMap(boolean pWithAll) {
 		if (pWithAll) {
-			Map<Integer,String> wMap = new LinkedHashMap<Integer, String>();
+			Map<Integer, String> wMap = new LinkedHashMap<Integer, String>();
 			wMap.put(mAllBook, "全て");
 			wMap.putAll(mBookMap);
 			return wMap;

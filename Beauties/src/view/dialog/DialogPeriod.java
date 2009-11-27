@@ -8,6 +8,7 @@ import model.SystemData;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
@@ -71,6 +72,7 @@ public class DialogPeriod extends Dialog {
 
 	@Override
 	protected void buttonPressed(int pButtonId) {
+		int wReturnCode = IDialogConstants.CANCEL_ID;
 		if (pButtonId == IDialogConstants.OK_ID) { // 0
 			mStartDate = (new GregorianCalendar(mDateTimeFrom.getYear(),
 					mDateTimeFrom.getMonth(), mDateTimeFrom.getDay()))
@@ -78,11 +80,18 @@ public class DialogPeriod extends Dialog {
 			mEndDate = (new GregorianCalendar(mDateTimeTo.getYear(),
 					mDateTimeTo.getMonth(), mDateTimeTo.getDay()))
 					.getTime();
-			setReturnCode(pButtonId);
+			if (mStartDate.after(mEndDate)) {
+				MessageDialog.openWarning(getShell(), "エラー", "不正な期間です");
+				setReturnCode(IDialogConstants.CANCEL_ID);
+				open();
+			} else {
+				wReturnCode = pButtonId;
+				setReturnCode(pButtonId);
+			}
 		} else { // 1
 			setReturnCode(pButtonId);
 		}
-		super.buttonPressed(pButtonId);
+		super.buttonPressed(wReturnCode);
 	}
 
 	public Date getStartDate() {
