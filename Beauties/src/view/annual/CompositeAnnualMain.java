@@ -14,6 +14,13 @@ import view.util.MyGridData;
 import view.util.MyGridLayout;
 
 public class CompositeAnnualMain extends Composite {
+	
+	// 指定期間（falseの場合は年間表示）
+	private boolean mIsInputPeriod = true;
+	
+	// 表示項目（0:カテゴリ、1:アイテム、2:独自収支。デフォルトはカテゴリ）
+	private int mViewItem = 0;
+	
 
 	public CompositeAnnualMain(Composite pParent) {
 		super(pParent, SWT.NONE);

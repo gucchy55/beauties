@@ -80,7 +80,7 @@ public class CompositeSummaryTable extends Composite {
 						SummaryTableItem wTableItem = (SummaryTableItem) sel
 								.getFirstElement();
 						CompositeEntry wParent = (CompositeEntry) getParent();
-						if (wTableItem.isSpecialRow()) {
+						if (wTableItem.isSpecial()) {
 							// CategoryId, ItemIdを初期化
 							SystemData.setCategoryId(SystemData
 									.getUndefinedInt());
@@ -176,13 +176,16 @@ class SummaryTableLabelProvider implements ITableLabelProvider,
 	@Override
 	public Color getBackground(Object pElement, int pColumnIndex) {
 		SummaryTableItem wItem = (SummaryTableItem) pElement;
-		if (wItem.isSpecialRow()) {
-			// 残高、営業収支等（赤）
-			return new Color(mDisplay, 255, 176, 176);
-		} else if (wItem.isAppearedSum()) {
-			// みかけ収支等（緑）
-			return new Color(mDisplay, 176, 255, 176);
-		} else if (wItem.getItemId() == SystemData.getUndefinedInt()) {
+		if (wItem.isAppearedSum()) {
+			// みかけ収支（赤）
+			return new Color(mDisplay, 255, 200, 200);
+		} else if (wItem.isAppearedIncomeExpense()) {
+			// みかけ収入、支出（緑）
+			return new Color(mDisplay, 200, 255, 200);
+		} else if (wItem.isSpecial()) {
+			// 残高、営業収支等（青）
+			return new Color(mDisplay, 200, 200, 255);
+		} else if (wItem.isCategory()) {
 			// カテゴリ（黄色）
 			return new Color(mDisplay, 255, 255, 176);
 		} else {
@@ -192,8 +195,13 @@ class SummaryTableLabelProvider implements ITableLabelProvider,
 	}
 
 	@Override
-	public Color getForeground(Object arg0, int arg1) {
+	public Color getForeground(Object pElement, int pColumnIndex) {
+		SummaryTableItem wItem = (SummaryTableItem) pElement;
+		if (pColumnIndex == 1 && wItem.getValue() < 0) {
+			return new Color(mDisplay, 255, 0, 0);
+		}
 		return null;
+		
 	}
 
 }
