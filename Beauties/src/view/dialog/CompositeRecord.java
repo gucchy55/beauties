@@ -10,6 +10,10 @@ import model.RecordTableItem;
 import model.SystemData;
 import model.db.DbUtil;
 
+//import org.eclipse.jface.fieldassist.IContentProposal;
+//import org.eclipse.jface.fieldassist.IContentProposalProvider;
+//import org.eclipse.jface.fieldassist.IControlContentAdapter;
+//import org.eclipse.jface.fieldassist.TextContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -23,6 +27,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
+//import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 
 import view.util.MyGridData;
 import view.util.MyGridLayout;
@@ -60,13 +65,12 @@ public class CompositeRecord extends Composite {
 
 	public CompositeRecord(Composite pParent) {
 		super(pParent, SWT.NONE);
-		
+
 		mBookId = SystemData.getBookId();
 		if (SystemData.isBookIdAll()) {
-			mBookId = SystemData.getBookMap(false).keySet().iterator()
-					.next();
+			mBookId = SystemData.getBookMap(false).keySet().iterator().next();
 		}
-		
+
 		mIncome = false;
 		initLayout();
 		initWidgets();
@@ -237,7 +241,7 @@ public class CompositeRecord extends Composite {
 		mFrequencySpinner.setSelection(mRecordTableItem.getFrequency());
 
 		if (!"".equals(mRecordTableItem.getNote())) {
-			mNoteCombo.setItem(0,mRecordTableItem.getNote());
+			mNoteCombo.setItem(0, mRecordTableItem.getNote());
 		}
 		mNoteCombo.select(0);
 
@@ -338,21 +342,28 @@ public class CompositeRecord extends Composite {
 	private void updateNoteCombo() {
 		String wNote = mNoteCombo.getText();
 		mNoteCombo.setItems(DbUtil.getNotes(mItemId));
-//		if ("".equals(wNote)) {
-			mNoteCombo.add(wNote, 0);
-			mNoteCombo.select(0);
-//		}
+		mNoteCombo.add(wNote, 0);
+		mNoteCombo.select(0);
+			
+//			IControlContentAdapter contentAdapter = new TextContentAdapter();
+//		    IContentProposalProvider provider = new IContentProposalProvider() {
+//		      public IContentProposal[] getProposals(String contents, int position) {
+//		        IContentProposal[] icps = 
+//		      }
+//		    }
+//		    ContentAssistCommandAdapter ca = new ContentAssistCommandAdapter(
+//		    mNoteCombo, contentAdapter, provider, null, new char[] {}, true);
 
 	}
 
 	public void updateForNextInput() {
 		updateCategoryCombo();
 		updateItemCombo();
-		
-		mNoteCombo.setItem(0,"");
+
+		mNoteCombo.setItem(0, "");
 		mNoteCombo.select(0);
 		updateNoteCombo();
-		
+
 		mValueSpinner.setSelection(0);
 		mFrequencySpinner.setSelection(0);
 	}

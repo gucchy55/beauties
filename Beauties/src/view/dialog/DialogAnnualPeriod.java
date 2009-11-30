@@ -51,7 +51,7 @@ public class DialogAnnualPeriod extends Dialog {
 		wLabel.setText("月 〜 ");
 
 		Calendar wCal = Calendar.getInstance();
-		wCal.setTime(SystemData.getStartDate());
+		wCal.setTime(Util.getPeriod(SystemData.getStartDate())[1]);
 		mStartYearSpinner.setSelection(wCal.get(Calendar.YEAR));
 		mStartYearSpinner.pack();
 		mStartMonthSpinner.setSelection(wCal.get(Calendar.MONTH) + 1);
@@ -62,7 +62,7 @@ public class DialogAnnualPeriod extends Dialog {
 		wLabel.setText("年");
 
 		mEndMonthSpinner = new Spinner(wComp, SWT.BORDER);
-		mEndMonthSpinner.setValues(0, 1, 12, 0, 1, 10);
+		mEndMonthSpinner.setValues(0, 1, 12, 0, 1, 12);
 		wLabel = new Label(wComp, SWT.NONE);
 		wLabel.setText("月");
 

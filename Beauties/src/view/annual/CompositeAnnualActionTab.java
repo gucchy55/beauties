@@ -26,7 +26,7 @@ public class CompositeAnnualActionTab extends Composite {
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING,
 				false, false).getMyGridData());
 		
-		Button wAnnualPeriodButton = new Button(this, SWT.NONE);
+		Button wAnnualPeriodButton = new Button(this, SWT.TOGGLE);
 		wAnnualPeriodButton.setText("年度表示");
 		if (SystemData.isAnnualPeriod()) {
 			wAnnualPeriodButton.setSelection(true);
@@ -48,7 +48,7 @@ public class CompositeAnnualActionTab extends Composite {
 		Label wSpaceLabel = new Label(this, SWT.NONE);
 		wSpaceLabel.setText("   ");
 
-		Button wCategoryButton = new Button(this, SWT.NONE);
+		Button wCategoryButton = new Button(this, SWT.TOGGLE);
 		wCategoryButton.setText(" 分類別 ");
 		if (SystemData.getAnnualViewType() == AnnualViewType.Category) {
 			wCategoryButton.setSelection(true);
@@ -63,7 +63,7 @@ public class CompositeAnnualActionTab extends Composite {
 			});
 		}
 
-		Button wItemButton = new Button(this, SWT.NONE);
+		Button wItemButton = new Button(this, SWT.TOGGLE);
 		wItemButton.setText(" 項目別 ");
 		if (SystemData.getAnnualViewType() == AnnualViewType.Item) {
 			wItemButton.setSelection(true);
@@ -78,7 +78,7 @@ public class CompositeAnnualActionTab extends Composite {
 			});
 		}
 
-		Button wModifyButton = new Button(this, SWT.NONE);
+		Button wModifyButton = new Button(this, SWT.TOGGLE);
 		wModifyButton.setText("特殊収支");
 //		if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
 //			wCategoryButton.setSelection(true);
