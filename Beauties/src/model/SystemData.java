@@ -15,17 +15,24 @@ public class SystemData {
 	private static final int mUndefined = -1;
 	private static final int mAllBook = 0;
 
+	// For common
 	private static int mCutOff;
 	private static Map<Integer, String> mBookMap = new LinkedHashMap<Integer, String>();
 	private static int mBookId = mUndefined;
 	private static Date mStartDate = null;
 	private static Date mEndDate = null;
 
+	// For entry
 	private static boolean isMonthPeriod = true;
 	private static int mItemId = mUndefined;
 	private static int mCategoryId = mUndefined;
 	private static boolean mAllIncome = false;
 	private static boolean mAllExpense = false;
+	
+	// For Annual
+	private static boolean isAnnualPeriod = false;
+	private static AnnualViewType mAnnualViewType;
+	private static int mMonthCount;
 
 	private static CompositeRightMain mCompositeRightMain;
 
@@ -41,6 +48,9 @@ public class SystemData {
 		mCategoryId = mUndefined;
 		mAllIncome = false;
 		mAllExpense = false;
+		isAnnualPeriod = false;
+		mAnnualViewType = AnnualViewType.Category;
+		mMonthCount = 13;	// 直近13ヶ月
 
 		// System設定変更後のみ更新で充分
 		mCutOff = DbUtil.getCutOff();
@@ -51,7 +61,6 @@ public class SystemData {
 			break;
 		case Anual:
 			mBookId = mAllBook;
-			mEndDate = new Date();
 			break;
 		default:
 			break;
@@ -174,6 +183,30 @@ public class SystemData {
 		} else {
 			return mBookMap;
 		}
+	}
+
+	public static boolean isAnnualPeriod() {
+		return isAnnualPeriod;
+	}
+
+	public static void setAnnualPeriod(boolean isAnnualPeriod) {
+		SystemData.isAnnualPeriod = isAnnualPeriod;
+	}
+
+	public static AnnualViewType getAnnualViewType() {
+		return mAnnualViewType;
+	}
+
+	public static void setmAnnualViewType(AnnualViewType pAnnualViewType) {
+		SystemData.mAnnualViewType = pAnnualViewType;
+	}
+
+	public static int getMonthCount() {
+		return mMonthCount;
+	}
+
+	public static void setMonthCount(int pMonthCount) {
+		SystemData.mMonthCount = pMonthCount;
 	}
 
 }

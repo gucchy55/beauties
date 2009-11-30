@@ -28,6 +28,7 @@ public class DbUtil {
 	private final static String mSystemValueCol = "NUM_VALUE";
 	private final static String mSystemIDCol = "SID";
 	private final static String mCutOff = "CUTOFF_DT";
+	private final static String mFiscalMonth = "FISCAL_MH";
 
 	// Categoryテーブル関連
 	private final static String mCategoryTable = "CBM_CATEGORY";
@@ -103,7 +104,29 @@ public class DbUtil {
 		return wCutOff;
 
 	}
+	
+	public static int getFisCalMonth() {
+		int wFiscalMonth = -1;
 
+		DbAccess wDbAccess = new DbAccess();
+		ResultSet wResultSet = wDbAccess.executeQuery("select "
+				+ mSystemValueCol + " from " + mSystemTable + " where "
+				+ mSystemIDCol + " = '" + mFiscalMonth + "'");
+
+		try {
+			wResultSet.next();
+			wFiscalMonth = wResultSet.getInt(mSystemValueCol);
+			wResultSet.close();
+
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		} finally {
+			wDbAccess.closeConnection();
+		}
+
+		return wFiscalMonth;
+	}
+	
 	public static int getCategoryIdByItemId(int pItemId) {
 		DbAccess wDbAccess = new DbAccess();
 		ResultSet wResultSet = wDbAccess.executeQuery("select "
@@ -1379,6 +1402,10 @@ public class DbUtil {
 									.isIncome()));
 				}
 			} else if (wAnnualHeaderItem.isItem()) {
+				if (!wExpenseRow && !wAnnualHeaderItem.isIncome()) {
+					wExpenseRow = true;
+					wSummaryTableItemList.add(wAppearedExpenseItem);
+				}
 				String wIndex = wAnnualHeaderItem.getCategoryId() + " + "
 						+ wAnnualHeaderItem.getItemId();
 				if (wAllItemMap.containsKey(wIndex)) {

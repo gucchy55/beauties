@@ -1,12 +1,10 @@
 package view.annual;
 
+import java.util.Date;
+
+import model.AnnualViewType;
 import model.SystemData;
-import model.action.DeleteRecord;
-import model.action.OpenDialogModifyMove;
-import model.action.OpenDialogModifyRecord;
-import model.action.OpenDialogNewMove;
-import model.action.OpenDialogNewRecord;
-import model.db.DbUtil;
+import model.action.UpdateAnnual;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -14,7 +12,9 @@ import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Label;
 
+import util.Util;
 import view.util.MyGridData;
 import view.util.MyRowLayout;
 
@@ -25,53 +25,72 @@ public class CompositeAnnualActionTab extends Composite {
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING,
 				false, false).getMyGridData());
+		
+		Button wAnnualPeriodButton = new Button(this, SWT.NONE);
+		wAnnualPeriodButton.setText("年度表示");
+		if (SystemData.isAnnualPeriod()) {
+			wAnnualPeriodButton.setSelection(true);
+			wAnnualPeriodButton.setEnabled(false);
+		} else {
+			wAnnualPeriodButton.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					SystemData.setAnnualPeriod(true);
+					SystemData.setMonthCount(12);
+					Date[] wDatePeriod = Util.getFiscalPeriod();
+					SystemData.setStartDate(wDatePeriod[0]);
+					SystemData.setEndDate(wDatePeriod[1]);
+					new UpdateAnnual(getParent().getParent()).run();
+				}
+			});
+		}
+		
+		Label wSpaceLabel = new Label(this, SWT.NONE);
+		wSpaceLabel.setText("   ");
 
-		Button wMoveButton = new Button(this, SWT.NONE);
-		wMoveButton.setText("移動");
-//		wMoveButton.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				new OpenDialogNewMove(getShell()).run();
-//			}
-//		});
+		Button wCategoryButton = new Button(this, SWT.NONE);
+		wCategoryButton.setText(" 分類別 ");
+		if (SystemData.getAnnualViewType() == AnnualViewType.Category) {
+			wCategoryButton.setSelection(true);
+			wCategoryButton.setEnabled(false);
+		} else {
+			wCategoryButton.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					SystemData.setmAnnualViewType(AnnualViewType.Category);
+					new UpdateAnnual(getParent().getParent()).run();
+				}
+			});
+		}
 
-		Button wAddButton = new Button(this, SWT.NONE);
-		wAddButton.setText("追加");
-//		wAddButton.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				new OpenDialogNewRecord(getShell()).run();
-//			}
-//		});
+		Button wItemButton = new Button(this, SWT.NONE);
+		wItemButton.setText(" 項目別 ");
+		if (SystemData.getAnnualViewType() == AnnualViewType.Item) {
+			wItemButton.setSelection(true);
+			wItemButton.setEnabled(false);
+		} else {
+			wItemButton.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					SystemData.setmAnnualViewType(AnnualViewType.Item);
+					new UpdateAnnual(getParent().getParent()).run();
+				}
+			});
+		}
 
 		Button wModifyButton = new Button(this, SWT.NONE);
-		wModifyButton.setText("変更");
-//		wModifyButton.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				CompositeAnnualMain wCompositeEntry = (CompositeAnnualMain)getParent();
-//				int wSelectedActId = wCompositeEntry.getSelectedActId();
-//				if (wSelectedActId != SystemData.getUndefinedInt()) {
-//					if (DbUtil.isMoveRecord(wSelectedActId)) {
-//						new OpenDialogModifyMove(getShell(), wSelectedActId).run();
-//					} else {
-//						new OpenDialogModifyRecord(getShell(), wCompositeEntry.getSelectedActId()).run();
-//					}
+		wModifyButton.setText("特殊収支");
+//		if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
+//			wCategoryButton.setSelection(true);
+//			wCategoryButton.setEnabled(false);
+//		} else {
+//			wItemButton.addSelectionListener(new SelectionAdapter() {
+//				@Override
+//				public void widgetSelected(SelectionEvent e) {
+//					SystemData.setmAnnualViewType(AnnualViewType.Original);
+//					new UpdateAnnual(getParent().getParent()).run();
 //				}
-//			}
-//		});
-
-		Button wDeleteButton = new Button(this, SWT.NONE);
-		wDeleteButton.setText("削除");
-//		wDeleteButton.addSelectionListener(new SelectionAdapter() {
-//			@Override
-//			public void widgetSelected(SelectionEvent e) {
-//				CompositeAnnualMain wCompositeEntry = (CompositeAnnualMain)getParent();
-//				int wSelectedActId = wCompositeEntry.getSelectedActId();
-//				if (wSelectedActId != SystemData.getUndefinedInt()) {
-//					new DeleteRecord(getShell(), wSelectedActId).run();
-//				}
-//			}
-//		});
+//			});
+//		}
 	}
 }

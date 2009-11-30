@@ -127,6 +127,7 @@ public class CompositeBookTab extends Composite {
 								SystemData.setBookId(wBookId);
 								new UpdateEntry(mCompositeRightMain)
 										.run();
+								break;
 							}
 						}
 

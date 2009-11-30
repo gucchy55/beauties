@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.List;
 
 import model.AnnualHeaderItem;
+import model.AnnualViewType;
 import model.SummaryTableItem;
 import model.SystemData;
 import model.db.DbUtil;
@@ -60,8 +61,25 @@ public class CompositeAnnualTable extends Composite {
 		wHeaderCol.setText("年月");
 		wHeaderCol.setWidth(mColumnWidth);
 
-		Date[][] wDatePeriods = Util.getDatePairs(SystemData.getEndDate(), 13);
-		SystemData.setStartDate(wDatePeriods[0][0]);
+		Date[][] wDatePeriods;
+
+		if (SystemData.getEndDate() == null) {
+			wDatePeriods = Util.getDatePairs(Util.getPeriod(new Date())[1],
+					SystemData.getMonthCount());
+			SystemData.setStartDate(wDatePeriods[0][0]);
+			SystemData.setEndDate(wDatePeriods[wDatePeriods.length - 1][1]);
+			
+		} else {
+			wDatePeriods = Util.getDatePairs(SystemData.getStartDate(),
+					SystemData.getEndDate());
+		}
+		
+		if (!SystemData.isAnnualPeriod()) {
+			SystemData.setMonthCount(wDatePeriods.length);
+		}
+
+		DateFormat dftmp = new SimpleDateFormat("yyyy/MM/dd");
+		System.out.println(SystemData.getMonthCount() + ": " + dftmp.format(SystemData.getStartDate()) + " - " + dftmp.format(SystemData.getEndDate()));
 
 		List<String> wRowHeaders = new ArrayList<String>();
 		DateFormat df = new SimpleDateFormat("yyyy年MM月");
@@ -75,7 +93,8 @@ public class CompositeAnnualTable extends Composite {
 		}
 		for (int i = 0; i < wDatePeriods.length; i++) {
 			Date wEndDate = wDatePeriods[i][1];
-			if (wEndDate.after(wDateNow) && wDateNow.after(wDatePeriods[i][0])
+			if (wDateNow.after(wDatePeriods[i][0])
+					&& Util.getAdjusentDay(wEndDate, 1).after(wDateNow)
 					&& !wIsSummationAdded) {
 				wIsSummationAdded = true;
 				wSummationRowIndex = i;
@@ -99,7 +118,7 @@ public class CompositeAnnualTable extends Composite {
 				| SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
 		Table wMainTable = wMainTableViewer.getTable();
 
-		wMainTable.setLayoutData(new MyGridData(GridData.FILL,
+		wMainTable.setLayoutData(new MyGridData(GridData.BEGINNING,
 				GridData.BEGINNING, true, true).getMyGridData());
 
 		// 線を表示する
@@ -108,12 +127,21 @@ public class CompositeAnnualTable extends Composite {
 		wMainTable.setHeaderVisible(true);
 
 		// 列のヘッダの設定
-		mAnnualHeaderItems = DbUtil
-				.getAnnualHeaderItem(SystemData.getBookId(), SystemData
-						.getStartDate(), SystemData.getEndDate(), true, false);
+		if (SystemData.getAnnualViewType() == AnnualViewType.Category) {
+			mAnnualHeaderItems = DbUtil
+					.getAnnualHeaderItem(SystemData.getBookId(), SystemData
+							.getStartDate(), SystemData.getEndDate(), true, false);
+		} else {
+			mAnnualHeaderItems = DbUtil
+			.getAnnualHeaderItem(SystemData.getBookId(), SystemData
+					.getStartDate(), SystemData.getEndDate(), false, true);
+		}
+
+		// Win32だとなぜか先頭列が右寄せにならないので、空白列を挿入
 		TableColumn wTableCol = new TableColumn(wMainTable, SWT.RIGHT);
 		wTableCol.setWidth(0);
 		wTableCol.setResizable(false);
+
 		for (AnnualHeaderItem wItem : mAnnualHeaderItems) {
 			wTableCol = new TableColumn(wMainTable, SWT.RIGHT);
 			wTableCol.setText(wItem.getName());

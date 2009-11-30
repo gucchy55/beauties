@@ -7,6 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 
 import model.SystemData;
+import model.db.DbUtil;
 
 public class Util {
 
@@ -21,13 +22,13 @@ public class Util {
 		return wCal.getTime();
 	}
 
-	// public static Date getAdjusentDay(Date pDate, int i) {
-	// Calendar wCal = Calendar.getInstance();
-	// wCal.setTime(pDate);
-	//		
-	// wCal.add(Calendar.DAY_OF_MONTH, i);
-	// return wCal.getTime();
-	// }
+	 public static Date getAdjusentDay(Date pDate, int i) {
+	 Calendar wCal = Calendar.getInstance();
+	 wCal.setTime(pDate);
+			
+	 wCal.add(Calendar.DAY_OF_MONTH, i);
+	 return wCal.getTime();
+	 }
 
 	public static String getDayOfTheWeekShort(Date pDate) {
 		Calendar wCal = Calendar.getInstance();
@@ -128,17 +129,28 @@ public class Util {
 
 		return (Date[][]) wDateList.toArray(new Date[0][]);
 	}
+	
+	// 年始を返す
+	public static Date[] getFiscalPeriod() {
+		int wFiscalMonth = DbUtil.getFisCalMonth();
+		Calendar wCalNow = Calendar.getInstance();
+		Calendar wFirstDate = new GregorianCalendar(wCalNow.get(Calendar.YEAR), wFiscalMonth - 1, 1);
+		
+		while (wFirstDate.after(wCalNow)) {
+			wFirstDate.add(Calendar.YEAR, -1);
+		}
+		Date[] wFirstPeriod = getPeriod(wFirstDate.getTime());
+		wFirstDate.setTime(wFirstPeriod[0]);
+		
+		Date wEndDate = getAdjusentMonth(wFirstPeriod[1], 11);
+		wEndDate = getPeriod(wEndDate)[1];
+		
+		return new Date[]{wFirstDate.getTime(), wEndDate};
+		
+	}
 
 //	public static void main(String[] args) {
-//		SystemData.init();
-//		DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-//		Date wStartDate = (new GregorianCalendar(2009, 0, 1)).getTime();
-//		Date wEndDate = new Date();
-//		Date[][] wDatePairs = getDatePairs(wEndDate, 25);
-//		for (Date[] wDates : wDatePairs) {
-//			System.out.println(df.format(wDates[0]) + " -- "
-//					+ df.format(wDates[1]));
-//		}
+//		System.out.println(getAdjusentMonth((new GregorianCalendar(2009, 10, 30)).getTime(), -13));
 //	}
 
 }
