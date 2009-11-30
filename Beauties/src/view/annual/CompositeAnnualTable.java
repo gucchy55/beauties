@@ -200,14 +200,14 @@ public class CompositeAnnualTable extends Composite {
 			int pAverageRowCount) {
 		// 合計
 		SummaryTableItem[] wSummationItems = DbUtil.getAllSummaryTableItems(
-				SystemData.getBookId(), SystemData.getStartDate(), SystemData
-						.getEndDate(), mAnnualHeaderItems);
+				SystemData.getBookId(), pStartDate, pEndDate,
+				mAnnualHeaderItems);
 		mSummaryTableItems.add(wSummationItems);
 
 		// 平均
 		SummaryTableItem[] wAverageItems = DbUtil.getAllSummaryTableItems(
-				SystemData.getBookId(), SystemData.getStartDate(), SystemData
-						.getEndDate(), mAnnualHeaderItems);
+				SystemData.getBookId(), pStartDate, pEndDate,
+				mAnnualHeaderItems);
 		for (SummaryTableItem wAveItem : wAverageItems) {
 			wAveItem.setValue(wAveItem.getValue() / pAverageRowCount);
 		}
