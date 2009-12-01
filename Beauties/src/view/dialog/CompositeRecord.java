@@ -10,10 +10,11 @@ import model.RecordTableItem;
 import model.SystemData;
 import model.db.DbUtil;
 
-//import org.eclipse.jface.fieldassist.IContentProposal;
-//import org.eclipse.jface.fieldassist.IContentProposalProvider;
-//import org.eclipse.jface.fieldassist.IControlContentAdapter;
-//import org.eclipse.jface.fieldassist.TextContentAdapter;
+import org.eclipse.jface.fieldassist.ComboContentAdapter;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.IControlContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -27,8 +28,8 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
-//import org.eclipse.ui.fieldassist.ContentAssistCommandAdapter;
 
+import util.Util;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
@@ -62,6 +63,8 @@ public class CompositeRecord extends Composite {
 	private Spinner mValueSpinner;
 	private Spinner mFrequencySpinner;
 	private Combo mNoteCombo;
+
+	private static final int mNoteCandidateCount = 10;
 
 	public CompositeRecord(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -208,6 +211,7 @@ public class CompositeRecord extends Composite {
 		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
 		wGridData = new GridData(GridData.FILL_HORIZONTAL);
 		mNoteCombo.setLayoutData(wGridData);
+
 	}
 
 	private void initWidgets() {
@@ -344,16 +348,16 @@ public class CompositeRecord extends Composite {
 		mNoteCombo.setItems(DbUtil.getNotes(mItemId));
 		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
-			
-//			IControlContentAdapter contentAdapter = new TextContentAdapter();
-//		    IContentProposalProvider provider = new IContentProposalProvider() {
-//		      public IContentProposal[] getProposals(String contents, int position) {
-//		        IContentProposal[] icps = 
-//		      }
-//		    }
-//		    ContentAssistCommandAdapter ca = new ContentAssistCommandAdapter(
-//		    mNoteCombo, contentAdapter, provider, null, new char[] {}, true);
 
+		IControlContentAdapter contentAdapter = new ComboContentAdapter();
+		IContentProposalProvider provider = new IContentProposalProvider() {
+			public IContentProposal[] getProposals(String contents, int position) {
+				return Util.createProposals(contents, position, mNoteCombo
+						.getItems(), mNoteCandidateCount);
+			}
+		};
+		new ContentProposalAdapter(mNoteCombo, contentAdapter, provider, null,
+				null);
 	}
 
 	public void updateForNextInput() {

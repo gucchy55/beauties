@@ -10,6 +10,11 @@ import model.RecordTableItem;
 import model.SystemData;
 import model.db.DbUtil;
 
+import org.eclipse.jface.fieldassist.ComboContentAdapter;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.IControlContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -21,6 +26,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 
+import util.Util;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
@@ -44,6 +50,8 @@ public class CompositeMove extends Composite {
 	private Spinner mValueSpinner;
 	private Spinner mFrequencySpinner;
 	private Combo mNoteCombo;
+	
+	private static final int mNoteCandidateCount = 10;
 
 	public CompositeMove(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -207,6 +215,16 @@ public class CompositeMove extends Composite {
 		mNoteCombo.setItems(DbUtil.getNotes(mMoveIncomeItemId));
 		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
+
+		IControlContentAdapter contentAdapter = new ComboContentAdapter();
+		IContentProposalProvider provider = new IContentProposalProvider() {
+			public IContentProposal[] getProposals(String contents, int position) {
+				return Util.createProposals(contents, position, mNoteCombo
+						.getItems(), mNoteCandidateCount);
+			}
+		};
+		new ContentProposalAdapter(mNoteCombo, contentAdapter, provider, null,
+				null);
 
 	}
 

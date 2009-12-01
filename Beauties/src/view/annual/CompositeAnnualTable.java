@@ -43,6 +43,10 @@ public class CompositeAnnualTable extends Composite {
 	private Table mRowHeaderTable;
 	private Table mMainTable;
 
+	private String[] mOriginalColumnHeaders = { "繰越残高", "みかけ収支", "営業収支",
+			"実質収支", "実質残高", "みかけ残高", "立替累計", "営業収入", "営業支出", "実質収入", "実質支出",
+			"みかけ収入", "みかけ支出", "特別収入", "特別支出", "立替等入", "立替等出" };
+
 	public CompositeAnnualTable(Composite pParent) {
 		super(pParent, SWT.NONE);
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
@@ -134,14 +138,20 @@ public class CompositeAnnualTable extends Composite {
 		mMainTable.setHeaderVisible(true);
 
 		// 列のヘッダの設定
-		if (SystemData.getAnnualViewType() == AnnualViewType.Category) {
-			mAnnualHeaderItems = DbUtil.getAnnualHeaderItem(SystemData
-					.getBookId(), SystemData.getStartDate(), SystemData
-					.getEndDate(), true, false);
-		} else {
+		if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
+			for (int i=0; i < mOriginalColumnHeaders.length; i++) {
+				mAnnualHeaderItems = new AnnualHeaderItem[mOriginalColumnHeaders.length];
+				mAnnualHeaderItems[i] = new AnnualHeaderItem(mOriginalColumnHeaders[i]);
+			}
+			
+		} else if (SystemData.getAnnualViewType() == AnnualViewType.Item) {
 			mAnnualHeaderItems = DbUtil.getAnnualHeaderItem(SystemData
 					.getBookId(), SystemData.getStartDate(), SystemData
 					.getEndDate(), false, true);
+		} else { // Category
+			mAnnualHeaderItems = DbUtil.getAnnualHeaderItem(SystemData
+					.getBookId(), SystemData.getStartDate(), SystemData
+					.getEndDate(), true, false);
 		}
 
 		// Win32だとなぜか先頭列が右寄せにならないので、空白列を挿入
@@ -158,21 +168,25 @@ public class CompositeAnnualTable extends Composite {
 		// 格納する値の取得
 		mSummaryTableItems = new ArrayList<SummaryTableItem[]>();
 		wIsSummationAdded = false;
-		for (int i = 0; i < wDatePeriods.length; i++) {
-			Date[] wDatePeriod = wDatePeriods[i];
-			if (i == wSummationRowIndex) {
-				wIsSummationAdded = true;
-				addSummationAverageRows(wDatePeriods[0][0],
-						wDatePeriods[i - 1][1], i);
+		if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
+			
+		} else {
+			for (int i = 0; i < wDatePeriods.length; i++) {
+				Date[] wDatePeriod = wDatePeriods[i];
+				if (i == wSummationRowIndex) {
+					wIsSummationAdded = true;
+					addSummationAverageRows(wDatePeriods[0][0],
+							wDatePeriods[i - 1][1], i);
+				}
+				mSummaryTableItems.add(DbUtil.getAllSummaryTableItems(SystemData
+						.getBookId(), wDatePeriod[0], wDatePeriod[1],
+						mAnnualHeaderItems));
 			}
-			mSummaryTableItems.add(DbUtil.getAllSummaryTableItems(SystemData
-					.getBookId(), wDatePeriod[0], wDatePeriod[1],
-					mAnnualHeaderItems));
-		}
-
-		if (!wIsSummationAdded) {
-			addSummationAverageRows(SystemData.getStartDate(), SystemData
-					.getEndDate(), wDatePeriods.length);
+	
+			if (!wIsSummationAdded) {
+				addSummationAverageRows(SystemData.getStartDate(), SystemData
+						.getEndDate(), wDatePeriods.length);
+			}
 		}
 
 		wMainTableViewer.setContentProvider(new SummaryTableContentProvider());

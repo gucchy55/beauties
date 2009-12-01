@@ -6,6 +6,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import org.eclipse.jface.fieldassist.IContentProposal;
+
 import model.SystemData;
 import model.db.DbUtil;
 
@@ -148,6 +150,54 @@ public class Util {
 		return new Date[]{wFirstDate.getTime(), wEndDate};
 		
 	}
+	
+	public static IContentProposal[] createProposals(final String pContent,
+			final int pPosition, String[] pCandidates, int pMaxCount) {
+
+		if (pContent.length() == 0 || pPosition < pContent.length()) {
+//			|| !(0 < (pPosition - 3)
+//				|| "".equals(pContent.substring(pPosition - 3, pPosition))) {
+			return new IContentProposal[] {};
+		}
+
+
+		List<IContentProposal> wProposalList = new ArrayList<IContentProposal>();
+		for (int i = 0; i < pCandidates.length; i++) {
+			if (pCandidates[i].length() > pPosition) {
+				final String wCandidate = pCandidates[i];
+				if (wCandidate.startsWith(pContent)) {
+					wProposalList.add(new IContentProposal() {
+						
+						@Override
+						public String getLabel() {
+							return wCandidate;
+						}
+						
+						@Override
+						public String getDescription() {
+							return null;
+						}
+						
+						@Override
+						public int getCursorPosition() {
+							return wCandidate.length();
+						}
+						
+						@Override
+						public String getContent() {
+							return wCandidate.substring(pPosition);
+						}
+					});
+					if (wProposalList.size() > pMaxCount) {
+						break;
+					}
+				}
+			}
+		}
+
+		return (IContentProposal[])wProposalList.toArray(new IContentProposal[0]);
+	}
+
 
 //	public static void main(String[] args) {
 //		System.out.println(getAdjusentMonth((new GregorianCalendar(2009, 10, 30)).getTime(), -13));
