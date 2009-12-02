@@ -66,6 +66,7 @@ public class CompositeRecord extends Composite {
 	private String[] mNoteItems;
 
 	private static final int mNoteCandidateCount = 10;
+	private static final int mVisibleComboItemCount = 10;
 
 	public CompositeRecord(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -120,6 +121,8 @@ public class CompositeRecord extends Composite {
 			mBookIdList.add(wBookId);
 			mBookCombo.add(mBookNameMap.get(wBookId));
 		}
+		
+		mBookCombo.setVisibleItemCount(mVisibleComboItemCount);
 
 		mBookCombo.select(mBookIdList.indexOf(mBookId));
 
@@ -308,6 +311,8 @@ public class CompositeRecord extends Composite {
 			mCategoryIdList.add(wCategoryId);
 			mCategoryCombo.add(mCategoryNameMap.get(wCategoryId));
 		}
+		
+		mCategoryCombo.setVisibleItemCount(mVisibleComboItemCount);
 
 		mCategoryCombo.select(0);
 		mCategoryId = mCategoryIdList.get(0);
@@ -345,6 +350,7 @@ public class CompositeRecord extends Composite {
 		mItemId = mItemIdList.get(0);
 
 		mItemCombo.pack();
+		mItemCombo.setVisibleItemCount(10);
 
 		mItemCombo.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent e) {
@@ -360,6 +366,7 @@ public class CompositeRecord extends Composite {
 		mNoteCombo.setItems(mNoteItems);
 		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
+		mNoteCombo.setVisibleItemCount(mVisibleComboItemCount);
 
 	}
 

@@ -53,6 +53,7 @@ public class CompositeMove extends Composite {
 	private String[] mNoteItems;
 	
 	private static final int mNoteCandidateCount = 10;
+	private static final int mVisibleComboItemCount = 10;
 
 	public CompositeMove(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -135,6 +136,9 @@ public class CompositeMove extends Composite {
 				break;
 			}
 		}
+		
+		mBookFromCombo.setVisibleItemCount(mVisibleComboItemCount);
+		mBookToCombo.setVisibleItemCount(mVisibleComboItemCount);
 
 		// Value & Frequency
 		Label wValueLabel = new Label(this, SWT.NONE);
@@ -227,7 +231,7 @@ public class CompositeMove extends Composite {
 		mNoteCombo.setItems(mNoteItems);
 		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
-
+		mNoteCombo.setVisibleItemCount(mVisibleComboItemCount);
 	}
 
 	public void insertRecord() {
