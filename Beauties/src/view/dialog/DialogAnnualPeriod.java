@@ -10,7 +10,7 @@ import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.layout.GridLayout;
+import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -18,13 +18,14 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
 import util.Util;
+import view.util.MyRowLayout;
 
 public class DialogAnnualPeriod extends Dialog {
 
 	private Spinner mStartYearSpinner;
-	private Spinner mStartMonthSpinner;
+	private Combo mStartMonthCombo;
 	private Spinner mEndYearSpinner;
-	private Spinner mEndMonthSpinner;
+	private Combo mEndMonthCombo;
 	private Date mStartDate;
 	private Date mEndDate;
 
@@ -35,7 +36,7 @@ public class DialogAnnualPeriod extends Dialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite wComp = (Composite) super.createDialogArea(parent);
-		wComp.setLayout(new GridLayout(9, false));
+		wComp.setLayout(new MyRowLayout().getMyRowLayout());
 
 		Label wLabel1 = new Label(wComp, SWT.NONE);
 		wLabel1.setText("期間");
@@ -45,8 +46,11 @@ public class DialogAnnualPeriod extends Dialog {
 		Label wLabel = new Label(wComp, SWT.NONE);
 		wLabel.setText("年");
 
-		mStartMonthSpinner = new Spinner(wComp, SWT.BORDER);
-		mStartMonthSpinner.setValues(0, 1, 12, 0, 1, 10);
+		mStartMonthCombo = new Combo(wComp, SWT.BORDER);
+		for (int i=0; i < 12; i++) {
+			mStartMonthCombo.add(Integer.toString(i+1));
+		}
+		mStartMonthCombo.pack();
 		wLabel = new Label(wComp, SWT.NONE);
 		wLabel.setText("月 〜 ");
 
@@ -54,23 +58,26 @@ public class DialogAnnualPeriod extends Dialog {
 		wCal.setTime(Util.getPeriod(SystemData.getStartDate())[1]);
 		mStartYearSpinner.setSelection(wCal.get(Calendar.YEAR));
 		mStartYearSpinner.pack();
-		mStartMonthSpinner.setSelection(wCal.get(Calendar.MONTH) + 1);
+		mStartMonthCombo.select(wCal.get(Calendar.MONTH));
 
 		mEndYearSpinner = new Spinner(wComp, SWT.BORDER);
 		mEndYearSpinner.setValues(0, 0, 9999, 0, 1, 10);
 		wLabel = new Label(wComp, SWT.NONE);
 		wLabel.setText("年");
 
-		mEndMonthSpinner = new Spinner(wComp, SWT.BORDER);
-		mEndMonthSpinner.setValues(0, 1, 12, 0, 1, 12);
+		mEndMonthCombo = new Combo(wComp, SWT.BORDER);
+		for (int i=0; i < 12; i++) {
+			mEndMonthCombo.add(Integer.toString(i+1));
+		}
 		wLabel = new Label(wComp, SWT.NONE);
 		wLabel.setText("月");
 
 		wCal.setTime(SystemData.getEndDate());
 		mEndYearSpinner.setSelection(wCal.get(Calendar.YEAR));
 		mEndYearSpinner.pack();
-		mEndMonthSpinner.setSelection(wCal.get(Calendar.MONTH) + 1);
+		mEndMonthCombo.select(wCal.get(Calendar.MONTH));
 
+		wComp.pack();
 		return wComp;
 	}
 
@@ -96,10 +103,10 @@ public class DialogAnnualPeriod extends Dialog {
 		int wReturnCode = IDialogConstants.CANCEL_ID;
 		if (pButtonId == IDialogConstants.OK_ID) { // 0
 			Date wInputStartDate = new GregorianCalendar(mStartYearSpinner
-					.getSelection(), mStartMonthSpinner.getSelection() - 1, 1)
+					.getSelection(), mStartMonthCombo.getSelectionIndex(), 1)
 					.getTime();
 			Date wInputEndDate = new GregorianCalendar(mEndYearSpinner
-					.getSelection(), mEndMonthSpinner.getSelection() - 1, 1)
+					.getSelection(), mEndMonthCombo.getSelectionIndex(), 1)
 					.getTime();
 			mStartDate = Util.getPeriod(wInputStartDate)[0];
 			mEndDate = Util.getPeriod(wInputEndDate)[1];

@@ -63,6 +63,7 @@ public class CompositeRecord extends Composite {
 	private Spinner mValueSpinner;
 	private Spinner mFrequencySpinner;
 	private Combo mNoteCombo;
+	private String[] mNoteItems;
 
 	private static final int mNoteCandidateCount = 10;
 
@@ -221,6 +222,16 @@ public class CompositeRecord extends Composite {
 		updateItemCombo();
 
 		updateNoteCombo();
+		
+		IControlContentAdapter wContentAdapter = new ComboContentAdapter();
+		IContentProposalProvider wContentProvider = new IContentProposalProvider() {
+			public IContentProposal[] getProposals(String contents, int position) {
+				return Util.createProposals(contents, position, mNoteCombo
+						.getItems(), mNoteCandidateCount);
+			}
+		};
+		new ContentProposalAdapter(mNoteCombo, wContentAdapter, wContentProvider, null,
+				null);
 	}
 
 	private void setWidgets() {
@@ -345,19 +356,11 @@ public class CompositeRecord extends Composite {
 
 	private void updateNoteCombo() {
 		String wNote = mNoteCombo.getText();
-		mNoteCombo.setItems(DbUtil.getNotes(mItemId));
+		mNoteItems = DbUtil.getNotes(mItemId);
+		mNoteCombo.setItems(mNoteItems);
 		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
 
-		IControlContentAdapter contentAdapter = new ComboContentAdapter();
-		IContentProposalProvider provider = new IContentProposalProvider() {
-			public IContentProposal[] getProposals(String contents, int position) {
-				return Util.createProposals(contents, position, mNoteCombo
-						.getItems(), mNoteCandidateCount);
-			}
-		};
-		new ContentProposalAdapter(mNoteCombo, contentAdapter, provider, null,
-				null);
 	}
 
 	public void updateForNextInput() {

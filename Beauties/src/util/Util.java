@@ -163,7 +163,7 @@ public class Util {
 
 		List<IContentProposal> wProposalList = new ArrayList<IContentProposal>();
 		for (int i = 0; i < pCandidates.length; i++) {
-			if (pCandidates[i].length() > pPosition) {
+			if (pCandidates[i].length() >= pPosition) {
 				final String wCandidate = pCandidates[i];
 				if (wCandidate.startsWith(pContent)) {
 					wProposalList.add(new IContentProposal() {
