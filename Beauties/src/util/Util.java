@@ -197,10 +197,59 @@ public class Util {
 
 		return (IContentProposal[])wProposalList.toArray(new IContentProposal[0]);
 	}
+	
+	public static int getSummationIndex(Date[][] pDatePeriods) {
+		Date wStartDateNow = Util.getPeriod(new Date())[0];
+		
+		if (pDatePeriods.length < 2) {
+			return SystemData.getUndefinedInt();
+		} else if (wStartDateNow.before(pDatePeriods[1][0])) {
+			return SystemData.getUndefinedInt();
+		}
+		if (wStartDateNow.after(pDatePeriods[pDatePeriods.length - 1][0])) {
+			return pDatePeriods.length;
+		}
+
+		
+		for (int i=0; i < pDatePeriods.length; i++) {
+			Date wStartDate = pDatePeriods[i][0];
+			if (wStartDate.compareTo(wStartDateNow) == 0) {
+				if (i < 2) {
+					return SystemData.getUndefinedInt();
+				} else {
+					return i;
+				}
+			}
+		}
+		return SystemData.getUndefinedInt();
+	}
+	
+	public static Date[][] getDatePeriodsWithSummaion(Date[][] pDatePeriods) {
+		
+		int wSummationIndex = getSummationIndex(pDatePeriods);
+
+		if (wSummationIndex != SystemData.getUndefinedInt()) {
+			List<Date[]> wDatePeriodList = new ArrayList<Date[]>(pDatePeriods.length + 1);
+			for (Date[] wDatePeriod : pDatePeriods) {
+				wDatePeriodList.add(wDatePeriod);
+			}
+			Date[] wSummationPeriod = { pDatePeriods[0][0], pDatePeriods[wSummationIndex - 1][1] };
+			wDatePeriodList.add(wSummationIndex, wSummationPeriod);
+			return (Date[][])wDatePeriodList.toArray(new Date[0][]);
+		} else {
+			return pDatePeriods;
+		}
+		
+	}
 
 
 //	public static void main(String[] args) {
-//		System.out.println(getAdjusentMonth((new GregorianCalendar(2009, 10, 30)).getTime(), -13));
+//		
+//		Date[][] wDatePeriods = getDatePeriodsWithSummaion(getDatePairs(new Date(), 3));
+//		DateFormat df = new SimpleDateFormat("yyyy/MM/dd");
+//		for (Date[] wDatePeriod : wDatePeriods) {
+//			System.out.println(df.format(wDatePeriod[0]) + " - " + df.format(wDatePeriod[1]));
+//		}
 //	}
 
 }
