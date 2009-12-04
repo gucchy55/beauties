@@ -80,14 +80,14 @@ public class CompositeSummaryTable extends Composite {
 						SummaryTableItem wTableItem = (SummaryTableItem) sel
 								.getFirstElement();
 						CompositeEntry wParent = (CompositeEntry) getParent();
-						if (wTableItem.isSpecial()) {
+						if (wTableItem.isSpecial() && !wTableItem.isAppearedIncomeExpense()) {
 							// CategoryId, ItemIdを初期化
 							SystemData.setCategoryId(SystemData
 									.getUndefinedInt());
 							SystemData.setItemId(SystemData.getUndefinedInt());
 							SystemData.setAllIncome(false);
 							SystemData.setAllExpense(false);
-						} else if (wTableItem.isAppearedSum()) {
+						} else if (wTableItem.isAppearedIncomeExpense()) {
 							SystemData.setAllIncome(wTableItem.isIncome());
 							SystemData.setAllExpense(!wTableItem.isIncome());
 							SystemData.setCategoryId(SystemData

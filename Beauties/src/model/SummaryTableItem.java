@@ -96,5 +96,9 @@ public class SummaryTableItem {
 	public void setAppearedSum(boolean isAppearedSum) {
 		this.isAppearedSum = isAppearedSum;
 	}
+	
+	public void setIncome(boolean isIncome) {
+		this.isIncome = isIncome;
+	}
 
 }

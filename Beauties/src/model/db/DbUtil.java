@@ -1028,11 +1028,13 @@ public class DbUtil {
 		SummaryTableItem wAppearedIncomeItem = new SummaryTableItem("みかけ収入",
 				wBookAppearedIncome);
 		wAppearedIncomeItem.setAppearedIncomeExpense(true);
+		wAppearedIncomeItem.setIncome(true);
 		wSummaryTableItemList.add(wAppearedIncomeItem);
 
 		SummaryTableItem wAppearedExpenseItem = new SummaryTableItem("みかけ支出",
 				wBookAppearedExpense);
 		wAppearedExpenseItem.setAppearedIncomeExpense(true);
+		wAppearedExpenseItem.setIncome(false);
 
 		// カテゴリ集計
 		// CategoryId-SummaryTableItemList
