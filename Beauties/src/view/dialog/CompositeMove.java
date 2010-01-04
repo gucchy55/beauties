@@ -262,6 +262,6 @@ public class CompositeMove extends Composite {
 
 	public boolean isValidInput() {
 		return (mValueSpinner.getSelection() > 0 && !mBookFromCombo
-				.getSelection().equals(mBookToCombo.getSelection()));
+				.getText().equals(mBookToCombo.getText()));
 	}
 }

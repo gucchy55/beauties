@@ -61,6 +61,8 @@ public class CompositeRecordTable extends Composite {
 		mTableUp = setTableHeader(this, new MyGridData(GridData.FILL,
 				GridData.FILL, true, true).getMyGridData());
 		mTableUp = setRecordTableItem(mTableUp, mRecordItemsUp);
+		mTableUp.getTable().setSelection(0);
+		mTableUp.getTable().setFocus();
 		
 		Label wLabel = new Label(this, SWT.NONE);
 		wLabel.setText("当月の収支予定");

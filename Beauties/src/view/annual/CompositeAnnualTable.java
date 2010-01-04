@@ -43,10 +43,6 @@ public class CompositeAnnualTable extends Composite {
 	private Table mRowHeaderTable;
 	private Table mMainTable;
 
-	private String[] mOriginalColumnHeaders = { "繰越残高", "みかけ収支", "営業収支",
-			"実質収支", "実質残高", "みかけ残高", "立替累計", "営業収入", "営業支出", "実質収入", "実質支出",
-			"みかけ収入", "みかけ支出", "特別収入", "特別支出", "立替等入", "立替等出" };
-
 	public CompositeAnnualTable(Composite pParent) {
 		super(pParent, SWT.NONE);
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
@@ -87,16 +83,10 @@ public class CompositeAnnualTable extends Composite {
 			SystemData.setMonthCount(wDatePeriods.length);
 		}
 
-		// DateFormat dftmp = new SimpleDateFormat("yyyy/MM/dd");
-		// System.out.println(SystemData.getMonthCount() + ": " +
-		// dftmp.format(SystemData.getStartDate()) + " - " +
-		// dftmp.format(SystemData.getEndDate()));
-
 		List<String> wRowHeaders = new ArrayList<String>();
 		DateFormat df = new SimpleDateFormat("yyyy年MM月");
 		Date wDateNow = new Date();
 		boolean wIsSummationAdded = false;
-		int wSummationRowIndex = SystemData.getUndefinedInt();
 
 		// DateNowが最初の月以前なら合計、平均は表示しない
 		if (wDatePeriods[0][1].after(wDateNow)) {
@@ -108,7 +98,6 @@ public class CompositeAnnualTable extends Composite {
 					&& Util.getAdjusentDay(wEndDate, 1).after(wDateNow)
 					&& !wIsSummationAdded) {
 				wIsSummationAdded = true;
-				wSummationRowIndex = i;
 				wRowHeaders.add("合計");
 				wRowHeaders.add("平均");
 			}
@@ -116,7 +105,6 @@ public class CompositeAnnualTable extends Composite {
 		}
 		if (!wIsSummationAdded) {
 			wRowHeaders.add("合計");
-			wSummationRowIndex = wDatePeriods.length;
 			wRowHeaders.add("平均");
 		}
 
@@ -137,21 +125,24 @@ public class CompositeAnnualTable extends Composite {
 		// ヘッダを可視にする
 		mMainTable.setHeaderVisible(true);
 
-		// 列のヘッダの設定
+		// 格納する値の取得
+		mSummaryTableItems = new ArrayList<SummaryTableItem[]>();
 		if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
-			for (int i=0; i < mOriginalColumnHeaders.length; i++) {
-				mAnnualHeaderItems = new AnnualHeaderItem[mOriginalColumnHeaders.length];
-				mAnnualHeaderItems[i] = new AnnualHeaderItem(mOriginalColumnHeaders[i]);
-			}
-			
-		} else if (SystemData.getAnnualViewType() == AnnualViewType.Item) {
-			mAnnualHeaderItems = DbUtil.getAnnualHeaderItem(SystemData
-					.getBookId(), SystemData.getStartDate(), SystemData
-					.getEndDate(), false, true);
-		} else { // Category
-			mAnnualHeaderItems = DbUtil.getAnnualHeaderItem(SystemData
-					.getBookId(), SystemData.getStartDate(), SystemData
-					.getEndDate(), true, false);
+			mSummaryTableItems = DbUtil
+					.getAnnualSummaryTableItemsOriginal(wDatePeriods);
+		} else if (SystemData.getAnnualViewType() == AnnualViewType.Category) {
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsCategory(
+					SystemData.getBookId(), wDatePeriods);
+		} else { // ITEM
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(SystemData
+					.getBookId(), wDatePeriods);
+		}
+
+		// 列のヘッダの設定
+		mAnnualHeaderItems = new AnnualHeaderItem[mSummaryTableItems.get(0).length];
+		for (int i = 0; i < mSummaryTableItems.get(0).length; i++) {
+			mAnnualHeaderItems[i] = new AnnualHeaderItem(mSummaryTableItems
+					.get(0)[i].getItemName());
 		}
 
 		// Win32だとなぜか先頭列が右寄せにならないので、空白列を挿入
@@ -163,30 +154,6 @@ public class CompositeAnnualTable extends Composite {
 			wTableCol = new TableColumn(mMainTable, SWT.RIGHT);
 			wTableCol.setText(wItem.getName());
 			wTableCol.setWidth(mColumnWidth);
-		}
-
-		// 格納する値の取得
-		mSummaryTableItems = new ArrayList<SummaryTableItem[]>();
-		wIsSummationAdded = false;
-		if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
-			
-		} else {
-			for (int i = 0; i < wDatePeriods.length; i++) {
-				Date[] wDatePeriod = wDatePeriods[i];
-				if (i == wSummationRowIndex) {
-					wIsSummationAdded = true;
-					addSummationAverageRows(wDatePeriods[0][0],
-							wDatePeriods[i - 1][1], i);
-				}
-				mSummaryTableItems.add(DbUtil.getAllSummaryTableItems(SystemData
-						.getBookId(), wDatePeriod[0], wDatePeriod[1],
-						mAnnualHeaderItems));
-			}
-	
-			if (!wIsSummationAdded) {
-				addSummationAverageRows(SystemData.getStartDate(), SystemData
-						.getEndDate(), wDatePeriods.length);
-			}
 		}
 
 		wMainTableViewer.setContentProvider(new SummaryTableContentProvider());
@@ -209,25 +176,6 @@ public class CompositeAnnualTable extends Composite {
 		});
 
 	}
-
-	private void addSummationAverageRows(Date pStartDate, Date pEndDate,
-			int pAverageRowCount) {
-		// 合計
-		SummaryTableItem[] wSummationItems = DbUtil.getAllSummaryTableItems(
-				SystemData.getBookId(), pStartDate, pEndDate,
-				mAnnualHeaderItems);
-		mSummaryTableItems.add(wSummationItems);
-
-		// 平均
-		SummaryTableItem[] wAverageItems = DbUtil.getAllSummaryTableItems(
-				SystemData.getBookId(), pStartDate, pEndDate,
-				mAnnualHeaderItems);
-		for (SummaryTableItem wAveItem : wAverageItems) {
-			wAveItem.setValue(wAveItem.getValue() / pAverageRowCount);
-		}
-		mSummaryTableItems.add(wAverageItems);
-	}
-
 }
 
 class HeaderTableContentProvider implements IStructuredContentProvider {
@@ -246,10 +194,10 @@ class HeaderTableContentProvider implements IStructuredContentProvider {
 
 class HeaderTableLabelProvider implements ITableLabelProvider,
 		ITableColorProvider {
-	private Display mDisplay;
+//	private Display mDisplay;
 
 	public HeaderTableLabelProvider(Display pDisplay) {
-		this.mDisplay = pDisplay;
+//		this.mDisplay = pDisplay;
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -289,8 +237,10 @@ class HeaderTableLabelProvider implements ITableLabelProvider,
 		// return new Color(mDisplay, 255, 255, 176);
 		// } else {
 		// アイテム（グレー）
-		return new Color(mDisplay, 238, 227, 251);
+		// return new Color(mDisplay, 238, 227, 251);
 		// }
+		// return new Color(mDisplay, 200, 200, 255);
+		return null;
 	}
 
 	@Override
@@ -327,10 +277,12 @@ class SummaryTableLabelProvider implements ITableLabelProvider,
 	}
 
 	public String getColumnText(Object element, int columnIndex) {
-		if (columnIndex == 0) {
+		SummaryTableItem[] wItem = (SummaryTableItem[]) element;
+		if (columnIndex == 0
+				|| wItem[columnIndex - 1].getValue() == SystemData
+						.getUndefinedInt()) {
 			return "";
 		} else {
-			SummaryTableItem[] wItem = (SummaryTableItem[]) element;
 			return mDecimalFormat.format(wItem[columnIndex - 1].getValue());
 		}
 	}
@@ -353,24 +305,25 @@ class SummaryTableLabelProvider implements ITableLabelProvider,
 		if (pColumnIndex == 0) {
 			return null;
 		} else {
-			SummaryTableItem[] wItems = (SummaryTableItem[]) pElement;
-			SummaryTableItem wItem = wItems[pColumnIndex - 1];
-			if (wItem.isAppearedSum()) {
-				// みかけ収支（赤）
-				return new Color(mDisplay, 255, 200, 200);
-			} else if (wItem.isAppearedIncomeExpense()) {
-				// みかけ収入、支出（緑）
-				return new Color(mDisplay, 200, 255, 200);
-			} else if (wItem.isSpecial()) {
-				// 残高、営業収支等（青）
-				return new Color(mDisplay, 200, 200, 255);
-			} else if (wItem.isCategory()) {
-				// カテゴリ（黄色）
-				return new Color(mDisplay, 255, 255, 176);
-			} else {
-				// アイテム（グレー）
-				return new Color(mDisplay, 238, 227, 251);
-			}
+			// SummaryTableItem[] wItems = (SummaryTableItem[]) pElement;
+			// SummaryTableItem wItem = wItems[pColumnIndex - 1];
+			// if (wItem.isAppearedSum()) {
+			// // みかけ収支（赤）
+			// return new Color(mDisplay, 255, 200, 200);
+			// } else if (wItem.isAppearedIncomeExpense()) {
+			// // みかけ収入、支出（緑）
+			// return new Color(mDisplay, 200, 255, 200);
+			// } else if (wItem.isSpecial()) {
+			// // 残高、営業収支等（青）
+			// return new Color(mDisplay, 200, 200, 255);
+			// } else if (wItem.isCategory()) {
+			// // カテゴリ（黄色）
+			// return new Color(mDisplay, 255, 255, 176);
+			// } else {
+			// // アイテム（グレー）
+			// return new Color(mDisplay, 238, 227, 251);
+			// }
+			return null;
 		}
 	}
 

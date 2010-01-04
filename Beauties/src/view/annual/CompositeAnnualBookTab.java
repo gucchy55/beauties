@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
+import model.AnnualViewType;
 import model.SystemData;
 import model.action.OpenDialogAnnualPeriod;
 import model.action.UpdateAnnual;
@@ -115,6 +116,8 @@ public class CompositeAnnualBookTab extends Composite {
 			wBookButton.setText(mBookMap.get(wBookId));
 			if (wBookId == SystemData.getBookId()) {
 				wBookButton.setSelection(true);
+				wBookButton.setEnabled(false);
+			} else if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
 				wBookButton.setEnabled(false);
 			} else {
 				wBookButton.addSelectionListener(new SelectionAdapter() {

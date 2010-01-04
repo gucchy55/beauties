@@ -78,19 +78,19 @@ public class CompositeAnnualActionTab extends Composite {
 			});
 		}
 
-		Button wModifyButton = new Button(this, SWT.TOGGLE);
-		wModifyButton.setText("特殊収支");
-//		if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
-//			wCategoryButton.setSelection(true);
-//			wCategoryButton.setEnabled(false);
-//		} else {
-//			wItemButton.addSelectionListener(new SelectionAdapter() {
-//				@Override
-//				public void widgetSelected(SelectionEvent e) {
-//					SystemData.setmAnnualViewType(AnnualViewType.Original);
-//					new UpdateAnnual(getParent().getParent()).run();
-//				}
-//			});
-//		}
+		Button wOriginalButton = new Button(this, SWT.TOGGLE);
+		wOriginalButton.setText("特殊収支");
+		if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
+			wOriginalButton.setSelection(true);
+			wOriginalButton.setEnabled(false);
+		} else {
+			wOriginalButton.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					SystemData.setmAnnualViewType(AnnualViewType.Original);
+					new UpdateAnnual(getParent().getParent()).run();
+				}
+			});
+		}
 	}
 }

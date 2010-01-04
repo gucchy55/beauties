@@ -24,7 +24,7 @@ public class OpenDialogAnnualPeriod extends Action {
 //			if (wDialogPeriod.getEndDate().after(wDialogPeriod.getStartDate())) {
 				SystemData.setStartDate(wDialogAnnualPeriod.getStartDate());
 				SystemData.setEndDate(wDialogAnnualPeriod.getEndDate());
-//				SystemData.setMonthPeriod(false);
+				SystemData.setAnnualPeriod(false);
 				new UpdateAnnual(SystemData.getCompositeRightMain()).run();
 //			}
 		}

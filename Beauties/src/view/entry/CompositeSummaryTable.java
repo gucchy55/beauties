@@ -70,6 +70,8 @@ public class CompositeSummaryTable extends Composite {
 
 		wTableViewer.setLabelProvider(new SummaryTableLabelProvider(
 				getDisplay()));
+		
+		wTableViewer.getTable().setSelection(0);
 
 		wTableViewer
 				.addSelectionChangedListener(new ISelectionChangedListener() {
