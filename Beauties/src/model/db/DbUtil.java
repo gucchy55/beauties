@@ -24,14 +24,14 @@ import model.SystemData;
 public class DbUtil {
 
 	// Systemテーブル関連
-	private final static String mSystemTable = "SYSTEM";
+	private final static String mSystemTable = "system";
 	private final static String mSystemValueCol = "NUM_VALUE";
 	private final static String mSystemIDCol = "SID";
 	private final static String mCutOff = "CUTOFF_DT";
 	private final static String mFiscalMonth = "FISCAL_MH";
 
 	// Categoryテーブル関連
-	private final static String mCategoryTable = "CBM_CATEGORY";
+	private final static String mCategoryTable = "cbm_category";
 	private final static String mCategoryNameCol = "CATEGORY_NAME";
 	private final static String mCategoryIdCol = "CATEGORY_ID";
 	private final static String mCategoryRexpCol = "REXP_DIV"; // 1: Income, 2:
@@ -39,15 +39,15 @@ public class DbUtil {
 	private final static int mExpneseRexp = 2; // REXP_DIVの値（Expense）
 
 	// BookとItemの関連テーブル
-	private final static String mBookItemTable = "CBR_BOOK";
+	private final static String mBookItemTable = "cbr_book";
 
 	// Itemテーブル関連
-	private final static String mItemTable = "CBM_ITEM";
+	private final static String mItemTable = "cbm_item";
 	private final static String mItemNameCol = "ITEM_NAME";
 	private final static String mItemIdCol = "ITEM_ID";
 
 	// ACTアイテム関連
-	private final static String mActTable = "CBT_ACT";
+	private final static String mActTable = "cbt_act";
 	private final static String mActIdCol = "ACT_ID";
 	private final static String mActDtCol = "ACT_DT";
 	private final static String mActIncomeCol = "INCOME";
@@ -61,13 +61,13 @@ public class DbUtil {
 	private final static String mSortKeyCol = "SORT_KEY";
 
 	// Bookテーブル関連
-	private final static String mBookTable = "CBM_BOOK";
+	private final static String mBookTable = "cbm_book";
 	private final static String mBookIdCol = "BOOK_ID";
 	private final static String mBookNameCol = "BOOK_NAME";
 	private final static String mBookBalanceCol = "BALANCE";
 
 	// Noteテーブル関連
-	private final static String mNoteTable = "CBT_NOTE";
+	private final static String mNoteTable = "cbt_note";
 	private final static String mNoteIdCol = "NOTE_ID";
 	private final static String mNoteNameCol = "NOTE_NAME";
 
