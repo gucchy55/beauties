@@ -20,6 +20,7 @@ import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Image;
@@ -52,28 +53,39 @@ public class CompositeRecordTable extends Composite {
 		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true,
 				true).getMyGridData());
+
+		SashForm wSashForm = new SashForm(this, SWT.VERTICAL);
+		wSashForm.setLayout(new MyGridLayout(1, false).getMyGridLayout());
+		wSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true,
+				true).getMyGridData());
 		
 		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mStartDate, mEndDate, SystemData.getBookId());
 		
 		mRecordItemsUp = wRecordTableItemAll[0];
 		mRecordItemsBottom = wRecordTableItemAll[1];
 		
-		mTableUp = setTableHeader(this, new MyGridData(GridData.FILL,
+		mTableUp = setTableHeader(wSashForm, new MyGridData(GridData.FILL,
 				GridData.FILL, true, true).getMyGridData());
 		mTableUp = setRecordTableItem(mTableUp, mRecordItemsUp);
 		mTableUp.getTable().setSelection(0);
 		mTableUp.getTable().setFocus();
 		
-		Label wLabel = new Label(this, SWT.NONE);
+		Composite wBottomComp = new Composite(wSashForm, SWT.NONE);
+		wBottomComp.setLayout(new MyGridLayout(1, false).getMyGridLayout());
+		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true,
+				true).getMyGridData());
+		wSashForm.setWeights(new int [] {80,20});
+		
+		Label wLabel = new Label(wBottomComp, SWT.NONE);
 		wLabel.setText("当月の収支予定");
 		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER,
 				true, false).getMyGridData());
 
-		GridData wGridData = new MyGridData(GridData.FILL, GridData.CENTER,
-				true, false).getMyGridData();
-		wGridData.heightHint = 100;
-		mTableBottom = setTableHeader(this, wGridData);
-
+		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL,
+				true, true).getMyGridData();
+//		wGridData.heightHint = 100;
+		mTableBottom = setTableHeader(wBottomComp, wGridData);
+		
 		if (mRecordItemsBottom.length > 0) {
 			mTableBottom = setRecordTableItem(mTableBottom, mRecordItemsBottom);
 		}
