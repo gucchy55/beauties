@@ -160,8 +160,7 @@ public class CompositeAnnualTable extends Composite {
 		wMainTableViewer.setInput((SummaryTableItem[][]) mSummaryTableItems
 				.toArray(new SummaryTableItem[0][]));
 
-		wMainTableViewer.setLabelProvider(new SummaryTableLabelProvider(
-				getDisplay()));
+		wMainTableViewer.setLabelProvider(new SummaryTableLabelProvider());
 
 		// 選択がシンクロするようリスナーを設定
 		mRowHeaderTable.addSelectionListener(new SelectionAdapter() {
@@ -194,10 +193,10 @@ class HeaderTableContentProvider implements IStructuredContentProvider {
 
 class HeaderTableLabelProvider implements ITableLabelProvider,
 		ITableColorProvider {
-//	private Display mDisplay;
+	// private Display mDisplay;
 
 	public HeaderTableLabelProvider(Display pDisplay) {
-//		this.mDisplay = pDisplay;
+		// this.mDisplay = pDisplay;
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -266,11 +265,6 @@ class SummaryTableContentProvider implements IStructuredContentProvider {
 class SummaryTableLabelProvider implements ITableLabelProvider,
 		ITableColorProvider {
 	private DecimalFormat mDecimalFormat = new DecimalFormat("###,###");
-	private Display mDisplay;
-
-	public SummaryTableLabelProvider(Display pDisplay) {
-		this.mDisplay = pDisplay;
-	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
@@ -336,7 +330,7 @@ class SummaryTableLabelProvider implements ITableLabelProvider,
 			SummaryTableItem wItem = wItems[pColumnIndex - 1];
 			if (wItem.getValue() < 0) {
 				// 赤字
-				return new Color(mDisplay, 255, 0, 0);
+				return new Color(Display.getCurrent(), 255, 0, 0);
 			}
 
 			return null;

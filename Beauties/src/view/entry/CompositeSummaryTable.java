@@ -68,9 +68,8 @@ public class CompositeSummaryTable extends Composite {
 		wTableViewer.setContentProvider(new SummaryTableContentProvider());
 		wTableViewer.setInput(wSummaryTableItems);
 
-		wTableViewer.setLabelProvider(new SummaryTableLabelProvider(
-				getDisplay()));
-		
+		wTableViewer.setLabelProvider(new SummaryTableLabelProvider());
+
 		wTableViewer.getTable().setSelection(0);
 
 		wTableViewer
@@ -82,7 +81,8 @@ public class CompositeSummaryTable extends Composite {
 						SummaryTableItem wTableItem = (SummaryTableItem) sel
 								.getFirstElement();
 						CompositeEntry wParent = (CompositeEntry) getParent();
-						if (wTableItem.isSpecial() && !wTableItem.isAppearedIncomeExpense()) {
+						if (wTableItem.isSpecial()
+								&& !wTableItem.isAppearedIncomeExpense()) {
 							// CategoryId, ItemIdを初期化
 							SystemData.setCategoryId(SystemData
 									.getUndefinedInt());
@@ -137,11 +137,6 @@ class SummaryTableContentProvider implements IStructuredContentProvider {
 class SummaryTableLabelProvider implements ITableLabelProvider,
 		ITableColorProvider {
 	private DecimalFormat mDecimalFormat = new DecimalFormat("###,###");
-	private Display mDisplay;
-
-	public SummaryTableLabelProvider(Display pDisplay) {
-		this.mDisplay = pDisplay;
-	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
@@ -180,19 +175,19 @@ class SummaryTableLabelProvider implements ITableLabelProvider,
 		SummaryTableItem wItem = (SummaryTableItem) pElement;
 		if (wItem.isAppearedSum()) {
 			// みかけ収支（赤）
-			return new Color(mDisplay, 255, 200, 200);
+			return new Color(Display.getCurrent(), 255, 200, 200);
 		} else if (wItem.isAppearedIncomeExpense()) {
 			// みかけ収入、支出（緑）
-			return new Color(mDisplay, 200, 255, 200);
+			return new Color(Display.getCurrent(), 200, 255, 200);
 		} else if (wItem.isSpecial()) {
 			// 残高、営業収支等（青）
-			return new Color(mDisplay, 200, 200, 255);
+			return new Color(Display.getCurrent(), 200, 200, 255);
 		} else if (wItem.isCategory()) {
 			// カテゴリ（黄色）
-			return new Color(mDisplay, 255, 255, 176);
+			return new Color(Display.getCurrent(), 255, 255, 176);
 		} else {
 			// アイテム（グレー）
-			return new Color(mDisplay, 238, 227, 251);
+			return new Color(Display.getCurrent(), 238, 227, 251);
 		}
 	}
 
@@ -200,10 +195,10 @@ class SummaryTableLabelProvider implements ITableLabelProvider,
 	public Color getForeground(Object pElement, int pColumnIndex) {
 		SummaryTableItem wItem = (SummaryTableItem) pElement;
 		if (pColumnIndex == 1 && wItem.getValue() < 0) {
-			return new Color(mDisplay, 255, 0, 0);
+			return new Color(Display.getCurrent(), 255, 0, 0);
 		}
 		return null;
-		
+
 	}
 
 }
