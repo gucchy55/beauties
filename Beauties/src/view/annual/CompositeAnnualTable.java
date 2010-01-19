@@ -29,6 +29,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+import org.eclipse.swt.widgets.TableItem;
 
 import util.Util;
 import view.util.MyGridData;
@@ -43,6 +44,9 @@ public class CompositeAnnualTable extends Composite {
 	private Table mRowHeaderTable;
 	private Table mMainTable;
 
+	private Color mColor1 = new Color(Display.getCurrent(), 255, 255, 255);
+	private Color mColor2 = new Color(Display.getCurrent(), 255, 255, 234);
+
 	public CompositeAnnualTable(Composite pParent) {
 		super(pParent, SWT.NONE);
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
@@ -51,8 +55,7 @@ public class CompositeAnnualTable extends Composite {
 		this.setLayoutData(wGridData);
 
 		// 年月列テーブル
-		TableViewer wRowHeader = new TableViewer(this, SWT.MULTI | SWT.BORDER
-				| SWT.VIRTUAL);
+		TableViewer wRowHeader = new TableViewer(this, SWT.MULTI | SWT.BORDER);
 		mRowHeaderTable = wRowHeader.getTable();
 		mRowHeaderTable.setLinesVisible(true);
 		mRowHeaderTable.setHeaderVisible(true);
@@ -114,7 +117,7 @@ public class CompositeAnnualTable extends Composite {
 
 		// メインテーブル
 		TableViewer wMainTableViewer = new TableViewer(this, SWT.MULTI
-				| SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
+				| SWT.FULL_SELECTION | SWT.BORDER);
 		mMainTable = wMainTableViewer.getTable();
 
 		mMainTable.setLayoutData(new MyGridData(GridData.BEGINNING,
@@ -161,6 +164,19 @@ public class CompositeAnnualTable extends Composite {
 				.toArray(new SummaryTableItem[0][]));
 
 		wMainTableViewer.setLabelProvider(new SummaryTableLabelProvider());
+
+		for (TableViewer wTableViewer : new TableViewer[] { wRowHeader,
+				wMainTableViewer }) {
+			TableItem[] wItems = wTableViewer.getTable().getItems();
+			for (int i = 0; i < wItems.length; i++) {
+				if (i % 2 == 0) {
+					wItems[i].setBackground(mColor1);
+				} else {
+					wItems[i].setBackground(mColor2);
+				}
+			}
+
+		}
 
 		// 選択がシンクロするようリスナーを設定
 		mRowHeaderTable.addSelectionListener(new SelectionAdapter() {
