@@ -77,6 +77,10 @@ public class DbUtil {
 	private final static int mSpecialExpenseCategoryId = 44;
 	private final static int mTempIncomeCategoryId = 60;
 	private final static int mTempExpenseCategoryId = 61;
+	
+	// エスケープ文字
+	private final static String mEscapeChar = "\\";
+	private final static String[] mSpecialChars = {"\\", "\'", "\""};
 
 	private DbUtil() {
 
@@ -526,6 +530,8 @@ public class DbUtil {
 	public static void insertNewRecord(int pBookId, int pItemId, int pYear,
 			int pMonth, int pDay, int pIncome, int pExpense, int pFrequency,
 			String pNote) {
+		
+		pNote = getNoteStringWithEscape(pNote);
 
 		DbAccess wDbAccess = new DbAccess();
 		String wQueryBase1 = "insert into  " + mActTable + " ( " + mBookIdCol
@@ -587,6 +593,8 @@ public class DbUtil {
 	public static void updateRecord(int pActId, int pBookId, int pItemId,
 			int pYear, int pMonth, int pDay, int pIncome, int pExpense,
 			int pFrequency, String pNote) {
+
+		pNote = getNoteStringWithEscape(pNote);
 
 		DbAccess wDbAccess = new DbAccess();
 
@@ -672,6 +680,8 @@ public class DbUtil {
 	public static void insertNewMoveRecord(int pBookFromId, int pBookToId,
 			int pYear, int pMonth, int pDay, int pValue, int pFrequency,
 			String pNote) {
+		
+		pNote = getNoteStringWithEscape(pNote);
 
 		DbAccess wDbAccess = new DbAccess();
 		int wGroupId = getNewGroupId(wDbAccess);
@@ -739,6 +749,8 @@ public class DbUtil {
 	public static void updateMoveRecord(int pIncomeActId, int pBookFromId,
 			int pBookToId, int pYear, int pMonth, int pDay, int pValue,
 			int pFrequency, String pNote) {
+
+		pNote = getNoteStringWithEscape(pNote);
 
 		DbAccess wDbAccess = new DbAccess();
 
@@ -2104,6 +2116,13 @@ public class DbUtil {
 				"SQL ResultSet Handling Error", e.toString() + "\n\n" + wStack);
 		// System.err.println("ResultSet Handling Error: " + e.toString());
 	}
+	
+	private static String getNoteStringWithEscape(String pNote) {
+		for (String wString : mSpecialChars) {
+			pNote = pNote.replace(wString, mEscapeChar + wString);
+		}
+		return pNote;
+	}
 
 	// public static String getCategoryNameById(int pCategoryId) {
 	// DbAccess wDbAccess = new DbAccess();
@@ -2165,19 +2184,7 @@ public class DbUtil {
 	// }
 
 	// public static void main(String[] args) {
-	// Date[][] wDatePeriods = Util.getDatePairs(new Date(), 13);
-	// List<SummaryTableItem[]> wAllList =
-	// getAnnualSummaryTableItemsOriginal(wDatePeriods);
-	// for (SummaryTableItem wItem : wAllList.get(0)) {
-	// System.out.print(wItem.getItemName() + ", ");
-	// }
-	// System.out.println();
-	// for (SummaryTableItem[] wList : wAllList) {
-	// for (SummaryTableItem wItem : wList) {
-	// System.out.print(wItem.getValue() + ", ");
-	// }
-	// System.out.println();
-	// }
+	// System.out.println(getNoteStringWithEscape("\\"));
 	// }
 
 }

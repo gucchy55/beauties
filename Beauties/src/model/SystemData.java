@@ -28,6 +28,7 @@ public class SystemData {
 	private static int mCategoryId = mUndefined;
 	private static boolean mAllIncome = false;
 	private static boolean mAllExpense = false;
+	private static int[] mRecordTableWeights = {80, 20};
 	
 	// For Annual
 	private static boolean isAnnualPeriod = false;
@@ -207,6 +208,14 @@ public class SystemData {
 
 	public static void setMonthCount(int pMonthCount) {
 		SystemData.mMonthCount = pMonthCount;
+	}
+
+	public static int[] getRecordTableWeights() {
+		return mRecordTableWeights;
+	}
+
+	public static void setRecordTableWeights(int[] pRecordTableWeights) {
+		SystemData.mRecordTableWeights = pRecordTableWeights;
 	}
 
 }

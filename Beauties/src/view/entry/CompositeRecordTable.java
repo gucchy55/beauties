@@ -21,6 +21,8 @@ import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
+import org.eclipse.swt.events.ControlEvent;
+import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.graphics.Color;
@@ -59,7 +61,7 @@ public class CompositeRecordTable extends Composite {
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true,
 				true).getMyGridData());
 
-		SashForm wSashForm = new SashForm(this, SWT.VERTICAL);
+		final SashForm wSashForm = new SashForm(this, SWT.VERTICAL);
 		wSashForm.setLayout(new MyGridLayout(1, false).getMyGridLayout());
 		wSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL,
 				true, true).getMyGridData());
@@ -80,7 +82,8 @@ public class CompositeRecordTable extends Composite {
 		wBottomComp.setLayout(new MyGridLayout(1, false).getMyGridLayout());
 		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL,
 				true, true).getMyGridData());
-		wSashForm.setWeights(new int[] { 80, 20 });
+		
+		wSashForm.setWeights(SystemData.getRecordTableWeights());
 
 		Label wLabel = new Label(wBottomComp, SWT.NONE);
 		wLabel.setText("当月の収支予定");
@@ -96,6 +99,20 @@ public class CompositeRecordTable extends Composite {
 			mTableBottom = setRecordTableItem(mTableBottom, mRecordItemsBottom);
 		}
 
+		wBottomComp.addControlListener(new ControlListener() {
+			
+			@Override
+			public void controlResized(ControlEvent arg0) {
+				SystemData.setRecordTableWeights(wSashForm.getWeights());
+				
+			}
+			
+			@Override
+			public void controlMoved(ControlEvent arg0) {
+				
+			}
+		});
+		
 		setStripeToTable();
 
 	}

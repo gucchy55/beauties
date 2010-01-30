@@ -380,6 +380,7 @@ public class CompositeRecord extends Composite {
 
 		mValueSpinner.setSelection(0);
 		mFrequencySpinner.setSelection(0);
+		mItemCombo.setFocus();
 	}
 
 	public void insertRecord() {
