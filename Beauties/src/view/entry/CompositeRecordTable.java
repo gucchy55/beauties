@@ -25,11 +25,9 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
-import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
@@ -49,8 +47,8 @@ public class CompositeRecordTable extends Composite {
 	private TableViewer mTableUp;
 	private TableViewer mTableBottom;
 
-	private Color mColor1 = new Color(Display.getCurrent(), 255, 255, 255);
-	private Color mColor2 = new Color(Display.getCurrent(), 255, 255, 234);
+//	private Color mColor1 = new Color(Display.getCurrent(), 255, 255, 255);
+//	private Color mColor2 = new Color(Display.getCurrent(), 255, 255, 234);
 
 	public CompositeRecordTable(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -113,14 +111,14 @@ public class CompositeRecordTable extends Composite {
 			}
 		});
 		
-		setStripeToTable();
+//		setStripeToTable();
 
 	}
 
 	private TableViewer setTableHeader(Composite pComp, GridData pGridData) {
 		// テーブルの作成
 		TableViewer wTableViewer = new TableViewer(pComp, SWT.FULL_SELECTION
-				| SWT.BORDER);
+				| SWT.BORDER | SWT.VIRTUAL);
 		Table wTable = wTableViewer.getTable();
 		wTable.setLayoutData(pGridData);
 		// 線を表示する
@@ -268,19 +266,19 @@ public class CompositeRecordTable extends Composite {
 		}
 	}
 
-	public void setStripeToTable() {
-		for (Table wTable : new Table[] { mTableUp.getTable(),
-				mTableBottom.getTable() }) {
-			TableItem[] wItems = wTable.getItems();
-			for (int i = 0; i < wItems.length; i++) {
-				if (i % 2 == 0) {
-					wItems[i].setBackground(mColor1);
-				} else {
-					wItems[i].setBackground(mColor2);
-				}
-			}
-		}
-	}
+//	public void setStripeToTable() {
+//		for (Table wTable : new Table[] { mTableUp.getTable(),
+//				mTableBottom.getTable() }) {
+//			TableItem[] wItems = wTable.getItems();
+//			for (int i = 0; i < wItems.length; i++) {
+//				if (i % 2 == 0) {
+//					wItems[i].setBackground(mColor1);
+//				} else {
+//					wItems[i].setBackground(mColor2);
+//				}
+//			}
+//		}
+//	}
 
 }
 

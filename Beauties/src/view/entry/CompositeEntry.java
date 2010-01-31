@@ -52,8 +52,8 @@ public class CompositeEntry extends Composite {
 		mCompositeRecordTable.removeFilter();
 	}
 	
-	public void setStripToTable() {
-		mCompositeRecordTable.setStripeToTable();
-	}
+//	public void setStripToTable() {
+//		mCompositeRecordTable.setStripeToTable();
+//	}
 
 }

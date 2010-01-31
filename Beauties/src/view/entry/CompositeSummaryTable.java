@@ -113,7 +113,7 @@ public class CompositeSummaryTable extends Composite {
 						}
 						wParent.removeFiltersFromRecord();
 						wParent.addFiltersToRecord();
-						wParent.setStripToTable();
+//						wParent.setStripToTable();
 
 					}
 
