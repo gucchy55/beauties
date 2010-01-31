@@ -226,11 +226,11 @@ class HeaderTableLabelProvider implements ITableLabelProvider, ITableColorProvid
 
 	@Override
 	public Color getBackground(Object pElement, int pColumnIndex) {
-		SummaryTableItem wItem = (SummaryTableItem) pElement;
-		if (wItem.isSpecial() && SystemData.getAnnualViewType() != AnnualViewType.Original) {
-			// 残高、営業収支等（赤）
-			return new Color(Display.getCurrent(), 255, 176, 176);
-		}
+//		SummaryTableItem wItem = (SummaryTableItem) pElement;
+//		if (wItem.isSpecial() && SystemData.getAnnualViewType() != AnnualViewType.Original) {
+//			// 残高、営業収支等（赤）
+//			return new Color(Display.getCurrent(), 255, 176, 176);
+//		}
 		// } else if (wItem.isAppearedSum()) {
 		// // みかけ収支等（緑）
 		// return new Color(mDisplay, 176, 255, 176);
