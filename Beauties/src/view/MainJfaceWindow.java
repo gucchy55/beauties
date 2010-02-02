@@ -3,10 +3,7 @@ package view;
 import model.RightType;
 import model.SystemData;
 import model.action.InitMainWindow;
-import model.action.OpenDialogNewMove;
-import model.action.OpenDialogNewRecord;
 
-import org.eclipse.jface.action.MenuManager;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -72,17 +69,17 @@ public class MainJfaceWindow extends ApplicationWindow {
 		init();
 		return pParent;
 	}
-
-	@Override
-	protected MenuManager createMenuManager() {
-		MenuManager menubar = new MenuManager();
-		MenuManager menu = new MenuManager("アクション(&A)");
-		menubar.add(menu);
-
-		menu.add(new OpenDialogNewRecord(getShell()));
-		menu.add(new OpenDialogNewMove(getShell()));
-		return menubar;
-	}
+//
+//	@Override
+//	protected MenuManager createMenuManager() {
+//		MenuManager menubar = new MenuManager();
+//		MenuManager menu = new MenuManager("アクション(&A)");
+//		menubar.add(menu);
+//
+//		menu.add(new OpenDialogNewRecord(getShell()));
+//		menu.add(new OpenDialogNewMove(getShell()));
+//		return menubar;
+//	}
 
 	private void init() {
 		new InitMainWindow(this).run();

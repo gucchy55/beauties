@@ -8,6 +8,8 @@ import model.SystemData;
 import model.action.DeleteRecord;
 import model.action.OpenDialogModifyMove;
 import model.action.OpenDialogModifyRecord;
+import model.action.OpenDialogNewMove;
+import model.action.OpenDialogNewRecord;
 import model.db.DbUtil;
 
 import org.eclipse.jface.viewers.DoubleClickEvent;
@@ -25,6 +27,7 @@ import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -47,8 +50,8 @@ public class CompositeRecordTable extends Composite {
 	private TableViewer mTableUp;
 	private TableViewer mTableBottom;
 
-//	private Color mColor1 = new Color(Display.getCurrent(), 255, 255, 255);
-//	private Color mColor2 = new Color(Display.getCurrent(), 255, 255, 234);
+	// private Color mColor1 = new Color(Display.getCurrent(), 255, 255, 255);
+	// private Color mColor2 = new Color(Display.getCurrent(), 255, 255, 234);
 
 	public CompositeRecordTable(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -56,40 +59,34 @@ public class CompositeRecordTable extends Composite {
 		this.mEndDate = SystemData.getEndDate();
 
 		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true,
-				true).getMyGridData());
+		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
 		final SashForm wSashForm = new SashForm(this, SWT.VERTICAL);
 		wSashForm.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		wSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL,
-				true, true).getMyGridData());
+		wSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(
-				mStartDate, mEndDate, SystemData.getBookId());
+		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mStartDate, mEndDate, SystemData
+				.getBookId());
 
 		mRecordItemsUp = wRecordTableItemAll[0];
 		mRecordItemsBottom = wRecordTableItemAll[1];
 
-		mTableUp = setTableHeader(wSashForm, new MyGridData(GridData.FILL,
-				GridData.FILL, true, true).getMyGridData());
+		mTableUp = setTableHeader(wSashForm, new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 		mTableUp = setRecordTableItem(mTableUp, mRecordItemsUp);
 		mTableUp.getTable().setSelection(0);
 		mTableUp.getTable().setFocus();
 
 		Composite wBottomComp = new Composite(wSashForm, SWT.NONE);
 		wBottomComp.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL,
-				true, true).getMyGridData());
-		
+		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+
 		wSashForm.setWeights(SystemData.getRecordTableWeights());
 
 		Label wLabel = new Label(wBottomComp, SWT.NONE);
 		wLabel.setText("当月の収支予定");
-		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER,
-				true, false).getMyGridData());
+		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER, true, false).getMyGridData());
 
-		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true,
-				true).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		// wGridData.heightHint = 100;
 		mTableBottom = setTableHeader(wBottomComp, wGridData);
 
@@ -98,27 +95,26 @@ public class CompositeRecordTable extends Composite {
 		}
 
 		wBottomComp.addControlListener(new ControlListener() {
-			
+
 			@Override
 			public void controlResized(ControlEvent arg0) {
 				SystemData.setRecordTableWeights(wSashForm.getWeights());
-				
+
 			}
-			
+
 			@Override
 			public void controlMoved(ControlEvent arg0) {
-				
+
 			}
 		});
-		
-//		setStripeToTable();
+
+		// setStripeToTable();
 
 	}
 
 	private TableViewer setTableHeader(Composite pComp, GridData pGridData) {
 		// テーブルの作成
-		TableViewer wTableViewer = new TableViewer(pComp, SWT.FULL_SELECTION
-				| SWT.BORDER | SWT.VIRTUAL);
+		TableViewer wTableViewer = new TableViewer(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
 		Table wTable = wTableViewer.getTable();
 		wTable.setLayoutData(pGridData);
 		// 線を表示する
@@ -173,8 +169,7 @@ public class CompositeRecordTable extends Composite {
 		return wTableViewer;
 	}
 
-	private TableViewer setRecordTableItem(final TableViewer pTableViewer,
-			final RecordTableItem[] pRecordTableItems) {
+	private TableViewer setRecordTableItem(final TableViewer pTableViewer, final RecordTableItem[] pRecordTableItems) {
 
 		final Table wTable = pTableViewer.getTable();
 		pTableViewer.setContentProvider(new TableContentProvider());
@@ -184,23 +179,20 @@ public class CompositeRecordTable extends Composite {
 
 		pTableViewer.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection sel = (IStructuredSelection) event
-						.getSelection();
-				RecordTableItem wRecord = (RecordTableItem) sel
-						.getFirstElement();
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				RecordTableItem wRecord = (RecordTableItem) sel.getFirstElement();
 				if (!wRecord.isBalanceRow()) {
 					if (wRecord.isMoveItem()) {
-						new OpenDialogModifyMove(getShell(), wRecord.getId())
-								.run();
+						new OpenDialogModifyMove(getShell(), wRecord.getId()).run();
 					} else {
-						new OpenDialogModifyRecord(getShell(), wRecord.getId())
-								.run();
+						new OpenDialogModifyRecord(getShell(), wRecord.getId()).run();
 					}
 				}
 			}
 		});
 
-		wTable.addKeyListener(new KeyAdapter() {
+		wTable.addKeyListener(new KeyListener() {
+
 			@Override
 			public void keyReleased(KeyEvent e) {
 				// Enterキーが押されたら変更ダイアログ
@@ -208,13 +200,10 @@ public class CompositeRecordTable extends Composite {
 					int index = wTable.getSelectionIndex();
 					TableItem wItem = wTable.getItem(index);
 					if (!"".equals(wItem.getText(0))) {
-						if (DbUtil.isMoveItem(Integer
-								.parseInt(wItem.getText(2)))) {
-							new OpenDialogModifyMove(getShell(), Integer
-									.parseInt(wItem.getText(0))).run();
+						if (DbUtil.isMoveItem(Integer.parseInt(wItem.getText(2)))) {
+							new OpenDialogModifyMove(getShell(), Integer.parseInt(wItem.getText(0))).run();
 						} else {
-							new OpenDialogModifyRecord(getShell(), Integer
-									.parseInt(wItem.getText(0))).run();
+							new OpenDialogModifyRecord(getShell(), Integer.parseInt(wItem.getText(0))).run();
 						}
 					}
 				}
@@ -224,11 +213,25 @@ public class CompositeRecordTable extends Composite {
 					int index = wTable.getSelectionIndex();
 					TableItem wItem = wTable.getItem(index);
 					if (!"".equals(wItem.getText(0))) {
-						new DeleteRecord(getShell(), Integer.parseInt(wItem
-								.getText(0))).run();
+						new DeleteRecord(getShell(), Integer.parseInt(wItem.getText(0))).run();
+					}
+				}
+
+			}
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				// TODO Auto-generated method stub
+				if (e.stateMask == SWT.CTRL) {
+					if (e.keyCode == 'i') {
+						new OpenDialogNewRecord(getShell()).run();
+					} 
+					if (e.keyCode == 'm') {
+						new OpenDialogNewMove(getShell()).run();
 					}
 				}
 			}
+
 		});
 
 		return pTableViewer;
@@ -266,19 +269,19 @@ public class CompositeRecordTable extends Composite {
 		}
 	}
 
-//	public void setStripeToTable() {
-//		for (Table wTable : new Table[] { mTableUp.getTable(),
-//				mTableBottom.getTable() }) {
-//			TableItem[] wItems = wTable.getItems();
-//			for (int i = 0; i < wItems.length; i++) {
-//				if (i % 2 == 0) {
-//					wItems[i].setBackground(mColor1);
-//				} else {
-//					wItems[i].setBackground(mColor2);
-//				}
-//			}
-//		}
-//	}
+	// public void setStripeToTable() {
+	// for (Table wTable : new Table[] { mTableUp.getTable(),
+	// mTableBottom.getTable() }) {
+	// TableItem[] wItems = wTable.getItems();
+	// for (int i = 0; i < wItems.length; i++) {
+	// if (i % 2 == 0) {
+	// wItems[i].setBackground(mColor1);
+	// } else {
+	// wItems[i].setBackground(mColor2);
+	// }
+	// }
+	// }
+	// }
 
 }
 

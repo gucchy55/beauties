@@ -45,7 +45,7 @@ public class InitMainWindow extends Action {
 			switch (mInputRightType) {
 			
 			case Main:
-				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(true);
+//				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(true);
 				SystemData.init();
 				new CompositeEntry(wRightComposite);
 				break;
