@@ -6,8 +6,6 @@ import java.util.Map;
 
 import model.db.DbUtil;
 
-import view.CompositeRightMain;
-
 public class SystemData {
 
 	private static RightType mRightType;
@@ -35,7 +33,7 @@ public class SystemData {
 	private static AnnualViewType mAnnualViewType;
 	private static int mMonthCount;
 
-	private static CompositeRightMain mCompositeRightMain;
+//	private static CompositeRightMain mCompositeRightMain;
 
 	private SystemData() {
 	}
@@ -125,14 +123,14 @@ public class SystemData {
 	}
 
 	// CompositeRightMain
-	public static void setCompositeRightMain(
-			CompositeRightMain pCompositeRightMain) {
-		mCompositeRightMain = pCompositeRightMain;
-	}
+//	public static void setCompositeRightMain(
+//			CompositeRightMain pCompositeRightMain) {
+//		mCompositeRightMain = pCompositeRightMain;
+//	}
 
-	public static CompositeRightMain getCompositeRightMain() {
-		return mCompositeRightMain;
-	}
+//	public static CompositeRightMain getCompositeRightMain() {
+//		return mCompositeRightMain;
+//	}
 
 	// ItemId
 	public static void setItemId(int pItemId) {

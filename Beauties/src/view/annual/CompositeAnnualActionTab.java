@@ -19,9 +19,13 @@ import view.util.MyGridData;
 import view.util.MyRowLayout;
 
 public class CompositeAnnualActionTab extends Composite {
+	
+	private CompositeAnnualMain mCompositeAnnualMain;
 
 	public CompositeAnnualActionTab(Composite pParent) {
 		super(pParent, SWT.NONE);
+		mCompositeAnnualMain = (CompositeAnnualMain)pParent;
+		
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING,
 				false, false).getMyGridData());
@@ -40,7 +44,7 @@ public class CompositeAnnualActionTab extends Composite {
 					Date[] wDatePeriod = Util.getFiscalPeriod();
 					SystemData.setStartDate(wDatePeriod[0]);
 					SystemData.setEndDate(wDatePeriod[1]);
-					new UpdateAnnual(getParent().getParent()).run();
+					new UpdateAnnual(mCompositeAnnualMain).run();
 				}
 			});
 		}
@@ -58,7 +62,7 @@ public class CompositeAnnualActionTab extends Composite {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					SystemData.setmAnnualViewType(AnnualViewType.Category);
-					new UpdateAnnual(getParent().getParent()).run();
+					new UpdateAnnual(mCompositeAnnualMain).run();
 				}
 			});
 		}
@@ -73,7 +77,7 @@ public class CompositeAnnualActionTab extends Composite {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					SystemData.setmAnnualViewType(AnnualViewType.Item);
-					new UpdateAnnual(getParent().getParent()).run();
+					new UpdateAnnual(mCompositeAnnualMain).run();
 				}
 			});
 		}
@@ -88,7 +92,7 @@ public class CompositeAnnualActionTab extends Composite {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					SystemData.setmAnnualViewType(AnnualViewType.Original);
-					new UpdateAnnual(getParent().getParent()).run();
+					new UpdateAnnual(mCompositeAnnualMain).run();
 				}
 			});
 		}

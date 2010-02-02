@@ -9,15 +9,15 @@ import view.annual.CompositeAnnualMain;
 
 public class UpdateAnnual extends Action {
 
-	private Composite mParent;
+	private Composite mCompositeRightMain;
 
-	public UpdateAnnual(Composite pComposite) {
-		mParent = pComposite;
+	public UpdateAnnual(CompositeAnnualMain pCompositeAnnualMain) {
+		mCompositeRightMain = pCompositeAnnualMain.getParent();
 	}
 
 	@Override
 	public void run() {
-		CompositeRightMain wComp = (CompositeRightMain) mParent;
+		CompositeRightMain wComp = (CompositeRightMain) mCompositeRightMain;
 		for (Control wChild : wComp.getChildren()) {
 			wChild.dispose();
 		}

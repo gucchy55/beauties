@@ -1,7 +1,6 @@
 package view;
 
 import model.RightType;
-import model.SystemData;
 import model.action.InitMainWindow;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -53,8 +52,7 @@ public class MainJfaceWindow extends ApplicationWindow {
 					}
 					wStack.append(e.getStackTrace()[i] + "\n");
 				}
-				MessageDialog.openWarning(SystemData.getCompositeRightMain()
-						.getShell(), "Internal Error", e.toString() + "\n\n"
+				MessageDialog.openWarning(getShell(), "Internal Error", e.toString() + "\n\n"
 						+ wStack);
 				e.printStackTrace();
 			}

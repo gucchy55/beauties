@@ -25,7 +25,6 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
-import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.graphics.Image;
@@ -41,6 +40,8 @@ import view.util.MyGridLayout;
 
 public class CompositeRecordTable extends Composite {
 
+	private CompositeEntry mCompositeEntry;
+	
 	private Date mStartDate;
 	private Date mEndDate;
 
@@ -55,6 +56,7 @@ public class CompositeRecordTable extends Composite {
 
 	public CompositeRecordTable(Composite pParent) {
 		super(pParent, SWT.NONE);
+		mCompositeEntry = (CompositeEntry) pParent;
 		this.mStartDate = SystemData.getStartDate();
 		this.mEndDate = SystemData.getEndDate();
 
@@ -183,9 +185,9 @@ public class CompositeRecordTable extends Composite {
 				RecordTableItem wRecord = (RecordTableItem) sel.getFirstElement();
 				if (!wRecord.isBalanceRow()) {
 					if (wRecord.isMoveItem()) {
-						new OpenDialogModifyMove(getShell(), wRecord.getId()).run();
+						new OpenDialogModifyMove(mCompositeEntry).run();
 					} else {
-						new OpenDialogModifyRecord(getShell(), wRecord.getId()).run();
+						new OpenDialogModifyRecord(mCompositeEntry).run();
 					}
 				}
 			}
@@ -201,9 +203,9 @@ public class CompositeRecordTable extends Composite {
 					TableItem wItem = wTable.getItem(index);
 					if (!"".equals(wItem.getText(0))) {
 						if (DbUtil.isMoveItem(Integer.parseInt(wItem.getText(2)))) {
-							new OpenDialogModifyMove(getShell(), Integer.parseInt(wItem.getText(0))).run();
+							new OpenDialogModifyMove(mCompositeEntry).run();
 						} else {
-							new OpenDialogModifyRecord(getShell(), Integer.parseInt(wItem.getText(0))).run();
+							new OpenDialogModifyRecord(mCompositeEntry).run();
 						}
 					}
 				}
@@ -213,7 +215,7 @@ public class CompositeRecordTable extends Composite {
 					int index = wTable.getSelectionIndex();
 					TableItem wItem = wTable.getItem(index);
 					if (!"".equals(wItem.getText(0))) {
-						new DeleteRecord(getShell(), Integer.parseInt(wItem.getText(0))).run();
+						new DeleteRecord(Integer.parseInt(wItem.getText(0)), mCompositeEntry).run();
 					}
 				}
 
@@ -224,10 +226,10 @@ public class CompositeRecordTable extends Composite {
 				// TODO Auto-generated method stub
 				if (e.stateMask == SWT.CTRL) {
 					if (e.keyCode == 'i') {
-						new OpenDialogNewRecord(getShell()).run();
+						new OpenDialogNewRecord(mCompositeEntry).run();
 					} 
 					if (e.keyCode == 'm') {
-						new OpenDialogNewMove(getShell()).run();
+						new OpenDialogNewMove(mCompositeEntry).run();
 					}
 				}
 			}

@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.swt.widgets.Display;
 
 import util.Util;
 
@@ -1954,7 +1955,7 @@ public class DbUtil {
 			}
 			wStack.append(e.getStackTrace()[i] + "\n");
 		}
-		MessageDialog.openWarning(SystemData.getCompositeRightMain().getShell(), "SQL ResultSet Handling Error", e
+		MessageDialog.openWarning(Display.getCurrent().getShells()[0], "SQL ResultSet Handling Error", e
 				.toString()
 				+ "\n\n" + wStack);
 		// System.err.println("ResultSet Handling Error: " + e.toString());

@@ -19,14 +19,14 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import util.Util;
-import view.CompositeRightMain;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 import view.util.MyRowLayout;
 
 public class CompositeAnnualBookTab extends Composite {
 
-	private CompositeRightMain mCompositeRightMain;
+//	private CompositeRightMain mCompositeRightMain;
+	private CompositeAnnualMain mCompositeAnnualMain;
 	private Map<Integer, String> mBookMap;
 
 	private static final int mPeriodWidthHint = 130;
@@ -38,7 +38,7 @@ public class CompositeAnnualBookTab extends Composite {
 	public CompositeAnnualBookTab(Composite pParent) {
 		super(pParent, SWT.NONE);
 
-		mCompositeRightMain = (CompositeRightMain) pParent.getParent();
+		mCompositeAnnualMain = (CompositeAnnualMain) pParent;
 		mBookMap = SystemData.getBookMap(true);
 
 		init();
@@ -64,7 +64,7 @@ public class CompositeAnnualBookTab extends Composite {
 						.getStartDate(), -SystemData.getMonthCount()))[0]);
 				SystemData.setEndDate(Util.getPeriod(Util.getAdjusentMonth(SystemData
 						.getEndDate(), -SystemData.getMonthCount()))[1]);
-				new UpdateAnnual(mCompositeRightMain).run();
+				new UpdateAnnual(mCompositeAnnualMain).run();
 			}
 		});
 
@@ -84,7 +84,7 @@ public class CompositeAnnualBookTab extends Composite {
 
 		wThisMonthLabel.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent arg0) {
-				new OpenDialogAnnualPeriod(getShell()).run();
+				new OpenDialogAnnualPeriod(mCompositeAnnualMain).run();
 			}
 		});
 
@@ -100,7 +100,7 @@ public class CompositeAnnualBookTab extends Composite {
 						.getStartDate(), SystemData.getMonthCount()))[0]);
 				SystemData.setEndDate(Util.getPeriod(Util.getAdjusentMonth(SystemData
 						.getEndDate(), SystemData.getMonthCount()))[1]);
-				new UpdateAnnual(mCompositeRightMain).run();
+				new UpdateAnnual(mCompositeAnnualMain).run();
 			}
 		});
 		wNextMonthButton.setLayoutData(wGridDataArrow);
@@ -128,7 +128,7 @@ public class CompositeAnnualBookTab extends Composite {
 						for (int wBookId : mBookMap.keySet()) {
 							if (wBookName.equals(mBookMap.get(wBookId))) {
 								SystemData.setBookId(wBookId);
-								new UpdateAnnual(mCompositeRightMain).run();
+								new UpdateAnnual(mCompositeAnnualMain).run();
 								break;
 							}
 						}

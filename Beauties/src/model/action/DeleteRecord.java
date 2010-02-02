@@ -1,29 +1,31 @@
 package model.action;
 
-import model.SystemData;
 import model.db.DbUtil;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.swt.widgets.Shell;
+import view.entry.CompositeEntry;
 
 public class DeleteRecord extends Action {
 
-	private Shell mShell;
+//	private Shell mShell;
 	private int mActId;
+	private CompositeEntry mCompositeEntry;
 
-	public DeleteRecord(Shell pShell, int pActId) {
+	public DeleteRecord(int pActId, CompositeEntry pCompositeEntry) {
 		super.setText("削除");
 		mActId = pActId;
-		mShell = pShell;
+		mCompositeEntry = pCompositeEntry;
+//		mShell = pShell;
 	}
 
 	@Override
 	public void run() {
-		if (MessageDialog.openConfirm(mShell, "確認",
+		if (MessageDialog.openConfirm(mCompositeEntry.getShell(), "確認",
 				"削除していいですか？")) {
 			DbUtil.deleteRecord(mActId);
-			new UpdateEntry(SystemData.getCompositeRightMain()).run();
+//			new UpdateEntry(SystemData.getCompositeRightMain()).run();
+			new UpdateEntry(mCompositeEntry).run();
 		}
 	}
 }

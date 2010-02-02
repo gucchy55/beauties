@@ -3,21 +3,22 @@ package model.action;
 import model.SystemData;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.widgets.Shell;
-
+import view.annual.CompositeAnnualMain;
 import view.dialog.DialogAnnualPeriod;
 
 public class OpenDialogAnnualPeriod extends Action {
 
-	private Shell mShell;
+//	private Shell mShell;
+	private CompositeAnnualMain mCompositeAnnualMain;
 
-	public OpenDialogAnnualPeriod(Shell pShell) {
-		mShell = pShell;
+	public OpenDialogAnnualPeriod(CompositeAnnualMain pCompositeAnnualMain) {
+//		mShell = pShell;
+		mCompositeAnnualMain = pCompositeAnnualMain;
 	}
 
 	@Override
 	public void run() {
-		DialogAnnualPeriod wDialogAnnualPeriod = new DialogAnnualPeriod(mShell);
+		DialogAnnualPeriod wDialogAnnualPeriod = new DialogAnnualPeriod(mCompositeAnnualMain.getShell());
 		int wRet = wDialogAnnualPeriod.open();
 
 		if (wRet == IDialogConstants.OK_ID) { // Updated
@@ -25,7 +26,7 @@ public class OpenDialogAnnualPeriod extends Action {
 				SystemData.setStartDate(wDialogAnnualPeriod.getStartDate());
 				SystemData.setEndDate(wDialogAnnualPeriod.getEndDate());
 				SystemData.setAnnualPeriod(false);
-				new UpdateAnnual(SystemData.getCompositeRightMain()).run();
+				new UpdateAnnual(mCompositeAnnualMain).run();
 //			}
 		}
 	}

@@ -1,29 +1,29 @@
 package model.action;
 
-import model.SystemData;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
 
 import view.dialog.DialogNewRecord;
+import view.entry.CompositeEntry;
 
 public class OpenDialogNewRecord extends Action {
 
-	private Shell mShell;
+//	private Shell mShell;
+	private CompositeEntry mCompositeEntry;
 
-	public OpenDialogNewRecord(Shell pShell) {
+	public OpenDialogNewRecord(CompositeEntry pCompositeEntry) {
 		super.setText("追加");
-		mShell = pShell;
-		this.setAccelerator(SWT.CTRL + 'I');
+//		mShell = pShell;
+		mCompositeEntry = pCompositeEntry;
+//		this.setAccelerator(SWT.CTRL + 'I');
 	}
 
 	@Override
 	public void run() {
-		DialogNewRecord wDialogNewRecord = new DialogNewRecord(mShell);
+		DialogNewRecord wDialogNewRecord = new DialogNewRecord(mCompositeEntry.getShell());
 		int wRet = wDialogNewRecord.open();
 		if (wRet == IDialogConstants.OK_ID) { // Updated
-			new UpdateEntry(SystemData.getCompositeRightMain()).run();
+			new UpdateEntry(mCompositeEntry).run();
 		}
 	}
 }

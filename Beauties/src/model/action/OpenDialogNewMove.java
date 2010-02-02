@@ -1,29 +1,28 @@
 package model.action;
 
-import model.SystemData;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Shell;
-
 import view.dialog.DialogMove;
+import view.entry.CompositeEntry;
 
 public class OpenDialogNewMove extends Action {
 
-	private Shell mShell;
+//	private Shell mShell;
+	private CompositeEntry mCompositeEntry;
 
-	public OpenDialogNewMove(Shell pShell) {
+	public OpenDialogNewMove(CompositeEntry pCompositeEntry) {
 		super.setText("移動");
-		mShell = pShell;
-		this.setAccelerator(SWT.CTRL + 'M');
+		mCompositeEntry = pCompositeEntry;
+//		mShell = pShell;
+//		this.setAccelerator(SWT.CTRL + 'M');
 	}
 
 	@Override
 	public void run() {
-		DialogMove wDialogMove = new DialogMove(mShell);
+		DialogMove wDialogMove = new DialogMove(mCompositeEntry.getShell());
 		int wRet = wDialogMove.open();
 		if (wRet == IDialogConstants.OK_ID) {
-			new UpdateEntry(SystemData.getCompositeRightMain()).run();
+			new UpdateEntry(mCompositeEntry).run();
 		}
 	}
 }

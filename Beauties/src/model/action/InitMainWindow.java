@@ -40,7 +40,7 @@ public class InitMainWindow extends Action {
 				
 			wMainJfaceWindow.createLeftComposite(wMainComposite);
 			CompositeRightMain wRightComposite = new CompositeRightMain(wMainComposite);
-			SystemData.setCompositeRightMain(wRightComposite);
+//			SystemData.setCompositeRightMain(wRightComposite);
 			
 			switch (mInputRightType) {
 			
@@ -51,13 +51,13 @@ public class InitMainWindow extends Action {
 				break;
 				
 			case Anual:
-				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(false);
+//				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(false);
 				SystemData.init();
 				new CompositeAnnualMain(wRightComposite);
 				break;
 				
 			default: 
-				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(false);
+//				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(false);
 				SystemData.init();
 				new CompositeRight2(wRightComposite);
 				

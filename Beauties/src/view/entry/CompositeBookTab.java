@@ -18,17 +18,17 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 import util.Util;
-import view.CompositeRightMain;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 import view.util.MyRowLayout;
 
 public class CompositeBookTab extends Composite {
 
-	private CompositeRightMain mCompositeRightMain;
+	// private CompositeRightMain mCompositeRightMain;
+	private CompositeEntry mCompositeEntry;
 	private Date mEndDate;
 	private Map<Integer, String> mBookMap;
-	
+
 	private static final int mPeriodWidthHint = 130;
 	private static final int mArrowWidthHint = 30;
 
@@ -38,7 +38,7 @@ public class CompositeBookTab extends Composite {
 	public CompositeBookTab(Composite pParent) {
 		super(pParent, SWT.NONE);
 
-		mCompositeRightMain = (CompositeRightMain) pParent.getParent();
+		mCompositeEntry = (CompositeEntry) pParent;
 		mEndDate = SystemData.getEndDate();
 		mBookMap = SystemData.getBookMap(true);
 
@@ -47,13 +47,11 @@ public class CompositeBookTab extends Composite {
 
 	private void init() {
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
-		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true,
-				false).getMyGridData());
+		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, false).getMyGridData());
 
 		mPeriodComp = new Composite(this, SWT.NONE);
 		mPeriodComp.setLayout(new MyGridLayout(3, false).getMyGridLayout());
-		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL,
-				false, true).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true).getMyGridData();
 		wGridData.widthHint = mPeriodWidthHint;
 		mPeriodComp.setLayoutData(wGridData);
 
@@ -62,15 +60,12 @@ public class CompositeBookTab extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				SystemData.setMonthPeriod(true);
-				UpdateEntry wAdjusentEntry = new UpdateEntry(
-						mCompositeRightMain, Util
-								.getAdjusentMonth(mEndDate, -1));
+				UpdateEntry wAdjusentEntry = new UpdateEntry(mCompositeEntry, Util.getAdjusentMonth(mEndDate, -1));
 				wAdjusentEntry.run();
 			}
 		});
 
-		GridData wGridDataArrow = new MyGridData(GridData.FILL, GridData.FILL,
-				false, true).getMyGridData();
+		GridData wGridDataArrow = new MyGridData(GridData.FILL, GridData.FILL, false, true).getMyGridData();
 		wGridDataArrow.widthHint = mArrowWidthHint;
 		wPrevMonthButton.setLayoutData(wGridDataArrow);
 
@@ -84,12 +79,11 @@ public class CompositeBookTab extends Composite {
 
 		wThisMonthLabel.addMouseListener(new MouseAdapter() {
 			public void mouseDoubleClick(MouseEvent arg0) {
-				new OpenDialogPeriod(getShell()).run();
+				new OpenDialogPeriod(mCompositeEntry).run();
 			}
 		});
 
-		GridData wGridDataLabel = new MyGridData(GridData.FILL,
-				GridData.CENTER, true, true).getMyGridData();
+		GridData wGridDataLabel = new MyGridData(GridData.FILL, GridData.CENTER, true, true).getMyGridData();
 		wThisMonthLabel.setLayoutData(wGridDataLabel);
 
 		Button wNextMonthButton = new Button(mPeriodComp, SWT.ARROW | SWT.RIGHT);
@@ -97,8 +91,7 @@ public class CompositeBookTab extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				SystemData.setMonthPeriod(true);
-				UpdateEntry wAdjusentEntry = new UpdateEntry(
-						mCompositeRightMain, Util.getAdjusentMonth(mEndDate, 1));
+				UpdateEntry wAdjusentEntry = new UpdateEntry(mCompositeEntry, Util.getAdjusentMonth(mEndDate, 1));
 				wAdjusentEntry.run();
 			}
 		});
@@ -107,8 +100,7 @@ public class CompositeBookTab extends Composite {
 		mBookNameComp = new Composite(this, SWT.NONE);
 		mBookNameComp.setLayout(new MyRowLayout().getMyRowLayout());
 		wGridData.widthHint = mPeriodWidthHint;
-		mBookNameComp.setLayoutData(new MyGridData(GridData.FILL,
-				GridData.FILL, true, true).getMyGridData());
+		mBookNameComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
 		for (int wBookId : mBookMap.keySet()) {
 			Button wBookButton = new Button(mBookNameComp, SWT.TOGGLE);
@@ -125,8 +117,7 @@ public class CompositeBookTab extends Composite {
 						for (int wBookId : mBookMap.keySet()) {
 							if (wBookName.equals(mBookMap.get(wBookId))) {
 								SystemData.setBookId(wBookId);
-								new UpdateEntry(mCompositeRightMain)
-										.run();
+								new UpdateEntry(mCompositeEntry).run();
 								break;
 							}
 						}
@@ -137,6 +128,5 @@ public class CompositeBookTab extends Composite {
 
 		}
 	}
-
 
 }

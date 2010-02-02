@@ -3,21 +3,22 @@ package model.action;
 import model.SystemData;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.widgets.Shell;
-
 import view.dialog.DialogPeriod;
+import view.entry.CompositeEntry;
 
 public class OpenDialogPeriod extends Action {
 
-	private Shell mShell;
+//	private Shell mShell;
+	private CompositeEntry mCompositeEntry;
 
-	public OpenDialogPeriod(Shell pShell) {
-		mShell = pShell;
+	public OpenDialogPeriod(CompositeEntry pCompositeEntry) {
+//		mShell = pShell;
+		mCompositeEntry = pCompositeEntry;
 	}
 
 	@Override
 	public void run() {
-		DialogPeriod wDialogPeriod = new DialogPeriod(mShell);
+		DialogPeriod wDialogPeriod = new DialogPeriod(mCompositeEntry.getShell());
 		int wRet = wDialogPeriod.open();
 
 		if (wRet == IDialogConstants.OK_ID) { // Updated
@@ -25,7 +26,7 @@ public class OpenDialogPeriod extends Action {
 				SystemData.setStartDate(wDialogPeriod.getStartDate());
 				SystemData.setEndDate(wDialogPeriod.getEndDate());
 				SystemData.setMonthPeriod(false);
-				new UpdateEntry(SystemData.getCompositeRightMain()).run();
+				new UpdateEntry(mCompositeEntry).run();
 //			}
 		}
 	}

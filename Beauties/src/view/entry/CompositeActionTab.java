@@ -19,9 +19,13 @@ import view.util.MyGridData;
 import view.util.MyRowLayout;
 
 public class CompositeActionTab extends Composite {
+	
+	private CompositeEntry mCompositeEntry;
 
 	public CompositeActionTab(Composite pParent) {
 		super(pParent, SWT.NONE);
+		mCompositeEntry = (CompositeEntry)pParent;
+		
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING,
 				false, false).getMyGridData());
@@ -31,7 +35,7 @@ public class CompositeActionTab extends Composite {
 		wMoveButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				new OpenDialogNewMove(getShell()).run();
+				new OpenDialogNewMove(mCompositeEntry).run();
 			}
 		});
 
@@ -40,7 +44,7 @@ public class CompositeActionTab extends Composite {
 		wAddButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				new OpenDialogNewRecord(getShell()).run();
+				new OpenDialogNewRecord(mCompositeEntry).run();
 			}
 		});
 
@@ -49,13 +53,12 @@ public class CompositeActionTab extends Composite {
 		wModifyButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				CompositeEntry wCompositeEntry = (CompositeEntry)getParent();
-				int wSelectedActId = wCompositeEntry.getSelectedActId();
+				int wSelectedActId = mCompositeEntry.getSelectedActId();
 				if (wSelectedActId != SystemData.getUndefinedInt()) {
 					if (DbUtil.isMoveRecord(wSelectedActId)) {
-						new OpenDialogModifyMove(getShell(), wSelectedActId).run();
+						new OpenDialogModifyMove(mCompositeEntry).run();
 					} else {
-						new OpenDialogModifyRecord(getShell(), wCompositeEntry.getSelectedActId()).run();
+						new OpenDialogModifyRecord(mCompositeEntry).run();
 					}
 				}
 			}
@@ -69,7 +72,7 @@ public class CompositeActionTab extends Composite {
 				CompositeEntry wCompositeEntry = (CompositeEntry)getParent();
 				int wSelectedActId = wCompositeEntry.getSelectedActId();
 				if (wSelectedActId != SystemData.getUndefinedInt()) {
-					new DeleteRecord(getShell(), wSelectedActId).run();
+					new DeleteRecord(wSelectedActId, mCompositeEntry).run();
 				}
 			}
 		});

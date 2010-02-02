@@ -14,22 +14,22 @@ import view.entry.CompositeEntry;
 
 public class UpdateEntry extends Action {
 
-	private Composite mParent;
+	private Composite mCompositeRightMain;
 
-	public UpdateEntry(Composite pComposite, Date pDate) {
-		mParent = pComposite;
+	public UpdateEntry(CompositeEntry pCompositeEntry, Date pDate) {
+		mCompositeRightMain = pCompositeEntry.getParent();
 		Date[] wDates = Util.getPeriod(pDate);
 		SystemData.setStartDate(wDates[0]);
 		SystemData.setEndDate(wDates[1]);
 	}
 
-	public UpdateEntry(Composite pComposite) {
-		mParent = pComposite;
+	public UpdateEntry(CompositeEntry pCompositeEntry) {
+		mCompositeRightMain = pCompositeEntry.getParent();
 	}
 
 	@Override
 	public void run() {
-		CompositeRightMain wComp = (CompositeRightMain) mParent;
+		CompositeRightMain wComp = (CompositeRightMain) mCompositeRightMain;
 		for (Control wChild : wComp.getChildren()) {
 			wChild.dispose();
 		}
