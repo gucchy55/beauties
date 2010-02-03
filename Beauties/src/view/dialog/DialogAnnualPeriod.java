@@ -4,7 +4,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import model.SystemData;
+//import model.SystemData;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
 import util.Util;
+import view.annual.CompositeAnnualMain;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
@@ -31,16 +32,18 @@ public class DialogAnnualPeriod extends Dialog {
 	private Date mStartDate;
 	private Date mEndDate;
 
-	public DialogAnnualPeriod(Shell parentShell) {
+	private CompositeAnnualMain mCompositeAnnualMain;
+
+	public DialogAnnualPeriod(Shell parentShell, CompositeAnnualMain pCompositeAnnualMain) {
 		super(parentShell);
+		mCompositeAnnualMain = pCompositeAnnualMain;
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		Composite wComp = (Composite) super.createDialogArea(parent);
 		wComp.setLayout(new MyGridLayout(9, false).getMyGridLayout());
-		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL,
-				false, true).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true).getMyGridData();
 		wComp.setLayoutData(wGridData);
 
 		Label wLabel1 = new Label(wComp, SWT.NONE);
@@ -60,7 +63,7 @@ public class DialogAnnualPeriod extends Dialog {
 		wLabel.setText("月 〜 ");
 
 		Calendar wCal = Calendar.getInstance();
-		wCal.setTime(Util.getPeriod(SystemData.getStartDate())[1]);
+		wCal.setTime(Util.getPeriod(mCompositeAnnualMain.getStartDate())[1]);
 		mStartYearSpinner.setSelection(wCal.get(Calendar.YEAR));
 		mStartMonthCombo.select(wCal.get(Calendar.MONTH));
 
@@ -76,17 +79,17 @@ public class DialogAnnualPeriod extends Dialog {
 		wLabel = new Label(wComp, SWT.NONE);
 		wLabel.setText("月");
 
-		wCal.setTime(SystemData.getEndDate());
+		wCal.setTime(mCompositeAnnualMain.getEndDate());
 		mEndYearSpinner.setSelection(wCal.get(Calendar.YEAR));
 		mEndMonthCombo.select(wCal.get(Calendar.MONTH));
 
 		return wComp;
 	}
 
-//	 @Override
-//	 protected Point getInitialSize() {
-//	 return new Point(318, 126);
-//	 }
+	// @Override
+	// protected Point getInitialSize() {
+	// return new Point(318, 126);
+	// }
 
 	@Override
 	protected void configureShell(Shell newShell) {
@@ -104,12 +107,10 @@ public class DialogAnnualPeriod extends Dialog {
 	protected void buttonPressed(int pButtonId) {
 		int wReturnCode = IDialogConstants.CANCEL_ID;
 		if (pButtonId == IDialogConstants.OK_ID) { // 0
-			Date wInputStartDate = new GregorianCalendar(mStartYearSpinner
-					.getSelection(), mStartMonthCombo.getSelectionIndex(), 1)
-					.getTime();
-			Date wInputEndDate = new GregorianCalendar(mEndYearSpinner
-					.getSelection(), mEndMonthCombo.getSelectionIndex(), 1)
-					.getTime();
+			Date wInputStartDate = new GregorianCalendar(mStartYearSpinner.getSelection(), mStartMonthCombo
+					.getSelectionIndex(), 1).getTime();
+			Date wInputEndDate = new GregorianCalendar(mEndYearSpinner.getSelection(), mEndMonthCombo
+					.getSelectionIndex(), 1).getTime();
 			mStartDate = Util.getPeriod(wInputStartDate)[0];
 			mEndDate = Util.getPeriod(wInputEndDate)[1];
 			if (mStartDate.after(mEndDate)) {

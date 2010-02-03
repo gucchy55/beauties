@@ -30,7 +30,7 @@ public class InitMainWindow extends Action {
 	@Override
 	public void run() {
 		MainJfaceWindow wMainJfaceWindow = (MainJfaceWindow) mWindow;
-		if (SystemData.getRightType() != mInputRightType) {
+//		if (SystemData.getRightType() != mInputRightType) {
 			SystemData.setRightType(mInputRightType);
 			Composite wMainComposite = wMainJfaceWindow.getmMainComposite();
 			
@@ -64,7 +64,7 @@ public class InitMainWindow extends Action {
 			}
 			
 			wMainComposite.layout();
-		}
+//		}
 		
 		Button[] wLeftButtonArray = wMainJfaceWindow.getLeftButtonArray();
 		wLeftButtonArray[mInputRightType.value].setSelection(true);

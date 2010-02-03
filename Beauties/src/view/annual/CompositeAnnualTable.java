@@ -43,11 +43,14 @@ public class CompositeAnnualTable extends Composite {
 	private Table mRowHeaderTable;
 	private Table mMainTable;
 
+	private CompositeAnnualMain mCompositeAnnualMain;
+
 	// private Color mColor1 = new Color(Display.getCurrent(), 255, 255, 255);
 	// private Color mColor2 = new Color(Display.getCurrent(), 255, 255, 234);
 
 	public CompositeAnnualTable(Composite pParent) {
 		super(pParent, SWT.NONE);
+		mCompositeAnnualMain = (CompositeAnnualMain) pParent;
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		this.setLayoutData(wGridData);
@@ -68,42 +71,54 @@ public class CompositeAnnualTable extends Composite {
 
 		Date[][] wDatePeriods;
 
-		if (SystemData.getEndDate() == null) {
-			wDatePeriods = Util.getDatePairs(Util.getPeriod(new Date())[1], SystemData.getMonthCount());
-			SystemData.setStartDate(wDatePeriods[0][0]);
-			SystemData.setEndDate(wDatePeriods[wDatePeriods.length - 1][1]);
+		if (mCompositeAnnualMain.getEndDate() == null) {
+			wDatePeriods = Util.getDatePairs(Util.getPeriod(new Date())[1], mCompositeAnnualMain.getMonthCount());
+			mCompositeAnnualMain.setStartDate(wDatePeriods[0][0]);
+			mCompositeAnnualMain.setEndDate(wDatePeriods[wDatePeriods.length - 1][1]);
 
 		} else {
-			wDatePeriods = Util.getDatePairs(SystemData.getStartDate(), SystemData.getEndDate());
+			wDatePeriods = Util.getDatePairs(mCompositeAnnualMain.getStartDate(), mCompositeAnnualMain.getEndDate());
 		}
 
-		if (!SystemData.isAnnualPeriod()) {
-			SystemData.setMonthCount(wDatePeriods.length);
+		if (!mCompositeAnnualMain.isAnnualPeriod()) {
+			mCompositeAnnualMain.setMonthCount(wDatePeriods.length);
 		}
 
 		List<String> wRowHeaders = new ArrayList<String>();
 		DateFormat df = new SimpleDateFormat("yyyy年MM月");
-		Date wDateNow = new Date();
-		boolean wIsSummationAdded = false;
+//		Date wDateNow = new Date();
+//		boolean wIsSummationAdded = false;
 
-		// DateNowが最初の月以前なら合計、平均は表示しない
-		if (wDatePeriods[0][1].after(wDateNow)) {
-			wIsSummationAdded = true;
-		}
 		for (int i = 0; i < wDatePeriods.length; i++) {
 			Date wEndDate = wDatePeriods[i][1];
-			if (wDateNow.after(wDatePeriods[i][0]) && Util.getAdjusentDay(wEndDate, 1).after(wDateNow)
-					&& !wIsSummationAdded) {
-				wIsSummationAdded = true;
-				wRowHeaders.add("合計");
-				wRowHeaders.add("平均");
-			}
 			wRowHeaders.add(df.format(wEndDate));
 		}
-		if (!wIsSummationAdded) {
-			wRowHeaders.add("合計");
-			wRowHeaders.add("平均");
+
+		int wSummationIndex = Util.getSummationIndex(wDatePeriods);
+		if (wSummationIndex != SystemData.getUndefinedInt()) {
+			wRowHeaders.add(wSummationIndex, "合計");
+			wRowHeaders.add(wSummationIndex + 1, "平均");
 		}
+
+		// DateNowが最初の月以前なら合計、平均は表示しない
+		// if (wDatePeriods[0][1].after(wDateNow)) {
+		// wIsSummationAdded = true;
+		// }
+		// for (int i = 0; i < wDatePeriods.length; i++) {
+		// Date wEndDate = wDatePeriods[i][1];
+		// if (wDateNow.after(wDatePeriods[i][0]) &&
+		// Util.getAdjusentDay(wEndDate, 1).after(wDateNow)
+		// && !wIsSummationAdded) {
+		// wIsSummationAdded = true;
+		// wRowHeaders.add("合計");
+		// wRowHeaders.add("平均");
+		// }
+		// wRowHeaders.add(df.format(wEndDate));
+		// }
+		// if (!wIsSummationAdded) {
+		// wRowHeaders.add("合計");
+		// wRowHeaders.add("平均");
+		// }
 
 		wRowHeader.setContentProvider(new HeaderTableContentProvider());
 		wRowHeader.setInput(wRowHeaders);
@@ -122,12 +137,13 @@ public class CompositeAnnualTable extends Composite {
 
 		// 格納する値の取得
 		mSummaryTableItems = new ArrayList<SummaryTableItem[]>();
-		if (SystemData.getAnnualViewType() == AnnualViewType.Original) {
+		if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Original) {
 			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsOriginal(wDatePeriods);
-		} else if (SystemData.getAnnualViewType() == AnnualViewType.Category) {
-			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsCategory(SystemData.getBookId(), wDatePeriods);
+		} else if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Category) {
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsCategory(mCompositeAnnualMain.getBookId(),
+					wDatePeriods);
 		} else { // ITEM
-			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(SystemData.getBookId(), wDatePeriods);
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(mCompositeAnnualMain.getBookId(), wDatePeriods);
 		}
 
 		// 列のヘッダの設定
@@ -226,11 +242,12 @@ class HeaderTableLabelProvider implements ITableLabelProvider, ITableColorProvid
 
 	@Override
 	public Color getBackground(Object pElement, int pColumnIndex) {
-//		SummaryTableItem wItem = (SummaryTableItem) pElement;
-//		if (wItem.isSpecial() && SystemData.getAnnualViewType() != AnnualViewType.Original) {
-//			// 残高、営業収支等（赤）
-//			return new Color(Display.getCurrent(), 255, 176, 176);
-//		}
+		// SummaryTableItem wItem = (SummaryTableItem) pElement;
+		// if (wItem.isSpecial() && mCompositeAnnualMain.getAnnualViewType() !=
+		// AnnualViewType.Original) {
+		// // 残高、営業収支等（赤）
+		// return new Color(Display.getCurrent(), 255, 176, 176);
+		// }
 		// } else if (wItem.isAppearedSum()) {
 		// // みかけ収支等（緑）
 		// return new Color(mDisplay, 176, 255, 176);
@@ -301,7 +318,7 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		} else {
 			SummaryTableItem[] wItems = (SummaryTableItem[]) pElement;
 			SummaryTableItem wItem = wItems[pColumnIndex - 1];
-			if (wItem.isSpecial() && SystemData.getAnnualViewType() != AnnualViewType.Original) {
+			if (wItem.isAppearedIncomeExpense() || wItem.isAppearedSum()) {
 				// 赤
 				// return new Color(Display.getCurrent(), 255, 200, 200);
 				// 黄色

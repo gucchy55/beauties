@@ -1,28 +1,27 @@
 package model.action;
 
 import org.eclipse.jface.action.Action;
-import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-
-import view.CompositeRightMain;
 import view.annual.CompositeAnnualMain;
 
 public class UpdateAnnual extends Action {
 
-	private Composite mCompositeRightMain;
+	private CompositeAnnualMain mCompositeAnnualMain;
 
 	public UpdateAnnual(CompositeAnnualMain pCompositeAnnualMain) {
-		mCompositeRightMain = pCompositeAnnualMain.getParent();
+		mCompositeAnnualMain = pCompositeAnnualMain;
 	}
 
 	@Override
 	public void run() {
-		CompositeRightMain wComp = (CompositeRightMain) mCompositeRightMain;
-		for (Control wChild : wComp.getChildren()) {
-			wChild.dispose();
-		}
-		new CompositeAnnualMain(wComp);
-		wComp.layout();
+		mCompositeAnnualMain.update();
+		// mCompositeAnnualMain.layout();
+		// System.out.println(mCompositeAnnualMain.getBookId());
+		// CompositeRightMain wComp = (CompositeRightMain) mCompositeAnnualMain;
+		// for (Control wChild : wComp.getChildren()) {
+		// wChild.dispose();
+		// }
+		// new CompositeAnnualMain(wComp);
+		// wComp.layout();
 	}
 
 }

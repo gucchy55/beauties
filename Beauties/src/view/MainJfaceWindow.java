@@ -27,6 +27,8 @@ public class MainJfaceWindow extends ApplicationWindow {
 	private Composite mMainComposite;
 	private Composite mLeftComposite;
 	private Composite mRightComposite;
+	
+	private RightType mRightType = RightType.Main;
 
 	private static final int mLeftWidthHint = 100;
 	private static final int mLeftHeightHint = 200;
@@ -109,7 +111,8 @@ public class MainJfaceWindow extends ApplicationWindow {
 					Button wButton = (Button) e.getSource();
 					String wButtonText = wButton.getText();
 					for (int i = 0; i < mLeftButtonNameArray.length; i++) {
-						if (wButtonText.equals(mLeftButtonNameArray[i])) {
+						if (wButtonText.equals(mLeftButtonNameArray[i]) && mRightType != RightType.valueOf(i)) {
+							mRightType = RightType.valueOf(i);
 							init(RightType.valueOf(i));
 							break;
 						}

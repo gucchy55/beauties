@@ -44,6 +44,15 @@ public class SummaryTableItem {
 		this.mValue = pValue;
 		this.isSpecial = true;
 	}
+	
+	// for special row
+	public SummaryTableItem(String pItemName, double pValue, boolean isAppearedIncomeExpense) {
+		this(pItemName, pValue);
+		this.isAppearedIncomeExpense = isAppearedIncomeExpense;
+//		this.mName = pItemName;
+//		this.mValue = pValue;
+//		this.isSpecial = true;
+	}
 
 	public int getItemId() {
 		return mItemId;

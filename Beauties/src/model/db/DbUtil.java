@@ -1150,14 +1150,14 @@ public class DbUtil {
 							double wIncome = wResultSet.getDouble(mActIncomeCol + wPeriodName + i);
 							double wExpense = wResultSet.getDouble(mActExpenseCol + wPeriodName + i);
 
-							wList.add(new SummaryTableItem("総収支", wIncome - wExpense));
-							wListIncome.add(new SummaryTableItem("総収入", wIncome));
-							wListExpense.add(new SummaryTableItem("総支出", wExpense));
+							wList.add(new SummaryTableItem("総収支", wIncome - wExpense, true));
+							wListIncome.add(new SummaryTableItem("総収入", wIncome, true));
+							wListExpense.add(new SummaryTableItem("総支出", wExpense, true));
 
 							if (i == wSummationIndex) {
-								wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i));
-								wListIncome.add(new SummaryTableItem("総収入", wIncome / i));
-								wListExpense.add(new SummaryTableItem("総支出", wExpense / i));
+								wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i, true));
+								wListIncome.add(new SummaryTableItem("総収入", wIncome / i, true));
+								wListExpense.add(new SummaryTableItem("総支出", wExpense / i, true));
 							}
 						}
 
@@ -1338,14 +1338,14 @@ public class DbUtil {
 							double wIncome = wResultSet.getDouble(mActIncomeCol + wPeriodName + i);
 							double wExpense = wResultSet.getDouble(mActExpenseCol + wPeriodName + i);
 
-							wList.add(new SummaryTableItem("総収支", wIncome - wExpense));
-							wListIncome.add(new SummaryTableItem("総収入", wIncome));
-							wListExpense.add(new SummaryTableItem("総支出", wExpense));
+							wList.add(new SummaryTableItem("総収支", wIncome - wExpense, true));
+							wListIncome.add(new SummaryTableItem("総収入", wIncome, true));
+							wListExpense.add(new SummaryTableItem("総支出", wExpense, true));
 
 							if (i == wSummationIndex) {
-								wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i));
-								wListIncome.add(new SummaryTableItem("総収入", wIncome / i));
-								wListExpense.add(new SummaryTableItem("総支出", wExpense / i));
+								wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i, true));
+								wListIncome.add(new SummaryTableItem("総収入", wIncome / i, true));
+								wListExpense.add(new SummaryTableItem("総支出", wExpense / i, true));
 							}
 						}
 

@@ -1,5 +1,8 @@
 package view.annual;
 
+import java.util.Date;
+
+import model.AnnualViewType;
 import model.SystemData;
 
 import org.eclipse.swt.SWT;
@@ -10,6 +13,17 @@ import view.util.MyGridLayout;
 
 public class CompositeAnnualMain extends Composite {
 
+	private int mBookId = SystemData.getAllBookInt();
+	private Date mStartDate = null;
+	private Date mEndDate = null;
+	private boolean isAnnualPeriod = false;
+	private AnnualViewType mAnnualViewType = AnnualViewType.Category;
+	private int mMonthCount = 13;
+
+	private CompositeAnnualActionTab mCompositeAnnualActionTab;
+	private CompositeAnnualBookTab mCompositeAnnualBookTab;
+	private CompositeAnnualTable mCompositeAnnualTable;
+
 	public CompositeAnnualMain(Composite pParent) {
 		super(pParent, SWT.NONE);
 		init();
@@ -17,25 +31,89 @@ public class CompositeAnnualMain extends Composite {
 
 	private void init() {
 		// long wTime = System.currentTimeMillis();
-		if (SystemData.getBookId() == SystemData.getUndefinedInt()) {
-			SystemData.setBookId(SystemData.getAllBookInt());
-		}
+		// if (SystemData.getBookId() == SystemData.getUndefinedInt()) {
+		// SystemData.setBookId(SystemData.getAllBookInt());
+		// }
 
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 
-		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true,
-				true).getMyGridData());
+		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		new CompositeAnnualBookTab(this);
-		new CompositeAnnualActionTab(this);
-		CompositeAnnualTable wCompositeAnnualTable = new CompositeAnnualTable(
-				this);
+		mCompositeAnnualBookTab = new CompositeAnnualBookTab(this);
+		mCompositeAnnualActionTab = new CompositeAnnualActionTab(this);
+
+		update();
+
+	}
+
+	public void update() {
+
+		mCompositeAnnualBookTab.update();
+
+		if (mCompositeAnnualActionTab != null) {
+			mCompositeAnnualActionTab.dispose();
+
+		}
+		if (mCompositeAnnualTable != null) {
+			mCompositeAnnualTable.dispose();
+		}
+		mCompositeAnnualActionTab = new CompositeAnnualActionTab(this);
+		mCompositeAnnualTable = new CompositeAnnualTable(this);
 
 		GridData wGridData = new GridData(GridData.FILL_BOTH);
 		wGridData.horizontalSpan = 2;
-		wCompositeAnnualTable.setLayoutData(wGridData);
+		mCompositeAnnualTable.setLayoutData(wGridData);
+
+		this.layout();
 
 	}
-	
+
+	public int getBookId() {
+		return mBookId;
+	}
+
+	public Date getStartDate() {
+		return mStartDate;
+	}
+
+	public Date getEndDate() {
+		return mEndDate;
+	}
+
+	public boolean isAnnualPeriod() {
+		return isAnnualPeriod;
+	}
+
+	public AnnualViewType getAnnualViewType() {
+		return mAnnualViewType;
+	}
+
+	public int getMonthCount() {
+		return mMonthCount;
+	}
+
+	public void setBookId(int pBookId) {
+		this.mBookId = pBookId;
+	}
+
+	public void setStartDate(Date pStartDate) {
+		this.mStartDate = pStartDate;
+	}
+
+	public void setEndDate(Date pEndDate) {
+		this.mEndDate = pEndDate;
+	}
+
+	public void setAnnualPeriod(boolean isAnnualPeriod) {
+		this.isAnnualPeriod = isAnnualPeriod;
+	}
+
+	public void setAnnualViewType(AnnualViewType pAnnualViewType) {
+		this.mAnnualViewType = pAnnualViewType;
+	}
+
+	public void setMonthCount(int pMonthCount) {
+		this.mMonthCount = pMonthCount;
+	}
 
 }
