@@ -13,7 +13,7 @@ public class UpdateAnnual extends Action {
 
 	@Override
 	public void run() {
-		mCompositeAnnualMain.update();
+		mCompositeAnnualMain.updateView();
 		// mCompositeAnnualMain.layout();
 		// System.out.println(mCompositeAnnualMain.getBookId());
 		// CompositeRightMain wComp = (CompositeRightMain) mCompositeAnnualMain;

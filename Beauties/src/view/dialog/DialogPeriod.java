@@ -4,8 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-import model.SystemData;
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -18,14 +16,19 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
+import view.entry.CompositeEntry;
+
 public class DialogPeriod extends Dialog {
 	private DateTime mDateTimeFrom;
 	private DateTime mDateTimeTo;
 	private Date mStartDate;
 	private Date mEndDate;
 
-	public DialogPeriod(Shell parentShell) {
+	private CompositeEntry mCompositeEntry;
+	
+	public DialogPeriod(Shell parentShell, CompositeEntry pCompositeEntry) {
 		super(parentShell);
+		mCompositeEntry = pCompositeEntry;
 	}
 
 	@Override
@@ -38,7 +41,7 @@ public class DialogPeriod extends Dialog {
 
 		mDateTimeFrom = new DateTime(wComp, SWT.DATE | SWT.BORDER);
 		Calendar wCal = Calendar.getInstance();
-		wCal.setTime(SystemData.getStartDate());
+		wCal.setTime(mCompositeEntry.getStartDate());
 		mDateTimeFrom.setDate(wCal.get(Calendar.YEAR),
 				wCal.get(Calendar.MONTH), wCal.get(Calendar.DAY_OF_MONTH));
 
@@ -46,7 +49,7 @@ public class DialogPeriod extends Dialog {
 		wLabel2.setText(" ~ ");
 
 		mDateTimeTo = new DateTime(wComp, SWT.DATE | SWT.BORDER);
-		wCal.setTime(SystemData.getEndDate());
+		wCal.setTime(mCompositeEntry.getEndDate());
 		mDateTimeTo.setDate(wCal.get(Calendar.YEAR), wCal.get(Calendar.MONTH),
 				wCal.get(Calendar.DAY_OF_MONTH));
 

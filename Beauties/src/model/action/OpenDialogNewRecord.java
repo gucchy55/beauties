@@ -20,7 +20,7 @@ public class OpenDialogNewRecord extends Action {
 
 	@Override
 	public void run() {
-		DialogNewRecord wDialogNewRecord = new DialogNewRecord(mCompositeEntry.getShell());
+		DialogNewRecord wDialogNewRecord = new DialogNewRecord(mCompositeEntry.getShell(), mCompositeEntry.getBookId());
 		int wRet = wDialogNewRecord.open();
 		if (wRet == IDialogConstants.OK_ID) { // Updated
 			new UpdateEntry(mCompositeEntry).run();

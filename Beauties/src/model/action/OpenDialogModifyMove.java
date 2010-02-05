@@ -1,7 +1,5 @@
 package model.action;
 
-import model.RightType;
-import model.SystemData;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import view.dialog.DialogMove;
@@ -21,13 +19,13 @@ public class OpenDialogModifyMove extends Action {
 	
 	@Override
 	public void run() {
-		if (SystemData.getRightType() == RightType.Main) {
+//		if (SystemData.getRightType() == RightType.Main) {
 			DialogMove wDialogMove = new DialogMove(mCompositeEntry.getShell(), mActId);
 			int wRet = wDialogMove.open();
 			
 			if (wRet == IDialogConstants.OK_ID) {
 				new UpdateEntry(mCompositeEntry).run();
 			}
-		}
+//		}
 	}
 }

@@ -37,7 +37,7 @@ public class CompositeMove extends Composite {
 
 	private RecordTableItem mIncomeRecord;
 	private RecordTableItem mExpenseRecord;
-
+	
 	// Map of ID & Name
 	private Map<Integer, String> mBookNameMap;
 
@@ -55,11 +55,11 @@ public class CompositeMove extends Composite {
 	private static final int mNoteCandidateCount = 10;
 	private static final int mVisibleComboItemCount = 10;
 
-	public CompositeMove(Composite pParent) {
+	public CompositeMove(Composite pParent, int pBookId, boolean pBool) {
 		super(pParent, SWT.NONE);
-
-		mBookId = SystemData.getBookId();
-		if (SystemData.isBookIdAll()) {
+		
+		mBookId = pBookId;
+		if (mBookId == SystemData.getAllBookInt()) {
 			mBookId = SystemData.getBookMap(false).keySet().iterator().next();
 		}
 		initLayout();

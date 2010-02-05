@@ -14,21 +14,22 @@ public class DialogMove extends Dialog {
 
 	private CompositeMove mCompositeMove;
 	private int mActId = SystemData.getUndefinedInt();
-
-	public DialogMove(Shell parentShell) {
+	private int mBookId;
+	
+	public DialogMove(Shell parentShell, int pBookId, boolean pBool) {
 		super(parentShell);
+		mBookId = pBookId;
 	}
 	
 	public DialogMove(Shell parentShell, int pActId) {
 		super(parentShell);
 		mActId = pActId;
-		
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		if (mActId == SystemData.getUndefinedInt()) {
-			mCompositeMove = new CompositeMove(parent);
+			mCompositeMove = new CompositeMove(parent, mBookId, true);
 			return mCompositeMove;
 		} else {
 			mCompositeMove = new CompositeMove(parent, mActId);

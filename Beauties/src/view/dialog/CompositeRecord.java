@@ -41,7 +41,7 @@ public class CompositeRecord extends Composite {
 	private int mItemId;
 
 	private RecordTableItem mRecordTableItem;
-
+	
 	private static final String mCategoryAllName = "（すべて）";
 	private static final int mCategoryAllId = -1;
 
@@ -68,11 +68,12 @@ public class CompositeRecord extends Composite {
 	private static final int mNoteCandidateCount = 10;
 	private static final int mVisibleComboItemCount = 10;
 
-	public CompositeRecord(Composite pParent) {
+	public CompositeRecord(Composite pParent, int pBookId, boolean pbool) {
 		super(pParent, SWT.NONE);
-
-		mBookId = SystemData.getBookId();
-		if (SystemData.isBookIdAll()) {
+		
+		mBookId = pBookId;
+		
+		if (mBookId == SystemData.getAllBookInt()) {
 			mBookId = SystemData.getBookMap(false).keySet().iterator().next();
 		}
 

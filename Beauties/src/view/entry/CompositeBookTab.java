@@ -39,7 +39,7 @@ public class CompositeBookTab extends Composite {
 		super(pParent, SWT.NONE);
 
 		mCompositeEntry = (CompositeEntry) pParent;
-		mEndDate = SystemData.getEndDate();
+		mEndDate = mCompositeEntry.getEndDate();
 		mBookMap = SystemData.getBookMap(true);
 
 		init();
@@ -59,7 +59,7 @@ public class CompositeBookTab extends Composite {
 		wPrevMonthButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SystemData.setMonthPeriod(true);
+				mCompositeEntry.setMonthPeriod(true);
 				UpdateEntry wAdjusentEntry = new UpdateEntry(mCompositeEntry, Util.getAdjusentMonth(mEndDate, -1));
 				wAdjusentEntry.run();
 			}
@@ -70,7 +70,7 @@ public class CompositeBookTab extends Composite {
 		wPrevMonthButton.setLayoutData(wGridDataArrow);
 
 		Label wThisMonthLabel = new Label(mPeriodComp, SWT.CENTER);
-		if (SystemData.isMonthPeriod()) {
+		if (mCompositeEntry.isMonthPeriod()) {
 			DateFormat df = new SimpleDateFormat("yyyy/MM");
 			wThisMonthLabel.setText(df.format(mEndDate));
 		} else {
@@ -90,7 +90,7 @@ public class CompositeBookTab extends Composite {
 		wNextMonthButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				SystemData.setMonthPeriod(true);
+				mCompositeEntry.setMonthPeriod(true);
 				UpdateEntry wAdjusentEntry = new UpdateEntry(mCompositeEntry, Util.getAdjusentMonth(mEndDate, 1));
 				wAdjusentEntry.run();
 			}
@@ -105,7 +105,7 @@ public class CompositeBookTab extends Composite {
 		for (int wBookId : mBookMap.keySet()) {
 			Button wBookButton = new Button(mBookNameComp, SWT.TOGGLE);
 			wBookButton.setText(mBookMap.get(wBookId));
-			if (wBookId == SystemData.getBookId()) {
+			if (wBookId == mCompositeEntry.getBookId()) {
 				wBookButton.setSelection(true);
 				wBookButton.setEnabled(false);
 			} else {
@@ -116,7 +116,7 @@ public class CompositeBookTab extends Composite {
 						String wBookName = wBookButton.getText();
 						for (int wBookId : mBookMap.keySet()) {
 							if (wBookName.equals(mBookMap.get(wBookId))) {
-								SystemData.setBookId(wBookId);
+								mCompositeEntry.setBookId(wBookId);
 								new UpdateEntry(mCompositeEntry).run();
 								break;
 							}

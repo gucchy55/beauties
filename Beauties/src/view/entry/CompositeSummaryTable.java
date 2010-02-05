@@ -31,21 +31,23 @@ public class CompositeSummaryTable extends Composite {
 
 	private static final int mRightWidthHint = 200;
 
+	private CompositeEntry mCompositeEntry;
+
 	public CompositeSummaryTable(Composite pParent) {
 		super(pParent, SWT.NONE);
+
+		mCompositeEntry = (CompositeEntry) pParent;
+
 		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
 
-		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL,
-				false, true).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true).getMyGridData();
 		wGridData.widthHint = mRightWidthHint;
 		this.setLayoutData(wGridData);
 
-		TableViewer wTableViewer = new TableViewer(this, SWT.FULL_SELECTION
-				| SWT.BORDER | SWT.VIRTUAL);
+		TableViewer wTableViewer = new TableViewer(this, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
 		Table wTable = wTableViewer.getTable();
 
-		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true,
-				true).getMyGridData());
+		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
 		// 線を表示する
 		wTable.setLinesVisible(true);
@@ -61,9 +63,8 @@ public class CompositeSummaryTable extends Composite {
 		wValueCol.setText("合計");
 		wValueCol.setWidth(80);
 
-		SummaryTableItem[] wSummaryTableItems = DbUtil.getSummaryTableItems(
-				SystemData.getBookId(), SystemData.getStartDate(), SystemData
-						.getEndDate());
+		SummaryTableItem[] wSummaryTableItems = DbUtil.getSummaryTableItems(mCompositeEntry.getBookId(),
+				mCompositeEntry.getStartDate(), mCompositeEntry.getEndDate());
 
 		wTableViewer.setContentProvider(new SummaryTableContentProvider());
 		wTableViewer.setInput(wSummaryTableItems);
@@ -72,52 +73,42 @@ public class CompositeSummaryTable extends Composite {
 
 		wTableViewer.getTable().setSelection(0);
 
-		wTableViewer
-				.addSelectionChangedListener(new ISelectionChangedListener() {
-					@Override
-					public void selectionChanged(SelectionChangedEvent event) {
-						IStructuredSelection sel = (IStructuredSelection) event
-								.getSelection();
-						SummaryTableItem wTableItem = (SummaryTableItem) sel
-								.getFirstElement();
-						CompositeEntry wParent = (CompositeEntry) getParent();
-						if (wTableItem.isSpecial()
-								&& !wTableItem.isAppearedIncomeExpense()) {
-							// CategoryId, ItemIdを初期化
-							SystemData.setCategoryId(SystemData
-									.getUndefinedInt());
-							SystemData.setItemId(SystemData.getUndefinedInt());
-							SystemData.setAllIncome(false);
-							SystemData.setAllExpense(false);
-						} else if (wTableItem.isAppearedIncomeExpense()) {
-							SystemData.setAllIncome(wTableItem.isIncome());
-							SystemData.setAllExpense(!wTableItem.isIncome());
-							SystemData.setCategoryId(SystemData
-									.getUndefinedInt());
-							SystemData.setItemId(SystemData.getUndefinedInt());
-						} else if (wTableItem.getItemId() != SystemData
-								.getUndefinedInt()) {
-							SystemData.setCategoryId(SystemData
-									.getUndefinedInt());
-							SystemData.setItemId(wTableItem.getItemId());
-							SystemData.setAllIncome(false);
-							SystemData.setAllExpense(false);
+		wTableViewer.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				SummaryTableItem wTableItem = (SummaryTableItem) sel.getFirstElement();
+				CompositeEntry wParent = (CompositeEntry) getParent();
+				if (wTableItem.isSpecial() && !wTableItem.isAppearedIncomeExpense()) {
+					// CategoryId, ItemIdを初期化
+					mCompositeEntry.setCategoryId(SystemData.getUndefinedInt());
+					mCompositeEntry.setItemId(SystemData.getUndefinedInt());
+					mCompositeEntry.setAllIncome(false);
+					mCompositeEntry.setAllExpense(false);
+				} else if (wTableItem.isAppearedIncomeExpense()) {
+					mCompositeEntry.setAllIncome(wTableItem.isIncome());
+					mCompositeEntry.setAllExpense(!wTableItem.isIncome());
+					mCompositeEntry.setCategoryId(SystemData.getUndefinedInt());
+					mCompositeEntry.setItemId(SystemData.getUndefinedInt());
+				} else if (wTableItem.getItemId() != SystemData.getUndefinedInt()) {
+					mCompositeEntry.setCategoryId(SystemData.getUndefinedInt());
+					mCompositeEntry.setItemId(wTableItem.getItemId());
+					mCompositeEntry.setAllIncome(false);
+					mCompositeEntry.setAllExpense(false);
 
-						} else if (wTableItem.getCategoryId() != SystemData
-								.getUndefinedInt()) {
-							SystemData
-									.setCategoryId(wTableItem.getCategoryId());
-							SystemData.setItemId(SystemData.getUndefinedInt());
-							SystemData.setAllIncome(false);
-							SystemData.setAllExpense(false);
-						}
-						wParent.removeFiltersFromRecord();
-						wParent.addFiltersToRecord();
-//						wParent.setStripToTable();
+				} else if (wTableItem.getCategoryId() != SystemData.getUndefinedInt()) {
+					mCompositeEntry.setCategoryId(wTableItem.getCategoryId());
+					mCompositeEntry.setItemId(SystemData.getUndefinedInt());
+					mCompositeEntry.setAllIncome(false);
+					mCompositeEntry.setAllExpense(false);
+				}
+				wParent.removeFiltersFromRecord();
+				wParent.addFiltersToRecord();
+				// wParent.setStripToTable();
 
-					}
+			}
 
-				});
+		});
 	}
 
 }
@@ -135,8 +126,7 @@ class SummaryTableContentProvider implements IStructuredContentProvider {
 	}
 }
 
-class SummaryTableLabelProvider implements ITableLabelProvider,
-		ITableColorProvider {
+class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
 	private DecimalFormat mDecimalFormat = new DecimalFormat("###,###");
 
 	public Image getColumnImage(Object element, int columnIndex) {

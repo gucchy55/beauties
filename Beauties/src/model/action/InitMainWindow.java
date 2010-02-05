@@ -31,7 +31,7 @@ public class InitMainWindow extends Action {
 	public void run() {
 		MainJfaceWindow wMainJfaceWindow = (MainJfaceWindow) mWindow;
 //		if (SystemData.getRightType() != mInputRightType) {
-			SystemData.setRightType(mInputRightType);
+//			SystemData.setRightType(mInputRightType);
 			Composite wMainComposite = wMainJfaceWindow.getmMainComposite();
 			
 			for (Control wControl : wMainComposite.getChildren()) {

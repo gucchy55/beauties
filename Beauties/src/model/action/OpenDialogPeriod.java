@@ -1,6 +1,5 @@
 package model.action;
 
-import model.SystemData;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import view.dialog.DialogPeriod;
@@ -18,14 +17,14 @@ public class OpenDialogPeriod extends Action {
 
 	@Override
 	public void run() {
-		DialogPeriod wDialogPeriod = new DialogPeriod(mCompositeEntry.getShell());
+		DialogPeriod wDialogPeriod = new DialogPeriod(mCompositeEntry.getShell(), mCompositeEntry);
 		int wRet = wDialogPeriod.open();
 
 		if (wRet == IDialogConstants.OK_ID) { // Updated
 //			if (wDialogPeriod.getEndDate().after(wDialogPeriod.getStartDate())) {
-				SystemData.setStartDate(wDialogPeriod.getStartDate());
-				SystemData.setEndDate(wDialogPeriod.getEndDate());
-				SystemData.setMonthPeriod(false);
+				mCompositeEntry.setStartDate(wDialogPeriod.getStartDate());
+				mCompositeEntry.setEndDate(wDialogPeriod.getEndDate());
+				mCompositeEntry.setMonthPeriod(false);
 				new UpdateEntry(mCompositeEntry).run();
 //			}
 		}

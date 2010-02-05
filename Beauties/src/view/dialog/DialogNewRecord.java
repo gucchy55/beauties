@@ -12,14 +12,17 @@ public class DialogNewRecord extends Dialog {
 
 	private CompositeRecord mCompositeRecord;
 	private int mReturnCode = IDialogConstants.CANCEL_ID;
-
-	public DialogNewRecord(Shell parentShell) {
+	
+	private int mBookId;
+	
+	public DialogNewRecord(Shell parentShell, int pBookId) {
 		super(parentShell);
+		mBookId = pBookId;
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		mCompositeRecord = new CompositeRecord(parent);
+		mCompositeRecord = new CompositeRecord(parent, mBookId, true);
 		return mCompositeRecord;
 	}
 
@@ -76,6 +79,10 @@ public class DialogNewRecord extends Dialog {
 		} else {
 			return false;
 		}
+	}
+	
+	public int getBookId() {
+		return mBookId;
 	}
 
 }

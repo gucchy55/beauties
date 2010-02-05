@@ -57,8 +57,8 @@ public class CompositeRecordTable extends Composite {
 	public CompositeRecordTable(Composite pParent) {
 		super(pParent, SWT.NONE);
 		mCompositeEntry = (CompositeEntry) pParent;
-		this.mStartDate = SystemData.getStartDate();
-		this.mEndDate = SystemData.getEndDate();
+		this.mStartDate = mCompositeEntry.getStartDate();
+		this.mEndDate = mCompositeEntry.getEndDate();
 
 		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
@@ -67,7 +67,7 @@ public class CompositeRecordTable extends Composite {
 		wSashForm.setLayout(new MyGridLayout(1, false).getMyGridLayout());
 		wSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mStartDate, mEndDate, SystemData
+		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mStartDate, mEndDate, mCompositeEntry
 				.getBookId());
 
 		mRecordItemsUp = wRecordTableItemAll[0];
@@ -101,7 +101,6 @@ public class CompositeRecordTable extends Composite {
 			@Override
 			public void controlResized(ControlEvent arg0) {
 				SystemData.setRecordTableWeights(wSashForm.getWeights());
-
 			}
 
 			@Override
@@ -258,8 +257,8 @@ public class CompositeRecordTable extends Composite {
 	}
 
 	public void addFilter() {
-		mTableUp.addFilter(new IdFilter());
-		mTableBottom.addFilter(new IdFilter());
+		mTableUp.addFilter(new IdFilter(mCompositeEntry));
+		mTableBottom.addFilter(new IdFilter(mCompositeEntry));
 	}
 
 	public void removeFilter() {
@@ -367,15 +366,22 @@ class TableLabelProvider implements ITableLabelProvider {
 }
 
 class IdFilter extends ViewerFilter {
+	
+	private CompositeEntry mCompositeEntry;
+	
+	public IdFilter(CompositeEntry pCompositeEntry) {
+		mCompositeEntry = pCompositeEntry;
+	}
+	
 	public boolean select(Viewer pViewer, Object pParent, Object pElement) {
 		RecordTableItem wRecord = (RecordTableItem) pElement;
-		if (SystemData.getCategoryId() != SystemData.getUndefinedInt()) {
-			return (wRecord.getCategoryId() == SystemData.getCategoryId());
-		} else if (SystemData.getItemId() != SystemData.getUndefinedInt()) {
-			return (wRecord.getItemId() == SystemData.getItemId());
-		} else if (SystemData.isAllIncome()) {
+		if (mCompositeEntry.getCategoryId() != SystemData.getUndefinedInt()) {
+			return (wRecord.getCategoryId() == mCompositeEntry.getCategoryId());
+		} else if (mCompositeEntry.getItemId() != SystemData.getUndefinedInt()) {
+			return (wRecord.getItemId() == mCompositeEntry.getItemId());
+		} else if (mCompositeEntry.isAllIncome()) {
 			return (wRecord.isIncome());
-		} else if (SystemData.isAllExpense()) {
+		} else if (mCompositeEntry.isAllExpense()) {
 			return (wRecord.isExpense());
 		} else {
 			return true;

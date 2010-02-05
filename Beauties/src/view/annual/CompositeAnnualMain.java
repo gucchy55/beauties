@@ -8,6 +8,8 @@ import model.SystemData;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Control;
+
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
@@ -20,8 +22,6 @@ public class CompositeAnnualMain extends Composite {
 	private AnnualViewType mAnnualViewType = AnnualViewType.Category;
 	private int mMonthCount = 13;
 
-	private CompositeAnnualActionTab mCompositeAnnualActionTab;
-	private CompositeAnnualBookTab mCompositeAnnualBookTab;
 	private CompositeAnnualTable mCompositeAnnualTable;
 
 	public CompositeAnnualMain(Composite pParent) {
@@ -39,31 +39,24 @@ public class CompositeAnnualMain extends Composite {
 
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		mCompositeAnnualBookTab = new CompositeAnnualBookTab(this);
-		mCompositeAnnualActionTab = new CompositeAnnualActionTab(this);
+		new CompositeAnnualBookTab(this);
+		new CompositeAnnualActionTab(this);
 
-		update();
-
-	}
-
-	public void update() {
-
-		mCompositeAnnualBookTab.update();
-
-		if (mCompositeAnnualActionTab != null) {
-			mCompositeAnnualActionTab.dispose();
-
-		}
-		if (mCompositeAnnualTable != null) {
-			mCompositeAnnualTable.dispose();
-		}
-		mCompositeAnnualActionTab = new CompositeAnnualActionTab(this);
 		mCompositeAnnualTable = new CompositeAnnualTable(this);
 
 		GridData wGridData = new GridData(GridData.FILL_BOTH);
 		wGridData.horizontalSpan = 2;
 		mCompositeAnnualTable.setLayoutData(wGridData);
 
+	}
+
+	public void updateView() {
+
+		for (Control wCtrl : this.getChildren()) {
+			wCtrl.dispose();
+		}
+		
+		this.init();
 		this.layout();
 
 	}

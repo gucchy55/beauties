@@ -41,10 +41,6 @@ public class CompositeAnnualBookTab extends Composite {
 		mCompositeAnnualMain = (CompositeAnnualMain) pParent;
 		mBookMap = SystemData.getBookMap(true);
 
-		init();
-	}
-
-	private void init() {
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, false).getMyGridData());
 
@@ -100,12 +96,6 @@ public class CompositeAnnualBookTab extends Composite {
 		});
 		wNextMonthButton.setLayoutData(wGridDataArrow);
 
-		update();
-
-	}
-
-	public void update() {
-
 		if (mBookNameComp != null) {
 			mBookNameComp.dispose();
 		}
@@ -133,7 +123,6 @@ public class CompositeAnnualBookTab extends Composite {
 				});
 			}
 		}
-		this.layout();
 	}
 
 }
