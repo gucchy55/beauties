@@ -26,7 +26,9 @@ public class CompositeEntry extends Composite {
 	private boolean mAllExpense = false;
 //	private int[] mRecordTableWeights = {80, 20};
 	
+//	private CompositeBookTab mCompositeBookTab;
 	private CompositeRecordTable mCompositeRecordTable;
+//	private CompositeSummaryTable mCompositeSummaryTable;
 	
 	public CompositeEntry(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -62,6 +64,7 @@ public class CompositeEntry extends Composite {
 		}
 		
 		this.init();
+		
 		this.layout();
 		
 	}

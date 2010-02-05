@@ -5,7 +5,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Map;
 
-import model.SystemData;
 import model.action.OpenDialogPeriod;
 import model.action.UpdateEntry;
 import org.eclipse.swt.SWT;
@@ -20,27 +19,24 @@ import org.eclipse.swt.widgets.Label;
 import util.Util;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
-import view.util.MyRowLayout;
 
 public class CompositeBookTab extends Composite {
 
 	// private CompositeRightMain mCompositeRightMain;
 	private CompositeEntry mCompositeEntry;
 	private Date mEndDate;
-	private Map<Integer, String> mBookMap;
 
 	private static final int mPeriodWidthHint = 130;
 	private static final int mArrowWidthHint = 30;
 
 	private Composite mPeriodComp;
-	private Composite mBookNameComp;
+	private CompositeBookNames mBookNameComp;
 
 	public CompositeBookTab(Composite pParent) {
 		super(pParent, SWT.NONE);
 
 		mCompositeEntry = (CompositeEntry) pParent;
 		mEndDate = mCompositeEntry.getEndDate();
-		mBookMap = SystemData.getBookMap(true);
 
 		init();
 	}
@@ -97,35 +93,31 @@ public class CompositeBookTab extends Composite {
 		});
 		wNextMonthButton.setLayoutData(wGridDataArrow);
 
-		mBookNameComp = new Composite(this, SWT.NONE);
-		mBookNameComp.setLayout(new MyRowLayout().getMyRowLayout());
-		wGridData.widthHint = mPeriodWidthHint;
-		mBookNameComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+		mBookNameComp = new CompositeBookNames(this, mCompositeEntry.getBookId());
+		// mBookNameComp.setLayout(new MyRowLayout().getMyRowLayout());
+		// mBookNameComp.setLayoutData(new MyGridData(GridData.FILL,
+		// GridData.FILL, true, true).getMyGridData());
 
-		for (int wBookId : mBookMap.keySet()) {
-			Button wBookButton = new Button(mBookNameComp, SWT.TOGGLE);
-			wBookButton.setText(mBookMap.get(wBookId));
-			if (wBookId == mCompositeEntry.getBookId()) {
-				wBookButton.setSelection(true);
-				wBookButton.setEnabled(false);
+		for (Map.Entry<Integer, Button> entry : mBookNameComp.getBookButtonMap().entrySet()) {
+			final int wBookId = entry.getKey();
+			Button wButton = entry.getValue();
+//			for (Listener l : wButton.getListeners(SWT.Selection)) {
+//				wButton.removeListener(SWT.Selection, l);
+//			}
+
+			if (mCompositeEntry.getBookId() == wBookId) {
+				wButton.setSelection(true);
+				wButton.setEnabled(false);
 			} else {
-				wBookButton.addSelectionListener(new SelectionAdapter() {
-					@Override
+//				wButton.setEnabled(true);
+//				wButton.setSelection(false);
+				wButton.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
-						Button wBookButton = (Button) e.getSource();
-						String wBookName = wBookButton.getText();
-						for (int wBookId : mBookMap.keySet()) {
-							if (wBookName.equals(mBookMap.get(wBookId))) {
-								mCompositeEntry.setBookId(wBookId);
-								new UpdateEntry(mCompositeEntry).run();
-								break;
-							}
-						}
-
+						mCompositeEntry.setBookId(wBookId);
+						new UpdateEntry(mCompositeEntry).run();
 					}
 				});
 			}
-
 		}
 	}
 
