@@ -1,6 +1,7 @@
 package view;
 
 import model.RightType;
+import model.SystemData;
 import model.action.InitMainWindow;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -26,7 +27,7 @@ public class MainJfaceWindow extends ApplicationWindow {
 
 	private Composite mMainComposite;
 	private Composite mLeftComposite;
-	private Composite mRightComposite;
+//	private Composite mRightComposite;
 	
 	private RightType mRightType = RightType.Main;
 
@@ -82,6 +83,8 @@ public class MainJfaceWindow extends ApplicationWindow {
 //	}
 
 	private void init() {
+		SystemData.init();
+		createLeftComposite(mMainComposite);
 		new InitMainWindow(this).run();
 	}
 
@@ -90,6 +93,7 @@ public class MainJfaceWindow extends ApplicationWindow {
 	}
 
 	public void createLeftComposite(Composite wParent) {
+		
 		mLeftComposite = new Composite(wParent, SWT.NONE);
 		mLeftComposite.setLayout(new MyFillLayout(SWT.VERTICAL)
 				.getMyFillLayout());
@@ -128,9 +132,9 @@ public class MainJfaceWindow extends ApplicationWindow {
 		return mLeftComposite;
 	}
 
-	public Composite getRightComposite() {
-		return mRightComposite;
-	}
+//	public Composite getRightComposite() {
+//		return mRightComposite;
+//	}
 
 	public static String[] getLeftButtonNameArray() {
 		return mLeftButtonNameArray;
