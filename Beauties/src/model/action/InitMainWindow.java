@@ -15,7 +15,7 @@ public class InitMainWindow extends Action {
 
 	private ApplicationWindow mWindow;
 	private RightType mInputRightType = RightType.Main; // 初期値
-	
+
 	public InitMainWindow(ApplicationWindow pWindow) {
 		mWindow = pWindow;
 	}
@@ -28,44 +28,33 @@ public class InitMainWindow extends Action {
 	@Override
 	public void run() {
 		MainJfaceWindow wMainJfaceWindow = (MainJfaceWindow) mWindow;
-//		if (SystemData.getRightType() != mInputRightType) {
-//			SystemData.setRightType(mInputRightType);
-			Composite wMainComposite = wMainJfaceWindow.getmMainComposite();
+		Composite wMainComposite = wMainJfaceWindow.getmMainComposite();
 
-			for (Control wControl : wMainComposite.getChildren()) {
-				wControl.dispose();
-			}
-			wMainJfaceWindow.createLeftComposite(wMainComposite);
-//			CompositeRightMain wRightComposite = new CompositeRightMain(wMainComposite);
-//			SystemData.setCompositeRightMain(wRightComposite);
-			
-			switch (mInputRightType) {
-			
-			case Main:
-//				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(true);
-//				SystemData.init();
-				new CompositeEntry(wMainComposite);
-				break;
-				
-			case Anual:
-//				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(false);
-//				SystemData.init();
-				new CompositeAnnualMain(wMainComposite);
-				break;
-				
-			default: 
-//				mWindow.getMenuBarManager().getMenu().getItems()[0].setEnabled(false);
-//				SystemData.init();
-				new CompositeRight2(wMainComposite);
-				
-			}
-			
-			wMainComposite.layout();
-//		}
-		
+		for (Control wControl : wMainComposite.getChildren()) {
+			wControl.dispose();
+		}
+		wMainJfaceWindow.createLeftComposite(wMainComposite);
+
+		switch (mInputRightType) {
+
+		case Main:
+			new CompositeEntry(wMainComposite);
+			break;
+
+		case Anual:
+			new CompositeAnnualMain(wMainComposite);
+			break;
+
+		default:
+			new CompositeRight2(wMainComposite);
+
+		}
+
+		wMainComposite.layout();
+
 		Button[] wLeftButtonArray = wMainJfaceWindow.getLeftButtonArray();
 		wLeftButtonArray[mInputRightType.value].setSelection(true);
-		
+
 	}
 
 }

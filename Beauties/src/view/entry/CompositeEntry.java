@@ -24,12 +24,8 @@ public class CompositeEntry extends Composite {
 	private int mCategoryId;
 	private boolean mAllIncome = false;
 	private boolean mAllExpense = false;
-//	private int[] mRecordTableWeights = {80, 20};
-	
-//	private CompositeBookTab mCompositeBookTab;
 	private CompositeRecordTable mCompositeRecordTable;
-//	private CompositeSummaryTable mCompositeSummaryTable;
-	
+
 	public CompositeEntry(Composite pParent) {
 		super(pParent, SWT.NONE);
 		mBookId = SystemData.getBookMap(false).keySet().iterator().next();
@@ -37,45 +33,41 @@ public class CompositeEntry extends Composite {
 	}
 
 	private void init() {
-//		long wTime = System.currentTimeMillis();
-		
 		if (mStartDate == null) {
 			Date[] wDates = Util.getPeriod(new Date());
 			mStartDate = wDates[0];
 			mEndDate = wDates[1];
 		}
-		
+
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 
-		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true,
-				true).getMyGridData());
-	
+		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+
 		new CompositeBookTab(this);
 		new CompositeActionTab(this);
 		mCompositeRecordTable = new CompositeRecordTable(this);
 		new CompositeSummaryTable(this);
-//		System.out.println(System.currentTimeMillis() - wTime);
-		
 	}
-	
+
 	public void updateView() {
 		for (Control wCtrl : this.getChildren()) {
 			wCtrl.dispose();
 		}
-		
+
 		this.init();
-		
+
 		this.layout();
-		
+
 	}
 
 	public int getSelectedActId() {
 		return mCompositeRecordTable.getSelectedActId();
 	}
-	
+
 	public void addFiltersToRecord() {
 		mCompositeRecordTable.addFilter();
 	}
+
 	public void removeFiltersFromRecord() {
 		mCompositeRecordTable.removeFilter();
 	}
@@ -111,10 +103,6 @@ public class CompositeEntry extends Composite {
 	public boolean isAllExpense() {
 		return mAllExpense;
 	}
-//
-//	public int[] getRecordTableWeights() {
-//		return mRecordTableWeights;
-//	}
 
 	public void setBookId(int pBookId) {
 		mBookId = pBookId;
@@ -147,13 +135,4 @@ public class CompositeEntry extends Composite {
 	public void setAllExpense(boolean pAllExpense) {
 		mAllExpense = pAllExpense;
 	}
-
-//	public void setRecordTableWeights(int[] pRecordTableWeights) {
-//		mRecordTableWeights = pRecordTableWeights;
-//	}
-	
-//	public void setStripToTable() {
-//		mCompositeRecordTable.setStripeToTable();
-//	}
-
 }

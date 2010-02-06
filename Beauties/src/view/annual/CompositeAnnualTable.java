@@ -86,8 +86,6 @@ public class CompositeAnnualTable extends Composite {
 
 		List<String> wRowHeaders = new ArrayList<String>();
 		DateFormat df = new SimpleDateFormat("yyyy年MM月");
-//		Date wDateNow = new Date();
-//		boolean wIsSummationAdded = false;
 
 		for (int i = 0; i < wDatePeriods.length; i++) {
 			Date wEndDate = wDatePeriods[i][1];
@@ -100,29 +98,9 @@ public class CompositeAnnualTable extends Composite {
 			wRowHeaders.add(wSummationIndex + 1, "平均");
 		}
 
-		// DateNowが最初の月以前なら合計、平均は表示しない
-		// if (wDatePeriods[0][1].after(wDateNow)) {
-		// wIsSummationAdded = true;
-		// }
-		// for (int i = 0; i < wDatePeriods.length; i++) {
-		// Date wEndDate = wDatePeriods[i][1];
-		// if (wDateNow.after(wDatePeriods[i][0]) &&
-		// Util.getAdjusentDay(wEndDate, 1).after(wDateNow)
-		// && !wIsSummationAdded) {
-		// wIsSummationAdded = true;
-		// wRowHeaders.add("合計");
-		// wRowHeaders.add("平均");
-		// }
-		// wRowHeaders.add(df.format(wEndDate));
-		// }
-		// if (!wIsSummationAdded) {
-		// wRowHeaders.add("合計");
-		// wRowHeaders.add("平均");
-		// }
-
 		wRowHeader.setContentProvider(new HeaderTableContentProvider());
 		wRowHeader.setInput(wRowHeaders);
-		wRowHeader.setLabelProvider(new HeaderTableLabelProvider(getDisplay()));
+		wRowHeader.setLabelProvider(new HeaderTableLabelProvider());
 
 		// メインテーブル
 		TableViewer wMainTableViewer = new TableViewer(this, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
@@ -168,19 +146,6 @@ public class CompositeAnnualTable extends Composite {
 
 		wMainTableViewer.setLabelProvider(new SummaryTableLabelProvider());
 
-		// for (TableViewer wTableViewer : new TableViewer[] { wRowHeader,
-		// wMainTableViewer }) {
-		// TableItem[] wItems = wTableViewer.getTable().getItems();
-		// for (int i = 0; i < wItems.length; i++) {
-		// if (i % 2 == 0) {
-		// wItems[i].setBackground(mColor1);
-		// } else {
-		// wItems[i].setBackground(mColor2);
-		// }
-		// }
-		//
-		// }
-
 		// 選択がシンクロするようリスナーを設定
 		mRowHeaderTable.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
@@ -211,11 +176,6 @@ class HeaderTableContentProvider implements IStructuredContentProvider {
 }
 
 class HeaderTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
-	// private Display mDisplay;
-
-	public HeaderTableLabelProvider(Display pDisplay) {
-		// this.mDisplay = pDisplay;
-	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;

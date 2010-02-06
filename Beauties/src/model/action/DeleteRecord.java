@@ -8,7 +8,6 @@ import view.entry.CompositeEntry;
 
 public class DeleteRecord extends Action {
 
-//	private Shell mShell;
 	private int mActId;
 	private CompositeEntry mCompositeEntry;
 
@@ -16,7 +15,6 @@ public class DeleteRecord extends Action {
 		super.setText("削除");
 		mActId = pActId;
 		mCompositeEntry = pCompositeEntry;
-//		mShell = pShell;
 	}
 
 	@Override
@@ -24,7 +22,6 @@ public class DeleteRecord extends Action {
 		if (MessageDialog.openConfirm(mCompositeEntry.getShell(), "確認",
 				"削除していいですか？")) {
 			DbUtil.deleteRecord(mActId);
-//			new UpdateEntry(SystemData.getCompositeRightMain()).run();
 			new UpdateEntry(mCompositeEntry).run();
 		}
 	}

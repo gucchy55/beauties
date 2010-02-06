@@ -7,11 +7,9 @@ import view.entry.CompositeEntry;
 
 public class OpenDialogPeriod extends Action {
 
-//	private Shell mShell;
 	private CompositeEntry mCompositeEntry;
 
 	public OpenDialogPeriod(CompositeEntry pCompositeEntry) {
-//		mShell = pShell;
 		mCompositeEntry = pCompositeEntry;
 	}
 
@@ -21,12 +19,10 @@ public class OpenDialogPeriod extends Action {
 		int wRet = wDialogPeriod.open();
 
 		if (wRet == IDialogConstants.OK_ID) { // Updated
-//			if (wDialogPeriod.getEndDate().after(wDialogPeriod.getStartDate())) {
-				mCompositeEntry.setStartDate(wDialogPeriod.getStartDate());
-				mCompositeEntry.setEndDate(wDialogPeriod.getEndDate());
-				mCompositeEntry.setMonthPeriod(false);
-				new UpdateEntry(mCompositeEntry).run();
-//			}
+			mCompositeEntry.setStartDate(wDialogPeriod.getStartDate());
+			mCompositeEntry.setEndDate(wDialogPeriod.getEndDate());
+			mCompositeEntry.setMonthPeriod(false);
+			new UpdateEntry(mCompositeEntry).run();
 		}
 	}
 }

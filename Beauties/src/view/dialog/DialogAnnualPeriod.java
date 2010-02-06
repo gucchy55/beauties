@@ -86,11 +86,6 @@ public class DialogAnnualPeriod extends Dialog {
 		return wComp;
 	}
 
-	// @Override
-	// protected Point getInitialSize() {
-	// return new Point(318, 126);
-	// }
-
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);

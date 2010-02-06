@@ -23,7 +23,7 @@ import view.util.MyGridLayout;
 public class CompositeRecordTable extends Composite {
 
 	private CompositeEntry mCompositeEntry;
-	
+
 	private Date mStartDate;
 	private Date mEndDate;
 
@@ -55,7 +55,6 @@ public class CompositeRecordTable extends Composite {
 		mRecordItemsUp = wRecordTableItemAll[0];
 		mRecordItemsBottom = wRecordTableItemAll[1];
 
-//		mTableUp = setTableHeader(wSashForm, new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 		mTableUp = new RecordTableViewer(wSashForm, mCompositeEntry);
 		mTableUp.setRecordTableItem(mRecordItemsUp);
 		mTableUp.getTable().setSelection(0);
@@ -71,9 +70,6 @@ public class CompositeRecordTable extends Composite {
 		wLabel.setText("当月の収支予定");
 		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER, true, false).getMyGridData());
 
-//		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
-		// wGridData.heightHint = 100;
-//		mTableBottom = setTableHeader(wBottomComp, wGridData);
 		mTableBottom = new RecordTableViewer(wBottomComp, mCompositeEntry);
 
 		if (mRecordItemsBottom.length > 0) {
@@ -93,134 +89,7 @@ public class CompositeRecordTable extends Composite {
 			}
 		});
 
-		// setStripeToTable();
-
 	}
-
-//	private TableViewer setTableHeader(Composite pComp, GridData pGridData) {
-//		// テーブルの作成
-//		TableViewer wTableViewer = new TableViewer(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
-//		Table wTable = wTableViewer.getTable();
-//		wTable.setLayoutData(pGridData);
-//		// 線を表示する
-//		wTable.setLinesVisible(true);
-//		// ヘッダを可視にする
-//		wTable.setHeaderVisible(true);
-//
-//		// 列のヘッダの設定
-//		TableColumn wActIdCol = new TableColumn(wTable, SWT.LEFT);
-//		wActIdCol.setText("ActID");
-//		wActIdCol.setWidth(0);
-//		wActIdCol.setResizable(false);
-//
-//		TableColumn wCategoryIdCol = new TableColumn(wTable, SWT.LEFT);
-//		wCategoryIdCol.setText("CategoryID");
-//		wCategoryIdCol.setWidth(0);
-//		wCategoryIdCol.setResizable(false);
-//
-//		TableColumn wItemIdCol = new TableColumn(wTable, SWT.LEFT);
-//		wItemIdCol.setText("ItemID");
-//		wItemIdCol.setWidth(0);
-//		wItemIdCol.setResizable(false);
-//
-//		TableColumn wDateCol = new TableColumn(wTable, SWT.CENTER);
-//		wDateCol.setText("日付");
-//		wDateCol.setWidth(62);
-//
-//		TableColumn wItemNameCol = new TableColumn(wTable, SWT.LEFT);
-//		wItemNameCol.setText("項目");
-//		wItemNameCol.setWidth(70);
-//
-//		TableColumn wIncomeCol = new TableColumn(wTable, SWT.RIGHT);
-//		wIncomeCol.setText("収入");
-//		wIncomeCol.setWidth(60);
-//
-//		TableColumn wExpenseCol = new TableColumn(wTable, SWT.RIGHT);
-//		wExpenseCol.setText("支出");
-//		wExpenseCol.setWidth(60);
-//
-//		TableColumn wBalanceCol = new TableColumn(wTable, SWT.RIGHT);
-//		wBalanceCol.setText("残高");
-//		wBalanceCol.setWidth(80);
-//
-//		TableColumn wFreqCol = new TableColumn(wTable, SWT.RIGHT);
-//		wFreqCol.setText("残回数");
-//		wFreqCol.setWidth(50);
-//
-//		TableColumn wNoteCol = new TableColumn(wTable, SWT.LEFT);
-//		wNoteCol.setText("備考");
-//		wNoteCol.setWidth(250);
-//
-//		return wTableViewer;
-//	}
-//
-//	private TableViewer setRecordTableItem(final TableViewer pTableViewer, final RecordTableItem[] pRecordTableItems) {
-//
-//		final Table wTable = pTableViewer.getTable();
-//		pTableViewer.setContentProvider(new TableContentProvider());
-//		pTableViewer.setInput(pRecordTableItems);
-//
-//		pTableViewer.setLabelProvider(new TableLabelProvider());
-//
-//		pTableViewer.addDoubleClickListener(new IDoubleClickListener() {
-//			public void doubleClick(DoubleClickEvent event) {
-//				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-//				RecordTableItem wRecord = (RecordTableItem) sel.getFirstElement();
-//				if (!wRecord.isBalanceRow()) {
-//					if (wRecord.isMoveItem()) {
-//						new OpenDialogModifyMove(mCompositeEntry).run();
-//					} else {
-//						new OpenDialogModifyRecord(mCompositeEntry).run();
-//					}
-//				}
-//			}
-//		});
-//
-//		wTable.addKeyListener(new KeyListener() {
-//
-//			@Override
-//			public void keyReleased(KeyEvent e) {
-//				// Enterキーが押されたら変更ダイアログ
-//				if (e.character == SWT.CR) {
-//					int index = wTable.getSelectionIndex();
-//					TableItem wItem = wTable.getItem(index);
-//					if (!"".equals(wItem.getText(0))) {
-//						if (DbUtil.isMoveItem(Integer.parseInt(wItem.getText(2)))) {
-//							new OpenDialogModifyMove(mCompositeEntry).run();
-//						} else {
-//							new OpenDialogModifyRecord(mCompositeEntry).run();
-//						}
-//					}
-//				}
-//
-//				// DELキーが押されたら削除（確認ダイアログ）
-//				if (e.character == SWT.DEL) {
-//					int index = wTable.getSelectionIndex();
-//					TableItem wItem = wTable.getItem(index);
-//					if (!"".equals(wItem.getText(0))) {
-//						new DeleteRecord(Integer.parseInt(wItem.getText(0)), mCompositeEntry).run();
-//					}
-//				}
-//
-//			}
-//
-//			@Override
-//			public void keyPressed(KeyEvent e) {
-//				// TODO Auto-generated method stub
-//				if (e.stateMask == SWT.CTRL) {
-//					if (e.keyCode == 'i') {
-//						new OpenDialogNewRecord(mCompositeEntry).run();
-//					} 
-//					if (e.keyCode == 'm') {
-//						new OpenDialogNewMove(mCompositeEntry).run();
-//					}
-//				}
-//			}
-//
-//		});
-//
-//		return pTableViewer;
-//	}
 
 	public int getSelectedActId() {
 		Table wTable = mTableUp.getTable();
@@ -253,123 +122,4 @@ public class CompositeRecordTable extends Composite {
 			mTableBottom.removeFilter(vf);
 		}
 	}
-
-	// public void setStripeToTable() {
-	// for (Table wTable : new Table[] { mTableUp.getTable(),
-	// mTableBottom.getTable() }) {
-	// TableItem[] wItems = wTable.getItems();
-	// for (int i = 0; i < wItems.length; i++) {
-	// if (i % 2 == 0) {
-	// wItems[i].setBackground(mColor1);
-	// } else {
-	// wItems[i].setBackground(mColor2);
-	// }
-	// }
-	// }
-	// }
-
 }
-
-//class TableContentProvider implements IStructuredContentProvider {
-//	public Object[] getElements(Object inputElement) {
-//		RecordTableItem[] wRecordTableItems = (RecordTableItem[]) inputElement;
-//		return wRecordTableItems;
-//	}
-//
-//	public void dispose() {
-//	}
-//
-//	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-//	}
-//}
-//
-//class TableLabelProvider implements ITableLabelProvider {
-//	private DecimalFormat mDecimalFormat = new DecimalFormat("###,###");
-//
-//	public Image getColumnImage(Object element, int columnIndex) {
-//		return null;
-//	}
-//
-//	public String getColumnText(Object element, int columnIndex) {
-//		RecordTableItem wRecord = (RecordTableItem) element;
-//		switch (columnIndex) {
-//		case 0:
-//			if (wRecord.isBalanceRow()) {
-//				return "";
-//			} else {
-//				return Integer.toString(wRecord.getId());
-//			}
-//		case 1:
-//			return Integer.toString(wRecord.getCategoryId());
-//		case 2:
-//			return Integer.toString(wRecord.getItemId());
-//		case 3:
-//			return wRecord.getDateString();
-//		case 4:
-//			return wRecord.getItemName();
-//		case 5:
-//			if (wRecord.isBalanceRow() || wRecord.getIncome() == 0) {
-//				return "";
-//			} else {
-//				return mDecimalFormat.format(wRecord.getIncome());
-//			}
-//		case 6:
-//			if (wRecord.isBalanceRow() || wRecord.getExpense() == 0) {
-//				return "";
-//			} else {
-//				return mDecimalFormat.format(wRecord.getExpense());
-//			}
-//		case 7:
-//			return mDecimalFormat.format(wRecord.getBalance());
-//		case 8:
-//			if (wRecord.getFrequency() == 0 || wRecord.isBalanceRow()) {
-//				return "";
-//			} else {
-//				return Integer.toString(wRecord.getFrequency());
-//			}
-//		case 9:
-//			return wRecord.getNote();
-//
-//		}
-//		return null;
-//	}
-//
-//	public void addListener(ILabelProviderListener listener) {
-//	}
-//
-//	public void dispose() {
-//	}
-//
-//	public boolean isLabelProperty(Object element, String property) {
-//		return false;
-//	}
-//
-//	public void removeListener(ILabelProviderListener listener) {
-//	}
-//
-//}
-//
-//class IdFilter extends ViewerFilter {
-//	
-//	private CompositeEntry mCompositeEntry;
-//	
-//	public IdFilter(CompositeEntry pCompositeEntry) {
-//		mCompositeEntry = pCompositeEntry;
-//	}
-//	
-//	public boolean select(Viewer pViewer, Object pParent, Object pElement) {
-//		RecordTableItem wRecord = (RecordTableItem) pElement;
-//		if (mCompositeEntry.getCategoryId() != SystemData.getUndefinedInt()) {
-//			return (wRecord.getCategoryId() == mCompositeEntry.getCategoryId());
-//		} else if (mCompositeEntry.getItemId() != SystemData.getUndefinedInt()) {
-//			return (wRecord.getItemId() == mCompositeEntry.getItemId());
-//		} else if (mCompositeEntry.isAllIncome()) {
-//			return (wRecord.isIncome());
-//		} else if (mCompositeEntry.isAllExpense()) {
-//			return (wRecord.isExpense());
-//		} else {
-//			return true;
-//		}
-//	}
-//
-//}

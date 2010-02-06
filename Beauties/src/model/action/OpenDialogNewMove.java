@@ -7,14 +7,11 @@ import view.entry.CompositeEntry;
 
 public class OpenDialogNewMove extends Action {
 
-//	private Shell mShell;
 	private CompositeEntry mCompositeEntry;
 
 	public OpenDialogNewMove(CompositeEntry pCompositeEntry) {
 		super.setText("移動");
 		mCompositeEntry = pCompositeEntry;
-//		mShell = pShell;
-//		this.setAccelerator(SWT.CTRL + 'M');
 	}
 
 	@Override

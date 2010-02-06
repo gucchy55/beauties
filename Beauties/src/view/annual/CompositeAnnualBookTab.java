@@ -22,11 +22,7 @@ import view.util.MyGridLayout;
 
 public class CompositeAnnualBookTab extends Composite {
 
-	// private CompositeRightMain mCompositeRightMain;
 	private CompositeAnnualMain mCompositeAnnualMain;
-//	private Map<Integer, String> mBookMap;
-	// private Map<Integer, Button> mBookButtonMap = new LinkedHashMap<Integer,
-	// Button>();
 
 	private static final int mPeriodWidthHint = 130;
 	private static final int mArrowWidthHint = 30;
@@ -38,7 +34,6 @@ public class CompositeAnnualBookTab extends Composite {
 		super(pParent, SWT.NONE);
 
 		mCompositeAnnualMain = (CompositeAnnualMain) pParent;
-//		mBookMap = SystemData.getBookMap(true);
 
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, false).getMyGridData());
@@ -100,21 +95,14 @@ public class CompositeAnnualBookTab extends Composite {
 		}
 
 		mBookNameComp = new CompositeBookNames(this, mCompositeAnnualMain.getBookId());
-//		mBookNameComp.setLayout(new MyRowLayout().getMyRowLayout());
-//		mBookNameComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 		for (Map.Entry<Integer, Button> entry : mBookNameComp.getBookButtonMap().entrySet()) {
 			final int wBookId = entry.getKey();
 			Button wButton = entry.getValue();
-//			for (Listener l : wButton.getListeners(SWT.Selection)) {
-//				wButton.removeListener(SWT.Selection, l);
-//			}
 
 			if (mCompositeAnnualMain.getBookId() == wBookId) {
 				wButton.setSelection(true);
 				wButton.setEnabled(false);
 			} else {
-//				wButton.setEnabled(true);
-//				wButton.setSelection(false);
 				wButton.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
 						mCompositeAnnualMain.setBookId(wBookId);
@@ -123,27 +111,5 @@ public class CompositeAnnualBookTab extends Composite {
 				});
 			}
 		}
-		
-//		for (final int wBookId : mBookMap.keySet()) {
-//			Button wBookButton = new Button(mBookNameComp, SWT.TOGGLE);
-//			wBookButton.setText(mBookMap.get(wBookId));
-//			// mBookButtonMap.put(wBookId, wBookButton);
-//
-//			if (mCompositeAnnualMain.getBookId() == wBookId) {
-//				wBookButton.setSelection(true);
-//			} else {
-//
-//				wBookButton.addSelectionListener(new SelectionAdapter() {
-//					@Override
-//					public void widgetSelected(SelectionEvent e) {
-//						// Button wButton = (Button)e.getSource();
-//						// wButton.setEnabled(false);
-//						mCompositeAnnualMain.setBookId(wBookId);
-//						new UpdateAnnual(mCompositeAnnualMain).run();
-//					}
-//				});
-//			}
-//		}
 	}
-
 }

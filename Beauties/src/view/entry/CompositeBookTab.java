@@ -22,7 +22,6 @@ import view.util.MyGridLayout;
 
 public class CompositeBookTab extends Composite {
 
-	// private CompositeRightMain mCompositeRightMain;
 	private CompositeEntry mCompositeEntry;
 	private Date mEndDate;
 
@@ -94,23 +93,15 @@ public class CompositeBookTab extends Composite {
 		wNextMonthButton.setLayoutData(wGridDataArrow);
 
 		mBookNameComp = new CompositeBookNames(this, mCompositeEntry.getBookId());
-		// mBookNameComp.setLayout(new MyRowLayout().getMyRowLayout());
-		// mBookNameComp.setLayoutData(new MyGridData(GridData.FILL,
-		// GridData.FILL, true, true).getMyGridData());
 
 		for (Map.Entry<Integer, Button> entry : mBookNameComp.getBookButtonMap().entrySet()) {
 			final int wBookId = entry.getKey();
 			Button wButton = entry.getValue();
-//			for (Listener l : wButton.getListeners(SWT.Selection)) {
-//				wButton.removeListener(SWT.Selection, l);
-//			}
 
 			if (mCompositeEntry.getBookId() == wBookId) {
 				wButton.setSelection(true);
 				wButton.setEnabled(false);
 			} else {
-//				wButton.setEnabled(true);
-//				wButton.setSelection(false);
 				wButton.addSelectionListener(new SelectionAdapter() {
 					public void widgetSelected(SelectionEvent e) {
 						mCompositeEntry.setBookId(wBookId);
@@ -120,5 +111,4 @@ public class CompositeBookTab extends Composite {
 			}
 		}
 	}
-
 }

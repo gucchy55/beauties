@@ -8,14 +8,11 @@ import view.entry.CompositeEntry;
 
 public class OpenDialogNewRecord extends Action {
 
-//	private Shell mShell;
 	private CompositeEntry mCompositeEntry;
 
 	public OpenDialogNewRecord(CompositeEntry pCompositeEntry) {
 		super.setText("追加");
-//		mShell = pShell;
 		mCompositeEntry = pCompositeEntry;
-//		this.setAccelerator(SWT.CTRL + 'I');
 	}
 
 	@Override

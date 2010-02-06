@@ -30,10 +30,6 @@ public class CompositeAnnualMain extends Composite {
 	}
 
 	private void init() {
-		// long wTime = System.currentTimeMillis();
-		// if (SystemData.getBookId() == SystemData.getUndefinedInt()) {
-		// SystemData.setBookId(SystemData.getAllBookInt());
-		// }
 
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 

@@ -27,7 +27,6 @@ public class MainJfaceWindow extends ApplicationWindow {
 
 	private Composite mMainComposite;
 	private Composite mLeftComposite;
-//	private Composite mRightComposite;
 	
 	private RightType mRightType = RightType.Main;
 
@@ -70,17 +69,6 @@ public class MainJfaceWindow extends ApplicationWindow {
 		init();
 		return pParent;
 	}
-//
-//	@Override
-//	protected MenuManager createMenuManager() {
-//		MenuManager menubar = new MenuManager();
-//		MenuManager menu = new MenuManager("アクション(&A)");
-//		menubar.add(menu);
-//
-//		menu.add(new OpenDialogNewRecord(getShell()));
-//		menu.add(new OpenDialogNewMove(getShell()));
-//		return menubar;
-//	}
 
 	private void init() {
 		SystemData.init();
@@ -128,17 +116,13 @@ public class MainJfaceWindow extends ApplicationWindow {
 		}
 	}
 
-	public Composite getLeftComposite() {
-		return mLeftComposite;
-	}
-
-//	public Composite getRightComposite() {
-//		return mRightComposite;
+//	public Composite getLeftComposite() {
+//		return mLeftComposite;
 //	}
 
-	public static String[] getLeftButtonNameArray() {
-		return mLeftButtonNameArray;
-	}
+//	public static String[] getLeftButtonNameArray() {
+//		return mLeftButtonNameArray;
+//	}
 
 	public Composite getmMainComposite() {
 		return mMainComposite;
