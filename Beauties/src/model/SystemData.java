@@ -3,11 +3,12 @@ package model;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+
 import model.db.DbUtil;
 
 public class SystemData {
-
-//	private static RightType mRightType;
 
 	private static final int mUndefined = -1;
 	private static final int mAllBook = 0;
@@ -15,59 +16,27 @@ public class SystemData {
 	// For common
 	private static int mCutOff;
 	private static Map<Integer, String> mBookMap = new LinkedHashMap<Integer, String>();
-//	private static int mBookId = mUndefined;
-//	private static Date mStartDate = null;
-//	private static Date mEndDate = null;
-//
-//	// For entry
-//	private static boolean isMonthPeriod = true;
-//	private static int mItemId = mUndefined;
-//	private static int mCategoryId = mUndefined;
-//	private static boolean mAllIncome = false;
-//	private static boolean mAllExpense = false;
+	
+	private static String mDbHost = "localhost";
+	private static int mDbPort = 3306;
+	private static String mDbUser = "root";
+	private static String mDbPass = "";
+	private static String mDbName = "beauties";
+	
+	private static Rectangle mWindowRectangle = new Rectangle(0, 0, 1000, 700);
+	private static Point mWindowPoint = new Point(1000, 1000);
+	private static boolean mWindowMaximized = false;
+	
 	private static int[] mRecordTableWeights = {80, 20};
 	
-	// For Annual
-//	private static boolean isAnnualPeriod = false;
-//	private static AnnualViewType mAnnualViewType;
-//	private static int mMonthCount;
-
-//	private static CompositeRightMain mCompositeRightMain;
-
 	private SystemData() {
 	}
 
 	public static void init() {
-		// RightType変更時に初期化
-//		mStartDate = null;
-//		mEndDate = null;
-//		isMonthPeriod = true;
-//		mItemId = mUndefined;
-//		mCategoryId = mUndefined;
-//		mAllIncome = false;
-//		mAllExpense = false;
-//		isAnnualPeriod = false;
-//		mAnnualViewType = AnnualViewType.Category;
-//		mMonthCount = 13;	// 直近13ヶ月
-
 		// System設定変更後のみ更新で充分
 		mCutOff = DbUtil.getCutOff();
 		mBookMap = DbUtil.getBookNameMap();
-//		switch (mRightType) {
-//		case Main:
-//			mBookId = mBookMap.keySet().iterator().next();
-//			break;
-//		case Anual:
-//			mBookId = mAllBook;
-//			break;
-//		default:
-//			break;
-//		}
 	}
-
-//	public static boolean isBookIdAll() {
-//		return (mBookId == mAllBook);
-//	}
 
 	public static int getAllBookInt() {
 		return mAllBook;
@@ -77,94 +46,6 @@ public class SystemData {
 		return mUndefined;
 	}
 
-	// RightType
-//	public static void setRightType(RightType pRightType) {
-//		mRightType = pRightType;
-//	}
-//
-//	public static RightType getRightType() {
-//		return mRightType;
-//	}
-
-	// BookId
-//	public static void setBookId(int pBookId) {
-//		mBookId = pBookId;
-//	}
-
-//	public static int getBookId() {
-//		return mBookId;
-//	}
-//
-//	// Start/End Dates
-//	public static void setStartDate(Date pStartDate) {
-//		mStartDate = pStartDate;
-//	}
-//
-//	public static Date getStartDate() {
-//		return mStartDate;
-//	}
-//
-//	public static void setEndDate(Date pEndDate) {
-//		mEndDate = pEndDate;
-//	}
-//
-//	public static Date getEndDate() {
-//		return mEndDate;
-//	}
-//
-//	// isMonthPeriod
-//	public static void setMonthPeriod(boolean p) {
-//		isMonthPeriod = p;
-//	}
-//
-//	public static boolean isMonthPeriod() {
-//		return isMonthPeriod;
-//	}
-
-	// CompositeRightMain
-//	public static void setCompositeRightMain(
-//			CompositeRightMain pCompositeRightMain) {
-//		mCompositeRightMain = pCompositeRightMain;
-//	}
-
-//	public static CompositeRightMain getCompositeRightMain() {
-//		return mCompositeRightMain;
-//	}
-
-	// ItemId
-//	public static void setItemId(int pItemId) {
-//		mItemId = pItemId;
-//	}
-//
-//	public static int getItemId() {
-//		return mItemId;
-//	}
-//
-//	// isAllIncome, isAllExpense
-//	public static void setAllIncome(boolean pAllIncome) {
-//		mAllIncome = pAllIncome;
-//	}
-//
-//	public static boolean isAllIncome() {
-//		return mAllIncome;
-//	}
-//
-//	public static void setAllExpense(boolean pAllExpense) {
-//		mAllExpense = pAllExpense;
-//	}
-//
-//	public static boolean isAllExpense() {
-//		return mAllExpense;
-//	}
-//
-//	// CategoryId
-//	public static void setCategoryId(int pCategoryId) {
-//		SystemData.mCategoryId = pCategoryId;
-//	}
-//
-//	public static int getCategoryId() {
-//		return mCategoryId;
-//	}
 
 	// CutOff (getter only)
 	public static int getCutOff() {
@@ -183,30 +64,6 @@ public class SystemData {
 		}
 	}
 
-//	public static boolean isAnnualPeriod() {
-//		return isAnnualPeriod;
-//	}
-//
-//	public static void setAnnualPeriod(boolean isAnnualPeriod) {
-//		SystemData.isAnnualPeriod = isAnnualPeriod;
-//	}
-//
-//	public static AnnualViewType getAnnualViewType() {
-//		return mAnnualViewType;
-//	}
-//
-//	public static void setmAnnualViewType(AnnualViewType pAnnualViewType) {
-//		SystemData.mAnnualViewType = pAnnualViewType;
-//	}
-//
-//	public static int getMonthCount() {
-//		return mMonthCount;
-//	}
-//
-//	public static void setMonthCount(int pMonthCount) {
-//		SystemData.mMonthCount = pMonthCount;
-//	}
-
 	public static int[] getRecordTableWeights() {
 		return mRecordTableWeights;
 	}
@@ -215,4 +72,68 @@ public class SystemData {
 		SystemData.mRecordTableWeights = pRecordTableWeights;
 	}
 
+	public static String getDbHost() {
+		return mDbHost;
+	}
+
+	public static int getDbPort() {
+		return mDbPort;
+	}
+
+	public static String getDbUser() {
+		return mDbUser;
+	}
+
+	public static String getDbPass() {
+		return mDbPass;
+	}
+
+	public static String getDbName() {
+		return mDbName;
+	}
+
+	public static boolean isWindowMaximized() {
+		return mWindowMaximized;
+	}
+
+	public static void setDbHost(String pDbHost) {
+		SystemData.mDbHost = pDbHost;
+	}
+
+	public static void setDbPort(int pDbPort) {
+		SystemData.mDbPort = pDbPort;
+	}
+
+	public static void setDbUser(String pDbUser) {
+		SystemData.mDbUser = pDbUser;
+	}
+
+	public static void setDbPass(String pDbPass) {
+		SystemData.mDbPass = pDbPass;
+	}
+
+	public static void setDbName(String pDbName) {
+		SystemData.mDbName = pDbName;
+	}
+
+	public static void setWindowMaximized(boolean pWindowMaximized) {
+		SystemData.mWindowMaximized = pWindowMaximized;
+	}
+
+	public static Rectangle getWindowRectangle() {
+		return mWindowRectangle;
+	}
+
+	public static void setWindowRectangle(Rectangle pWindowRectangle) {
+		SystemData.mWindowRectangle = pWindowRectangle;
+	}
+	
+	public static Point getWindowPoint() {
+		return mWindowPoint;
+	}
+	
+	public static void setWindowPoint(Point pWindowPoint) {
+		SystemData.mWindowPoint = pWindowPoint;
+	}
+	
 }

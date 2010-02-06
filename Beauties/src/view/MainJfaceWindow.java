@@ -1,5 +1,6 @@
 package view;
 
+import io.FileLoader;
 import model.RightType;
 import model.SystemData;
 import model.action.InitMainWindow;
@@ -8,7 +9,7 @@ import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
-import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionEvent; //import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -22,18 +23,17 @@ import view.util.MyGridLayout;
 public class MainJfaceWindow extends ApplicationWindow {
 
 	private static final String mWindowTitle = "家計簿";
-	private int mWindowWidth = 1000;
-	private int mWindowHeight = 700;
+	// private int mWindowWidth = 1000;
+	// private int mWindowHeight = 700;
 
 	private Composite mMainComposite;
 	private Composite mLeftComposite;
-	
+
 	private RightType mRightType = RightType.Main;
 
 	private static final int mLeftWidthHint = 100;
 	private static final int mLeftHeightHint = 200;
-	private static final String[] mLeftButtonNameArray = { "記帳", "年間一覧", "グラフ",
-			"メモ帳", "設定" };
+	private static final String[] mLeftButtonNameArray = { "記帳", "年間一覧", "グラフ", "メモ帳", "設定" };
 	private Button[] mLeftButtonArray = new Button[mLeftButtonNameArray.length];
 
 	public MainJfaceWindow() {
@@ -41,9 +41,8 @@ public class MainJfaceWindow extends ApplicationWindow {
 
 	}
 
-	@Override
-	protected Control createContents(Composite pParent) {
-
+	protected void configureShell(final Shell pShell) {
+		super.configureShell(pShell);
 		setExceptionHandler(new IExceptionHandler() {
 			public void handleException(Throwable e) {
 				StringBuffer wStack = new StringBuffer();
@@ -54,16 +53,21 @@ public class MainJfaceWindow extends ApplicationWindow {
 					}
 					wStack.append(e.getStackTrace()[i] + "\n");
 				}
-				MessageDialog.openWarning(getShell(), "Internal Error", e.toString() + "\n\n"
-						+ wStack);
+				MessageDialog.openWarning(pShell, "Internal Error", e.toString() + "\n\n" + wStack);
 				e.printStackTrace();
 			}
 		});
 
-		Shell wShell = this.getShell();
-		wShell.setText(mWindowTitle);
-		wShell.setSize(mWindowWidth, mWindowHeight);
+		pShell.setText(mWindowTitle);
+		pShell.setSize(SystemData.getWindowPoint());
+		// pShell.setSize(new Point(1000,1000));
+		// pShell.setSize(mWindowWidth, mWindowHeight);
+		pShell.setMaximized(SystemData.isWindowMaximized());
 
+	}
+
+	@Override
+	protected Control createContents(Composite pParent) {
 		mMainComposite = new Composite(pParent, SWT.FILL);
 		mMainComposite.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 		init();
@@ -81,13 +85,12 @@ public class MainJfaceWindow extends ApplicationWindow {
 	}
 
 	public void createLeftComposite(Composite wParent) {
-		
-		mLeftComposite = new Composite(wParent, SWT.NONE);
-		mLeftComposite.setLayout(new MyFillLayout(SWT.VERTICAL)
-				.getMyFillLayout());
 
-		GridData wGridData = new MyGridData(GridData.HORIZONTAL_ALIGN_FILL,
-				GridData.VERTICAL_ALIGN_END, false, false).getMyGridData();
+		mLeftComposite = new Composite(wParent, SWT.NONE);
+		mLeftComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getMyFillLayout());
+
+		GridData wGridData = new MyGridData(GridData.HORIZONTAL_ALIGN_FILL, GridData.VERTICAL_ALIGN_END, false, false)
+				.getMyGridData();
 		wGridData.widthHint = mLeftWidthHint;
 		wGridData.heightHint = mLeftHeightHint;
 		mLeftComposite.setLayoutData(wGridData);
@@ -116,14 +119,6 @@ public class MainJfaceWindow extends ApplicationWindow {
 		}
 	}
 
-//	public Composite getLeftComposite() {
-//		return mLeftComposite;
-//	}
-
-//	public static String[] getLeftButtonNameArray() {
-//		return mLeftButtonNameArray;
-//	}
-
 	public Composite getmMainComposite() {
 		return mMainComposite;
 	}
@@ -133,6 +128,10 @@ public class MainJfaceWindow extends ApplicationWindow {
 	}
 
 	public static void main(String[] args) {
+		if (args.length > 0) {
+			new FileLoader(args[0]);
+		}
+
 		MainJfaceWindow wWindow = new MainJfaceWindow();// トップレベル・シェルの作成
 		wWindow.setBlockOnOpen(true); // ウィンドウが閉じられるまでopen()メソッドをブロック
 		wWindow.addMenuBar();
