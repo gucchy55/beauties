@@ -20,7 +20,7 @@ import view.entry.CompositeBookNames;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
-public class CompositeAnnualBookTab extends Composite {
+class CompositeAnnualBookTab extends Composite {
 
 	private CompositeAnnualMain mCompositeAnnualMain;
 

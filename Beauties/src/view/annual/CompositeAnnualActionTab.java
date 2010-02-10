@@ -17,7 +17,7 @@ import util.Util;
 import view.util.MyGridData;
 import view.util.MyRowLayout;
 
-public class CompositeAnnualActionTab extends Composite {
+class CompositeAnnualActionTab extends Composite {
 
 	private CompositeAnnualMain mCompositeAnnualMain;
 

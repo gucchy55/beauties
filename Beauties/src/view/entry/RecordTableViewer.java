@@ -32,7 +32,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import view.util.MyGridData;
 
-public class RecordTableViewer extends TableViewer {
+class RecordTableViewer extends TableViewer {
 	
 	private CompositeEntry mCompositeEntry;
 

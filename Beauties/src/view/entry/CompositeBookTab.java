@@ -20,7 +20,7 @@ import util.Util;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
-public class CompositeBookTab extends Composite {
+class CompositeBookTab extends Composite {
 
 	private CompositeEntry mCompositeEntry;
 	private Date mEndDate;

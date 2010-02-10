@@ -34,7 +34,7 @@ import util.Util;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
-public class CompositeAnnualTable extends Composite {
+class CompositeAnnualTable extends Composite {
 
 	private static final int mColumnWidth = 75;
 	private AnnualHeaderItem[] mAnnualHeaderItems;

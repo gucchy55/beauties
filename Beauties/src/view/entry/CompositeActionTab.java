@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Composite;
 import view.util.MyGridData;
 import view.util.MyRowLayout;
 
-public class CompositeActionTab extends Composite {
+class CompositeActionTab extends Composite {
 	
 	private CompositeEntry mCompositeEntry;
 

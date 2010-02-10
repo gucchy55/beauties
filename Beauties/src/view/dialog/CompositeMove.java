@@ -30,7 +30,7 @@ import util.Util;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
-public class CompositeMove extends Composite {
+class CompositeMove extends Composite {
 
 	private int mBookId; // Selected on this Dialog
 	private static final int mMoveIncomeItemId = DbUtil.getMoveIncomeItemId();

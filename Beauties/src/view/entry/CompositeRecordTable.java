@@ -20,7 +20,7 @@ import org.eclipse.swt.widgets.TableItem;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
-public class CompositeRecordTable extends Composite {
+class CompositeRecordTable extends Composite {
 
 	private CompositeEntry mCompositeEntry;
 

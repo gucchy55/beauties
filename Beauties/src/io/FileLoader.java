@@ -1,8 +1,6 @@
 package io;
 
 import org.eclipse.swt.graphics.Point;
-import org.eclipse.swt.graphics.Rectangle;
-
 import model.SystemData;
 
 public class FileLoader {

@@ -27,7 +27,7 @@ import org.eclipse.swt.widgets.TableColumn;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
-public class CompositeSummaryTable extends Composite {
+class CompositeSummaryTable extends Composite {
 
 	private static final int mRightWidthHint = 200;
 

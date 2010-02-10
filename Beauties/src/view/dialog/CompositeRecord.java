@@ -33,7 +33,7 @@ import util.Util;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
 
-public class CompositeRecord extends Composite {
+class CompositeRecord extends Composite {
 
 	private int mBookId; // Selected on this Dialog
 	private boolean mIncome = false;

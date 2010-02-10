@@ -14,6 +14,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
 import view.util.MyFillLayout;
@@ -134,8 +135,8 @@ public class MainJfaceWindow extends ApplicationWindow {
 
 		MainJfaceWindow wWindow = new MainJfaceWindow();// トップレベル・シェルの作成
 		wWindow.setBlockOnOpen(true); // ウィンドウが閉じられるまでopen()メソッドをブロック
-		wWindow.addMenuBar();
 		wWindow.open(); // 表示
+		Display.getCurrent().dispose();
 	}
 
 }
