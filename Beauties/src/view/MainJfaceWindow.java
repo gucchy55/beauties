@@ -61,8 +61,6 @@ public class MainJfaceWindow extends ApplicationWindow {
 
 		pShell.setText(mWindowTitle);
 		pShell.setSize(SystemData.getWindowPoint());
-		// pShell.setSize(new Point(1000,1000));
-		// pShell.setSize(mWindowWidth, mWindowHeight);
 		pShell.setMaximized(SystemData.isWindowMaximized());
 
 	}
@@ -108,7 +106,11 @@ public class MainJfaceWindow extends ApplicationWindow {
 					String wButtonText = wButton.getText();
 					for (int i = 0; i < mLeftButtonNameArray.length; i++) {
 						if (wButtonText.equals(mLeftButtonNameArray[i]) && mRightType != RightType.valueOf(i)) {
-							mRightType = RightType.valueOf(i);
+							if (RightType.valueOf(i) != RightType.Setting) {
+								mRightType = RightType.valueOf(i);
+							} else {
+								wButton.setSelection(false);
+							}
 							init(RightType.valueOf(i));
 							break;
 						}

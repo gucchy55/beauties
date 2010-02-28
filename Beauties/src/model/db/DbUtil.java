@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Display;
 
 import util.Util;
 
+import model.ConfigItem;
 import model.RecordTableItem;
 import model.SummaryTableItem;
 import model.SystemData;
@@ -1185,39 +1186,45 @@ public class DbUtil {
 								}
 							}
 
-//							if (wIncome > 0) {
-//								if (isSummationInput) {
-//									wSummaryTableItemList.get(i + 1).add(
-//											new SummaryTableItem(wCategoryId, wCategoryName, wIncome, true));
-//								} else {
-//									wSummaryTableItemList.get(i).add(
-//											new SummaryTableItem(wCategoryId, wCategoryName, wIncome, true));
-//								}
-//							} else {
-//								if (isSummationInput) {
-//									wSummaryTableItemList.get(i + 1).add(
-//											new SummaryTableItem(wCategoryId, wCategoryName, wExpense, false));
-//								} else {
-//									wSummaryTableItemList.get(i).add(
-//											new SummaryTableItem(wCategoryId, wCategoryName, wExpense, false));
-//								}
-//							}
-//							if (i == wSummationIndex) {
-//								if (wIncome > 0) {
-//									wSummaryTableItemList.get(i + 1).add(
-//											new SummaryTableItem(wCategoryId, wCategoryName, wIncome / i, true));
-//								} else {
-//									wSummaryTableItemList.get(i + 1).add(
-//											new SummaryTableItem(wCategoryId, wCategoryName, wExpense / i, false));
-//								}
-//								isSummationInput = true;
-//							}
+							// if (wIncome > 0) {
+							// if (isSummationInput) {
+							// wSummaryTableItemList.get(i + 1).add(
+							// new SummaryTableItem(wCategoryId, wCategoryName,
+							// wIncome, true));
+							// } else {
+							// wSummaryTableItemList.get(i).add(
+							// new SummaryTableItem(wCategoryId, wCategoryName,
+							// wIncome, true));
+							// }
+							// } else {
+							// if (isSummationInput) {
+							// wSummaryTableItemList.get(i + 1).add(
+							// new SummaryTableItem(wCategoryId, wCategoryName,
+							// wExpense, false));
+							// } else {
+							// wSummaryTableItemList.get(i).add(
+							// new SummaryTableItem(wCategoryId, wCategoryName,
+							// wExpense, false));
+							// }
+							// }
+							// if (i == wSummationIndex) {
+							// if (wIncome > 0) {
+							// wSummaryTableItemList.get(i + 1).add(
+							// new SummaryTableItem(wCategoryId, wCategoryName,
+							// wIncome / i, true));
+							// } else {
+							// wSummaryTableItemList.get(i + 1).add(
+							// new SummaryTableItem(wCategoryId, wCategoryName,
+							// wExpense / i, false));
+							// }
+							// isSummationInput = true;
+							// }
 						}
-						
+
 						double wKey = wRexpDiv * Math.pow(10, 5) + wCategorySortKey;
 						// System.out.println(wKey);
 						wSummaryTableItemListMap.put(wKey, wList);
-						
+
 					}
 				}
 			}
@@ -1230,7 +1237,7 @@ public class DbUtil {
 		wDbAccess.closeConnection();
 
 		List<SummaryTableItem[]> wReturnList = new ArrayList<SummaryTableItem[]>(wDatePeriodCount);
-		
+
 		for (int i = 0; i < wDatePeriodCount; i++) {
 			List<SummaryTableItem> wRowList = new ArrayList<SummaryTableItem>();
 			for (Map.Entry<Double, List<SummaryTableItem>> wEntry : wSummaryTableItemListMap.entrySet()) {
@@ -1240,10 +1247,11 @@ public class DbUtil {
 			}
 			wReturnList.add((SummaryTableItem[]) wRowList.toArray(new SummaryTableItem[0]));
 		}
-		
-//		for (List<SummaryTableItem> wList : wSummaryTableItemList) {
-//			wReturnList.add((SummaryTableItem[]) wList.toArray(new SummaryTableItem[0]));
-//		}
+
+		// for (List<SummaryTableItem> wList : wSummaryTableItemList) {
+		// wReturnList.add((SummaryTableItem[]) wList.toArray(new
+		// SummaryTableItem[0]));
+		// }
 		return wReturnList;
 	}
 
@@ -1671,6 +1679,86 @@ public class DbUtil {
 		}
 		return wReturnList;
 	}
+	
+	public static ConfigItem getRootConfigItem() {
+		DbAccess wDbAccess = new DbAccess();
+		ConfigItem wRootItem = new ConfigItem(SystemData.getUndefinedInt(), "", true);
+		wRootItem.addItem(getEachConfigItem(true, wDbAccess));
+		wRootItem.addItem(getEachConfigItem(false, wDbAccess));
+		wDbAccess.closeConnection();
+		
+		return wRootItem;
+	}
+
+	public static ConfigItem getEachConfigItem(boolean pIsIncome, DbAccess pDbAccess) {
+	
+		int wRexp = mIncomeRexp;
+		String wRootLabel;
+		if (!pIsIncome) {
+			wRexp = mExpenseRexp;
+			wRootLabel = "支出項目";
+		} else {
+			wRootLabel = "収入項目";
+		}
+		
+		Map<Integer, ConfigItem> wResultMap = new LinkedHashMap<Integer, ConfigItem>();
+		
+		// Category一覧の取得
+		String wQuery = "select " + mCategoryIdCol + ", " + mCategoryNameCol + " from " + mCategoryTable;
+		wQuery += " where " + mDelFlgCol + " = b'0' and "  + mCategoryRexpCol + " = " + wRexp;
+		wQuery += " and " + mSortKeyCol + " > 0";
+		wQuery += " order by " + mSortKeyCol;
+		
+//		System.out.println(wQuery);
+		
+		ResultSet wResultSet = pDbAccess.executeQuery(wQuery);
+
+		try {
+			while (wResultSet.next()) {
+				int wCategoryId = wResultSet.getInt(mCategoryIdCol);
+				String wCategoryName = wResultSet.getString(mCategoryNameCol);
+				wResultMap.put(wCategoryId, new ConfigItem(wCategoryId, wCategoryName, true));
+			}
+			wResultSet.close();
+
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		}
+		
+		// Item一覧の取得
+		
+		wQuery = "select " + mCategoryIdCol + ", " + mItemIdCol + ", " + mItemIdCol + ", " + mItemNameCol;
+		wQuery += " from " + mItemTable;
+		wQuery += " where " + mDelFlgCol + " = b'0' and " + mMoveFlgCol + " = b'0'";
+		wQuery += " order by " + mSortKeyCol;
+
+//		System.out.println(wQuery);
+		wResultSet = pDbAccess.executeQuery(wQuery);
+
+		try {
+			while (wResultSet.next()) {
+				int wCategoryId = wResultSet.getInt(mCategoryIdCol);
+				int wItemId = wResultSet.getInt(mItemIdCol);
+				String wItemName = wResultSet.getString(mItemNameCol);
+				if (wResultMap.containsKey(wCategoryId)) {
+					wResultMap.get(wCategoryId).addItem(new ConfigItem(wItemId, wItemName, false));
+				}
+			}
+			wResultSet.close();
+
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		} 
+		
+		//結果をルートアイテムに格納
+		ConfigItem wRootItem = new ConfigItem(SystemData.getUndefinedInt(), wRootLabel, true);
+		for (Map.Entry<Integer, ConfigItem> wEntrySet : wResultMap.entrySet()) {
+			wRootItem.addItem(wEntrySet.getValue());
+		}
+		
+//		return (ConfigItem[])wResultMap.values().toArray(new ConfigItem[0]);
+		return wRootItem;
+	}
 
 	// 立替残高（借入残高）
 	private static double getTempBalance(DbAccess pDbAccess, Date pEndDate) {
@@ -1955,8 +2043,7 @@ public class DbUtil {
 			}
 			wStack.append(e.getStackTrace()[i] + "\n");
 		}
-		MessageDialog.openWarning(Display.getCurrent().getShells()[0], "SQL ResultSet Handling Error", e
-				.toString()
+		MessageDialog.openWarning(Display.getCurrent().getShells()[0], "SQL ResultSet Handling Error", e.toString()
 				+ "\n\n" + wStack);
 		// System.err.println("ResultSet Handling Error: " + e.toString());
 	}
@@ -2028,7 +2115,15 @@ public class DbUtil {
 	// }
 
 	// public static void main(String[] args) {
-	// System.out.println(getNoteStringWithEscape("\\"));
+	// ConfigItem[] wConfigItems = getConfigItems(true);
+	// for (ConfigItem c : wConfigItems) {
+	// System.out.println(c);
+	// if (c.hasItem()) {
+	// for (ConfigItem ci : c.getItems()) {
+	// System.out.println("  " + ci);
+	// }
+	// }
+	// }
 	// }
 
 }
