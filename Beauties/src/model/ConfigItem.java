@@ -4,29 +4,28 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ConfigItem {
-	private int mId;
+	private int mId = SystemData.getUndefinedInt();
 	private String mName;
+	private boolean isSpecial = false;
 	private boolean isCategory = false;
-	private boolean hasItem = false;
 	private boolean hasParent = false;
 	
 	private ConfigItem mParent;
-	private List<ConfigItem> mItemList;
+	private List<ConfigItem> mItemList = new ArrayList<ConfigItem>();
 
 	public ConfigItem(int pId, String pName, boolean isCategory) {
 		mId = pId;
 		mName = pName;
 		this.isCategory = isCategory;
 	}
+	
+	public ConfigItem(String pName) {
+		this.mName = pName;
+		this.isSpecial = true;
+	}
 
 	public void addItem(ConfigItem pItem) {
-		
 		pItem.setParent(this);
-		
-		if (!hasItem) {
-			hasItem = true;
-			mItemList = new ArrayList<ConfigItem>();
-		}
 		mItemList.add(pItem);
 	}
 
@@ -42,11 +41,15 @@ public class ConfigItem {
 		return isCategory;
 	}
 	
+	public boolean isSpecial() {
+		return isSpecial;
+	}
+	
 	public boolean hasItem() {
-		return hasItem;
+		return (mItemList.size() > 0);
 	}
 
-	public ConfigItem[] getItems() {
+	public ConfigItem[] getChildren() {
 		return (ConfigItem[])mItemList.toArray(new ConfigItem[0]);
 	}
 	
@@ -65,6 +68,49 @@ public class ConfigItem {
 	
 	public String toString() {
 		return mId + "_" + mName;
+	}
+	
+	public void setItems(ConfigItem[] pItems) {
+		mItemList.clear();
+		for (ConfigItem wItem : pItems) {
+			mItemList.add(wItem);
+		}
+	}
+	
+	public void moveUp() {
+		if (!this.isSpecial) {
+			ConfigItem wParent = this.getParent();
+			ConfigItem[] wChildren = wParent.getChildren();
+			for (int i=0; i < wChildren.length; i++) {
+				ConfigItem ci = wChildren[i];
+				if (ci.getId() == this.mId) {
+					if (i > 0) {
+						wChildren[i] = wChildren[i-1];
+						wChildren[i-1] = this;
+						wParent.setItems(wChildren);
+					}
+					break;
+				}
+			}
+		}
+	}
+	
+	public void moveDown() {
+		if (!this.isSpecial) {
+			ConfigItem wParent = this.getParent();
+			ConfigItem[] wChildren = wParent.getChildren();
+			for (int i=0; i < wChildren.length; i++) {
+				ConfigItem ci = wChildren[i];
+				if (ci.getId() == this.mId) {
+					if (i < wChildren.length - 1) {
+						wChildren[i] = wChildren[i+1];
+						wChildren[i+1] = this;
+						wParent.setItems(wChildren);
+					}
+					break;
+				}
+			}
+		}
 	}
 	
 }

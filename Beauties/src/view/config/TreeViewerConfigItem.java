@@ -1,12 +1,16 @@
 package view.config;
 
 import model.ConfigItem;
+
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.TreeViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.custom.TreeEditor;
 import org.eclipse.swt.widgets.Composite;
+import org.eclipse.swt.widgets.Tree;
 
 public class TreeViewerConfigItem extends TreeViewer {
 
@@ -14,10 +18,29 @@ public class TreeViewerConfigItem extends TreeViewer {
 		super(pParent, SWT.NONE);
 
 		this.setContentProvider(new TreeContentProvider());
-		
+
 		this.setInput(pConfigItem);
 		this.setLabelProvider(new TreeLabelProvider());
 
+		this.setExpandedElements(pConfigItem.getChildren());
+
+		final Tree wTree = this.getTree();
+		final TreeEditor wTreeEditor = new TreeEditor(wTree);
+		wTreeEditor.grabHorizontal = true;
+		
+//		this.addDoubleClickListener(new IDoubleClickListener() {
+//			public void doubleClick(DoubleClickEvent event) {
+//				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+//				ConfigItem wConfigItem = (ConfigItem) sel.getFirstElement();
+//				wConfigItem.moveUp();
+//			}
+//		});
+		
+	}
+	
+	protected ConfigItem getSelectedConfigItem() {
+		IStructuredSelection sel = (IStructuredSelection) this.getSelection();
+		return (ConfigItem) sel.getFirstElement();
 	}
 
 }
@@ -27,7 +50,7 @@ class TreeContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object element) {
 		ConfigItem wItem = (ConfigItem) element;
 		if (wItem.hasItem()) {
-			return wItem.getItems();
+			return wItem.getChildren();
 		}
 		return new Object[0];
 	}
