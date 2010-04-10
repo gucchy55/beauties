@@ -1,8 +1,10 @@
 package view.config;
 
 import model.ConfigItem;
+import model.SystemData;
 import model.db.DbUtil;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -12,6 +14,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+
+import view.dialog.DialogNewRecord;
 import view.util.MyFillLayout;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
@@ -25,7 +29,7 @@ class PreferencePageItem extends PreferencePage {
 	private TreeViewerConfigItem mTreeViewerConfigItem;
 	private ConfigItem mRootConfigItem;
 	private boolean mTreeOrderChanged = false;
-	
+
 	private Composite mAttributeComposite;
 
 	// private static final String[] mButtonNames = {"分類追加", "項目追加", "削除", "↑",
@@ -39,7 +43,8 @@ class PreferencePageItem extends PreferencePage {
 		Composite wMainComposite = new Composite(parent, SWT.NONE);
 
 		wMainComposite.setLayout(new MyGridLayout(2, false).getMyGridLayout());
-		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false)
+				.getMyGridData();
 		wMainComposite.setLayoutData(wGridData);
 
 		Composite wTopComposite = new Composite(wMainComposite, SWT.NONE);
@@ -49,10 +54,21 @@ class PreferencePageItem extends PreferencePage {
 
 		Button wCategoryAddButton = new Button(wTopComposite, SWT.NULL);
 		wCategoryAddButton.setText("分類追加");
+		wCategoryAddButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+//				MessageDialog.openConfirm(getShell(), "分類追加", "分類追加です");
+				new DialogNewRecord(getShell(), SystemData.getAllBookInt()).open();
+			}
+		});
 
 		Button wItemAddButton = new Button(wTopComposite, SWT.NULL);
 		wItemAddButton.setText("項目追加");
-
+		wItemAddButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				MessageDialog.openConfirm(getShell(), "項目追加", "項目追加です");
+			}
+		});
+		
 		Button wModifyButton = new Button(wTopComposite, SWT.NULL);
 		wModifyButton.setText("変更");
 		wModifyButton.addSelectionListener(new SelectionAdapter() {
@@ -129,9 +145,9 @@ class PreferencePageItem extends PreferencePage {
 
 	}
 
-//	private void addNewCategory() {
-//
-//	}
+	// private void addNewCategory() {
+	//
+	// }
 
 	private void updateTree() {
 		mTreeViewerConfigItem.getTree().setRedraw(true);
@@ -151,6 +167,5 @@ class PreferencePageItem extends PreferencePage {
 		}
 
 	}
-
 
 }
