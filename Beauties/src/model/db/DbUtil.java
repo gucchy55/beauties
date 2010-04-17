@@ -428,12 +428,47 @@ public class DbUtil {
 				+ mCategoryIdCol + ", " + mCategoryTable + "." + mCategoryNameCol;
 		wQuery += " from " + mItemTable + ", " + mBookItemTable + ", " + mCategoryTable;
 		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "." + mItemIdCol + " and "
-				+ mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol + " and "
-				+ mBookItemTable + "." + mBookIdCol + " = " + pBookId + " and " + mCategoryTable + "."
+				+ mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol;
+		if (pBookId != SystemData.getAllBookInt()) {
+			wQuery += " and " + mBookItemTable + "." + mBookIdCol + " = " + pBookId;
+		}
+		wQuery += " and " + mCategoryTable + "."
 				+ mCategoryRexpCol + " = " + wRexp + " and " + mBookItemTable + "." + mDelFlgCol + " = b'0' " + " and "
 				+ mItemTable + "." + mDelFlgCol + " = b'0' ";
 		wQuery += " group by " + mCategoryTable + "." + mCategoryNameCol;
 		wQuery += " order by " + mCategoryTable + "." + mSortKeyCol;
+
+		// System.out.println(wQuery);
+
+		ResultSet wResultSet = wDbAccess.executeQuery(wQuery);
+		try {
+			while (wResultSet.next()) {
+				wResultMap.put(wResultSet.getInt(mCategoryIdCol), wResultSet.getString(mCategoryNameCol));
+			}
+			wResultSet.close();
+
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		} finally {
+			wDbAccess.closeConnection();
+		}
+
+		return wResultMap;
+	}
+	
+	// 設定時に使用
+	public static Map<Integer, String> getAllCategoryNameMap(boolean pIncome) {
+		Map<Integer, String> wResultMap = new LinkedHashMap<Integer, String>();
+		int wRexp = mIncomeRexp;
+		if (!pIncome) {
+			wRexp = mExpenseRexp;
+		}
+
+		DbAccess wDbAccess = new DbAccess();
+		String wQuery = "select " + mCategoryIdCol + ", " + mCategoryNameCol;
+		wQuery += " from " + mCategoryTable;
+		wQuery += " where " + mCategoryRexpCol + " = " + wRexp + " and " + mDelFlgCol + " = b'0' " + " and " + mSortKeyCol + " > " + 0;
+		wQuery += " order by " + mSortKeyCol;
 
 		// System.out.println(wQuery);
 
@@ -1805,6 +1840,23 @@ public class DbUtil {
 
 		wDbAccess.closeConnection();
 
+	}
+	
+	public static void insertNewCategory(boolean isIncome, String pCategoryName) {
+		DbAccess wDbAccess = new DbAccess();
+		String wQuery = "insert into " + mCategoryTable + " (" + mCategoryRexpCol + ", " + mCategoryNameCol + ", " + mSortKeyCol + ") values (";
+		wQuery += (isIncome) ? mIncomeRexp : mExpenseRexp;
+		wQuery += ", '" + pCategoryName + "', " + 9999 + ")";
+//		System.out.println(wQuery);
+		wDbAccess.executeUpdate(wQuery);
+	}
+	
+	public static void insertNewItem(int pCategoryId, String pItemName) {
+		DbAccess wDbAccess = new DbAccess();
+		String wQuery = "insert into " + mItemTable + " (" + mCategoryIdCol + ", " + mItemNameCol + ", " + mSortKeyCol + ") values (";
+		wQuery += pCategoryId + ", '" + pItemName + "', " + 9999 + ")";
+//		System.out.println(wQuery);
+		wDbAccess.executeUpdate(wQuery);
 	}
 
 	// 立替残高（借入残高）

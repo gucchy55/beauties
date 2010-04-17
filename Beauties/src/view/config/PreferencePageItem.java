@@ -1,10 +1,8 @@
 package view.config;
 
 import model.ConfigItem;
-import model.SystemData;
 import model.db.DbUtil;
 
-import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -15,7 +13,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 
-import view.dialog.DialogNewRecord;
 import view.util.MyFillLayout;
 import view.util.MyGridData;
 import view.util.MyGridLayout;
@@ -57,7 +54,9 @@ class PreferencePageItem extends PreferencePage {
 		wCategoryAddButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 //				MessageDialog.openConfirm(getShell(), "分類追加", "分類追加です");
-				new DialogNewRecord(getShell(), SystemData.getAllBookInt()).open();
+				if (new DialogNewItem(getShell(), true).open() == 0) {
+					updateTree();
+				}
 			}
 		});
 
@@ -65,7 +64,9 @@ class PreferencePageItem extends PreferencePage {
 		wItemAddButton.setText("項目追加");
 		wItemAddButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				MessageDialog.openConfirm(getShell(), "項目追加", "項目追加です");
+				if (new DialogNewItem(getShell(), false).open() == 0) {
+					updateTree();
+				}
 			}
 		});
 		
@@ -89,7 +90,7 @@ class PreferencePageItem extends PreferencePage {
 				if (wSelectedItem != null) {
 					wSelectedItem.moveUp();
 					mTreeOrderChanged = true;
-					updateTree();
+					updateTreeOrder();
 				}
 			}
 		});
@@ -102,7 +103,7 @@ class PreferencePageItem extends PreferencePage {
 				if (wSelectedItem != null) {
 					wSelectedItem.moveDown();
 					mTreeOrderChanged = true;
-					updateTree();
+					updateTreeOrder();
 				}
 			}
 		});
@@ -149,7 +150,7 @@ class PreferencePageItem extends PreferencePage {
 	//
 	// }
 
-	private void updateTree() {
+	private void updateTreeOrder() {
 		mTreeViewerConfigItem.getTree().setRedraw(true);
 
 		try {
@@ -166,6 +167,16 @@ class PreferencePageItem extends PreferencePage {
 			mTreeViewerConfigItem.getTree().setRedraw(true);
 		}
 
+	}
+	
+	private void updateTree() {
+		mRootConfigItem = DbUtil.getRootConfigItem();
+		mTreeViewerConfigItem.getTree().dispose();
+		mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite, mRootConfigItem);
+		mTreeComposite.layout();
+
+		DbUtil.updateSortKeys(mRootConfigItem);
+		mTreeOrderChanged = false;
 	}
 
 }
