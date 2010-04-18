@@ -1,11 +1,18 @@
 package view.config;
 
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+
 import model.ConfigItem;
+import model.SystemData;
 import model.db.DbUtil;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -30,8 +37,7 @@ class PreferencePageItem extends PreferencePage {
 
 	private Composite mAttributeComposite;
 
-	// private static final String[] mButtonNames = {"分類追加", "項目追加", "削除", "↑",
-	// "↓"};
+	private Map<Integer, Button> mBookButtonMap;
 
 	public PreferencePageItem() {
 		setTitle("項目設定");
@@ -143,6 +149,41 @@ class PreferencePageItem extends PreferencePage {
 		wGridData.widthHint = mRightHint;
 		mAttributeComposite.setLayoutData(wGridData);
 
+		Map<Integer, String> wBookNameMap = DbUtil.getBookNameMap();
+		mBookButtonMap = new LinkedHashMap<Integer, Button>();
+		for (Map.Entry<Integer, String> entry : wBookNameMap.entrySet()) {
+			Button wButton = new Button(mAttributeComposite, SWT.CHECK);
+			wButton.setText(entry.getValue());
+			wButton.setVisible(false);
+			mBookButtonMap.put(entry.getKey(), wButton);
+
+			wButton.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
+					if (wSelectedItem != null) {
+						Button wButton = (Button) e.getSource();
+						int wBookId = SystemData.getUndefinedInt();
+						for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
+							if (wButton == entry.getValue()) {
+								wBookId = entry.getKey();
+								break;
+							}
+						}
+						DbUtil.updateItemRelation(wSelectedItem.getId(), wBookId, wButton.getSelection());
+					}
+				}
+			});
+		}
+
+		mTreeViewerConfigItem.addSelectionChangedListener(new ISelectionChangedListener() {
+
+			@Override
+			public void selectionChanged(SelectionChangedEvent arg0) {
+				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
+				updateAttributeButtons(wConfigItem);
+			}
+		});
+
 		return wMainComposite;
 	}
 
@@ -164,10 +205,6 @@ class PreferencePageItem extends PreferencePage {
 	protected void performDefaults() {
 
 	}
-
-	// private void addNewCategory() {
-	//
-	// }
 
 	private void updateTreeOrder() {
 		mTreeViewerConfigItem.getTree().setRedraw(true);
@@ -196,6 +233,31 @@ class PreferencePageItem extends PreferencePage {
 
 		DbUtil.updateSortKeys(mRootConfigItem);
 		mTreeOrderChanged = false;
+	}
+
+	protected void updateAttributeButtons(ConfigItem pConfigItem) {
+		if (pConfigItem == null || pConfigItem.isSpecial() || pConfigItem.isCategory()) {
+			for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
+				Button wButton = entry.getValue();
+				if (wButton.isVisible()) {
+					wButton.setVisible(false);
+				}
+			}
+		} else {
+			List<Integer> wBookIdList = DbUtil.getRelatedBookIdList(pConfigItem);
+			for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
+				Button wButton = entry.getValue();
+				if (!wButton.isVisible()) {
+					wButton.setVisible(true);
+				}
+				if (wBookIdList.contains(entry.getKey())) {
+					wButton.setSelection(true);
+				} else {
+					wButton.setSelection(false);
+				}
+			}
+		}
+
 	}
 
 }

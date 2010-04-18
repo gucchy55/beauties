@@ -1,6 +1,7 @@
 package view.config;
 
 import model.ConfigItem;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -12,6 +13,8 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Tree;
 
 public class TreeViewerConfigItem extends TreeViewer {
+
+//	private ConfigItem mSelectedConfigItem;
 	
 	public TreeViewerConfigItem(Composite pParent, ConfigItem pConfigItem) {
 		super(pParent, SWT.NONE);
@@ -40,12 +43,13 @@ public class TreeViewerConfigItem extends TreeViewer {
 //			public void selectionChanged(SelectionChangedEvent event) {
 //				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 //				mSelectedConfigItem = (ConfigItem) sel.getFirstElement();
+//				
 //			}
 //		});
 		
 		
 	}
-	
+
 	protected ConfigItem getSelectedConfigItem() {
 		IStructuredSelection sel = (IStructuredSelection) this.getSelection();
 		return (ConfigItem) sel.getFirstElement();

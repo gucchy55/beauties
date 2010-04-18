@@ -1884,7 +1884,46 @@ public class DbUtil {
 
 		String wQuery = "update " + wTableName + " set " + mDelFlgCol + " = b'1' where " + wIdName + " = "
 				+ pConfigItem.getId();
-//		System.out.println(wQuery);
+		// System.out.println(wQuery);
+		wDbAccess.executeUpdate(wQuery);
+	}
+
+	public static List<Integer> getRelatedBookIdList(ConfigItem pConfigItem) {
+		List<Integer> wList = new ArrayList<Integer>();
+		DbAccess wDbAccess = new DbAccess();
+
+		String wQuery = "select " + mBookIdCol + " from " + mBookItemTable + " where " + mItemIdCol + " = "
+				+ pConfigItem.getId();
+		ResultSet wResultSet = wDbAccess.executeQuery(wQuery);
+
+		try {
+			while (wResultSet.next()) {
+				wList.add(wResultSet.getInt(mBookIdCol));
+			}
+			wResultSet.close();
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		} finally {
+			wDbAccess.closeConnection();
+		}
+
+		return wList;
+	}
+
+	public static void updateItemRelation(int pItemId, int pBookId, boolean isSelected) {
+		DbAccess wDbAccess = new DbAccess();
+		String wQuery;
+
+		if (!isSelected) {
+			// 削除
+			wQuery = "delete from " + mBookItemTable + " where " + mItemIdCol + " = " + pItemId + " and " + mBookIdCol
+					+ " = " + pBookId;
+		} else {
+			// 追加
+			wQuery = "insert into " + mBookItemTable + " (" + mItemIdCol + ", " + mBookIdCol + ") values (" + pItemId
+					+ ", " + pBookId + ")";
+		}
+		
 		wDbAccess.executeUpdate(wQuery);
 	}
 
