@@ -3,6 +3,7 @@ package view.config;
 import model.ConfigItem;
 import model.db.DbUtil;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.swt.SWT;
@@ -40,8 +41,7 @@ class PreferencePageItem extends PreferencePage {
 		Composite wMainComposite = new Composite(parent, SWT.NONE);
 
 		wMainComposite.setLayout(new MyGridLayout(2, false).getMyGridLayout());
-		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false)
-				.getMyGridData();
+		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false).getMyGridData();
 		wMainComposite.setLayoutData(wGridData);
 
 		Composite wTopComposite = new Composite(wMainComposite, SWT.NONE);
@@ -53,7 +53,7 @@ class PreferencePageItem extends PreferencePage {
 		wCategoryAddButton.setText("分類追加");
 		wCategoryAddButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-//				MessageDialog.openConfirm(getShell(), "分類追加", "分類追加です");
+				// MessageDialog.openConfirm(getShell(), "分類追加", "分類追加です");
 				if (new DialogNewItem(getShell(), true).open() == 0) {
 					updateTree();
 				}
@@ -69,18 +69,37 @@ class PreferencePageItem extends PreferencePage {
 				}
 			}
 		});
-		
+
 		Button wModifyButton = new Button(wTopComposite, SWT.NULL);
 		wModifyButton.setText("変更");
 		wModifyButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (mTreeViewerConfigItem.getSelectedConfigItem() != null)
-					System.out.println(mTreeViewerConfigItem.getSelectedConfigItem().getName());
+				if (mTreeViewerConfigItem.getSelectedConfigItem() != null) {
+					ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
+					if (!wConfigItem.isSpecial()) {
+						if (new DialogNewItem(getShell(), wConfigItem).open() == 0) {
+							updateTree();
+						}
+					}
+				}
 			}
 		});
 
 		Button wDeleteButton = new Button(wTopComposite, SWT.NULL);
 		wDeleteButton.setText("削除");
+		wDeleteButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				if (mTreeViewerConfigItem.getSelectedConfigItem() != null) {
+					ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
+					if (!wConfigItem.isSpecial()) {
+						if (MessageDialog.openConfirm(getShell(), "削除", wConfigItem.getName() + " - 本当に削除しますか？")) {
+							DbUtil.deleteCategoryItem(wConfigItem);
+							updateTree();
+						}
+					}
+				}
+			}
+		});
 
 		Button wUpButton = new Button(wTopComposite, SWT.NULL);
 		wUpButton.setText("↑");
@@ -168,7 +187,7 @@ class PreferencePageItem extends PreferencePage {
 		}
 
 	}
-	
+
 	private void updateTree() {
 		mRootConfigItem = DbUtil.getRootConfigItem();
 		mTreeViewerConfigItem.getTree().dispose();

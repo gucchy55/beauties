@@ -5,7 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import model.SystemData;
+import model.ConfigItem;
 import model.db.DbUtil;
 
 import org.eclipse.jface.dialogs.Dialog;
@@ -28,21 +28,32 @@ class DialogNewItem extends Dialog {
 
 	private CompositeNewItem mCompositeNewItem;
 	private boolean isCategory;
-	
+	private ConfigItem mConfigItem;
+
 	public DialogNewItem(Shell parentShell, boolean isCategory) {
 		super(parentShell);
 		this.isCategory = isCategory;
 	}
 
+	public DialogNewItem(Shell parentShell, ConfigItem pConfigItem) {
+		super(parentShell);
+		this.isCategory = pConfigItem.isCategory();
+		this.mConfigItem = pConfigItem;
+	}
+
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		mCompositeNewItem = new CompositeNewItem(parent, isCategory);
+		if (mConfigItem == null) {
+			mCompositeNewItem = new CompositeNewItem(parent, isCategory);
+		} else {
+			mCompositeNewItem = new CompositeNewItem(parent, mConfigItem);
+		}
 		return mCompositeNewItem;
 	}
 
 	@Override
 	protected Point getInitialSize() {
-		return new Point(400, 200);
+		return new Point(300, 200);
 	}
 
 	@Override
@@ -50,12 +61,16 @@ class DialogNewItem extends Dialog {
 		super.configureShell(newShell);
 		newShell.setText(isCategory ? "分類追加" : "項目追加");
 	}
-	
+
 	protected void buttonPressed(int pButtonId) {
-		if (pButtonId == IDialogConstants.OK_ID) {	//0
-			mCompositeNewItem.insertItem();
+		if (pButtonId == IDialogConstants.OK_ID) { // 0
+			if (mConfigItem == null) {
+				mCompositeNewItem.insertItem();
+			} else {
+				mCompositeNewItem.updateItem();
+			}
 			close();
-		} else if (pButtonId == IDialogConstants.CANCEL_ID){	//1
+		} else if (pButtonId == IDialogConstants.CANCEL_ID) { // 1
 			close();
 		}
 	}
@@ -63,21 +78,11 @@ class DialogNewItem extends Dialog {
 }
 
 class CompositeNewItem extends Composite {
-	
+
 	private boolean isCategory;
-	
-	public CompositeNewItem(Composite pParent, boolean isCategory) {
-		super(pParent, SWT.NONE);
-		
-		this.isCategory = isCategory;
-		initLayout();
-		initWidgets();
-		mNameText.setFocus();
-	}
-	
+	private ConfigItem mConfigItem;
+
 	private boolean mIncome = false;
-	private int mCategoryId;
-	private int mItemId;
 
 	// Map of ID & Name
 	private Map<Integer, String> mCategoryNameMap;
@@ -90,6 +95,26 @@ class CompositeNewItem extends Composite {
 	private Text mNameText;
 
 	private static final int mVisibleComboItemCount = 10;
+
+	public CompositeNewItem(Composite pParent, boolean isCategory) {
+		super(pParent, SWT.NONE);
+
+		this.isCategory = isCategory;
+		initLayout();
+		initWidgets();
+		mNameText.setFocus();
+	}
+
+	public CompositeNewItem(Composite pParent, ConfigItem pConfigItem) {
+		super(pParent, SWT.NONE);
+
+		this.isCategory = pConfigItem.isCategory();
+		mConfigItem = pConfigItem;
+		initLayout();
+		initWidgets();
+		setWidgets();
+		mNameText.setFocus();
+	}
 
 	private void initLayout() {
 		GridLayout wGridLayout = new GridLayout(2, false);
@@ -125,8 +150,6 @@ class CompositeNewItem extends Composite {
 		wItemLabel.setText("名前");
 
 		mNameText = new Text(this, SWT.BORDER);
-
-
 	}
 
 	private void initWidgets() {
@@ -139,11 +162,21 @@ class CompositeNewItem extends Composite {
 	}
 
 	private void setWidgets() {
+		if (!isCategory) {
+			int wCategoryId = mConfigItem.getParent().getId();
 
+			if (!mCategoryIdList.contains(wCategoryId)) {
+				mIncomeExpenseCombo.select((mIncomeExpenseCombo.getSelectionIndex() + 1) % 2);
+			}
+			mCategoryCombo.select(mCategoryIdList.indexOf(wCategoryId));
+		}
+		mIncomeExpenseCombo.setEnabled(false);
+
+		mNameText.setText(mConfigItem.getName());
 	}
 
 	private void modifyIncomeExpense() {
-		mIncome = (mIncomeExpenseCombo.getSelectionIndex() == 0)? true : false;
+		mIncome = (mIncomeExpenseCombo.getSelectionIndex() == 0) ? true : false;
 		if (!isCategory) {
 			updateCategoryCombo();
 		}
@@ -163,17 +196,16 @@ class CompositeNewItem extends Composite {
 			mCategoryIdList.add(wCategoryId);
 			mCategoryCombo.add(mCategoryNameMap.get(wCategoryId));
 		}
-		
+
 		mCategoryCombo.setVisibleItemCount(mVisibleComboItemCount);
 
 		mCategoryCombo.select(0);
-		mCategoryId = mCategoryIdList.get(0);
 
 		mCategoryCombo.pack();
 
 	}
 
-	public void insertItem() {
+	protected void insertItem() {
 		// アイテム追加
 		if ("".equals(mNameText.getText())) {
 			MessageDialog.openWarning(getShell(), "Empty Name", "Input Name");
@@ -181,11 +213,24 @@ class CompositeNewItem extends Composite {
 			if (isCategory) {
 				DbUtil.insertNewCategory(mIncome, mNameText.getText());
 			} else {
-				mCategoryId = mCategoryIdList.get(mCategoryCombo.getSelectionIndex());
-				DbUtil.insertNewItem(mCategoryId, mNameText.getText());
+				int wCategoryId = mCategoryIdList.get(mCategoryCombo.getSelectionIndex());
+				DbUtil.insertNewItem(wCategoryId, mNameText.getText());
 			}
 		}
 	}
 
+	protected void updateItem() {
+		if ("".equals(mNameText.getText())) {
+			MessageDialog.openWarning(getShell(), "Empty Name", "Input Name");
+		} else {
+
+			if (isCategory) {
+				DbUtil.updateCategory(mConfigItem.getId(), mNameText.getText());
+			} else {
+				DbUtil.updateItem(mCategoryIdList.get(mCategoryCombo.getSelectionIndex()), mConfigItem.getId(),
+						mNameText.getText());
+			}
+		}
+	}
 
 }
