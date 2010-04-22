@@ -60,9 +60,8 @@ public class MainJfaceWindow extends ApplicationWindow {
 		});
 
 		pShell.setText(mWindowTitle);
-		pShell.setSize(SystemData.getWindowPoint());
+		pShell.setBounds(SystemData.getWindowRectangle());
 		pShell.setMaximized(SystemData.isWindowMaximized());
-
 	}
 
 	@Override

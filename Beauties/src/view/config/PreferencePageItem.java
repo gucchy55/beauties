@@ -20,6 +20,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
+import org.eclipse.swt.widgets.Label;
 
 import view.util.MyFillLayout;
 import view.util.MyGridData;
@@ -149,6 +150,9 @@ class PreferencePageItem extends PreferencePage {
 		wGridData.widthHint = mRightHint;
 		mAttributeComposite.setLayoutData(wGridData);
 
+		Label wLabel = new Label(mAttributeComposite, SWT.NONE);
+		wLabel.setText("関連付け");
+		
 		Map<Integer, String> wBookNameMap = DbUtil.getBookNameMap();
 		mBookButtonMap = new LinkedHashMap<Integer, Button>();
 		for (Map.Entry<Integer, String> entry : wBookNameMap.entrySet()) {
@@ -174,9 +178,19 @@ class PreferencePageItem extends PreferencePage {
 				}
 			});
 		}
+		
+		Label wSpaceLabel = new Label(mAttributeComposite, SWT.NONE);
+		wSpaceLabel.setText("");
+		
+		Label wSpecialAttributeLabel = new Label(mAttributeComposite, SWT.NONE);
+		wSpecialAttributeLabel.setText("特別収支系設定");
+		
+		Button wSpecialIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
+		wSpecialIncomeExpenseButton.setText("特別収支");
+		Button wTempIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
+		wTempIncomeExpenseButton.setText("立替収支");		
 
 		mTreeViewerConfigItem.addSelectionChangedListener(new ISelectionChangedListener() {
-
 			@Override
 			public void selectionChanged(SelectionChangedEvent arg0) {
 				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();

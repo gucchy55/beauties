@@ -1,6 +1,7 @@
 package io;
 
-import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.graphics.Rectangle;
+
 import model.SystemData;
 
 public class FileLoader {
@@ -13,8 +14,8 @@ public class FileLoader {
 	private static final String mDbPassKey = "dbPass";
 	private static final String mDbNameKey = "dbName";
 
-//	private static final String mWindowXKey = "x";
-//	private static final String mWindowYKey = "y";
+	private static final String mWindowXKey = "x";
+	private static final String mWindowYKey = "y";
 	private static final String mWindowWidthKey = "width";
 	private static final String mWindowHeightKey = "height";
 	private static final String mWindowMaximiedKey = "maximized";
@@ -35,9 +36,9 @@ public class FileLoader {
 			SystemData.setDbPass(prop.getProperty(mDbPassKey));
 			SystemData.setDbName(prop.getProperty(mDbNameKey));
 			
-			SystemData.setWindowPoint(new Point(
-//					Integer.parseInt(prop.getProperty(mWindowXKey)),
-//					Integer.parseInt(prop.getProperty(mWindowYKey)), 
+			SystemData.setWindowRectangle(new Rectangle(
+					Integer.parseInt(prop.getProperty(mWindowXKey)),
+					Integer.parseInt(prop.getProperty(mWindowYKey)), 
 					Integer.parseInt(prop.getProperty(mWindowWidthKey)), 
 					Integer.parseInt(prop.getProperty(mWindowHeightKey))));
 
