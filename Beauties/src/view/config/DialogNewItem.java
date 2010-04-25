@@ -155,7 +155,7 @@ class CompositeNewItem extends Composite {
 	private void initWidgets() {
 
 		if (isCategory) {
-			mCategoryCombo.setEnabled(false);
+			mCategoryCombo.setVisible(false);
 		} else {
 			updateCategoryCombo();
 		}
@@ -170,7 +170,7 @@ class CompositeNewItem extends Composite {
 			}
 			mCategoryCombo.select(mCategoryIdList.indexOf(wCategoryId));
 		}
-		mIncomeExpenseCombo.setEnabled(false);
+		mIncomeExpenseCombo.setVisible(false);
 
 		mNameText.setText(mConfigItem.getName());
 	}

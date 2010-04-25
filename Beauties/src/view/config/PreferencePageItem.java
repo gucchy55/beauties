@@ -31,6 +31,7 @@ class PreferencePageItem extends PreferencePage {
 
 	private static final int mRightHint = 150;
 
+	private Composite mMainComposite;
 	private Composite mTreeComposite;
 	private TreeViewerConfigItem mTreeViewerConfigItem;
 	private ConfigItem mRootConfigItem;
@@ -39,7 +40,7 @@ class PreferencePageItem extends PreferencePage {
 	private Composite mAttributeComposite;
 
 	private Map<Integer, Button> mBookButtonMap;
-	
+
 	private Button mSpecialIncomeExpenseButton;
 	private Button mTempIncomeExpenseButton;
 
@@ -48,13 +49,13 @@ class PreferencePageItem extends PreferencePage {
 	}
 
 	protected Control createContents(Composite parent) {
-		Composite wMainComposite = new Composite(parent, SWT.NONE);
+		mMainComposite = new Composite(parent, SWT.NONE);
 
-		wMainComposite.setLayout(new MyGridLayout(2, false).getMyGridLayout());
+		mMainComposite.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false).getMyGridData();
-		wMainComposite.setLayoutData(wGridData);
+		mMainComposite.setLayoutData(wGridData);
 
-		Composite wTopComposite = new Composite(wMainComposite, SWT.NONE);
+		Composite wTopComposite = new Composite(mMainComposite, SWT.NONE);
 		wTopComposite.setLayout(new MyRowLayout().getMyRowLayout());
 		wGridData.horizontalSpan = 2;
 		wTopComposite.setLayoutData(wGridData);
@@ -84,12 +85,10 @@ class PreferencePageItem extends PreferencePage {
 		wModifyButton.setText("変更");
 		wModifyButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (mTreeViewerConfigItem.getSelectedConfigItem() != null) {
-					ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
-					if (!wConfigItem.isSpecial()) {
-						if (new DialogNewItem(getShell(), wConfigItem).open() == 0) {
-							updateTree();
-						}
+				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
+				if (!wConfigItem.isSpecial()) {
+					if (new DialogNewItem(getShell(), wConfigItem).open() == 0) {
+						updateTree();
 					}
 				}
 			}
@@ -99,13 +98,11 @@ class PreferencePageItem extends PreferencePage {
 		wDeleteButton.setText("削除");
 		wDeleteButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				if (mTreeViewerConfigItem.getSelectedConfigItem() != null) {
-					ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
-					if (!wConfigItem.isSpecial()) {
-						if (MessageDialog.openConfirm(getShell(), "削除", wConfigItem.getName() + " - 本当に削除しますか？")) {
-							DbUtil.deleteCategoryItem(wConfigItem);
-							updateTree();
-						}
+				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
+				if (!wConfigItem.isSpecial()) {
+					if (MessageDialog.openConfirm(getShell(), "削除", wConfigItem.getName() + " - 本当に削除しますか？")) {
+						DbUtil.deleteCategoryItem(wConfigItem);
+						updateTree();
 					}
 				}
 			}
@@ -116,11 +113,9 @@ class PreferencePageItem extends PreferencePage {
 		wUpButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
-				if (wSelectedItem != null) {
-					wSelectedItem.moveUp();
-					mTreeOrderChanged = true;
-					updateTreeOrder();
-				}
+				wSelectedItem.moveUp();
+				mTreeOrderChanged = true;
+				updateTreeOrder();
 			}
 		});
 
@@ -129,16 +124,14 @@ class PreferencePageItem extends PreferencePage {
 		wDownButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
-				if (wSelectedItem != null) {
-					wSelectedItem.moveDown();
-					mTreeOrderChanged = true;
-					updateTreeOrder();
-				}
+				wSelectedItem.moveDown();
+				mTreeOrderChanged = true;
+				updateTreeOrder();
 			}
 		});
 
 		// TreeViewer
-		mTreeComposite = new Composite(wMainComposite, SWT.BORDER);
+		mTreeComposite = new Composite(mMainComposite, SWT.BORDER);
 		mTreeComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getMyFillLayout());
 		wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		mTreeComposite.setLayoutData(wGridData);
@@ -146,16 +139,23 @@ class PreferencePageItem extends PreferencePage {
 		mRootConfigItem = DbUtil.getRootConfigItem();
 		mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite, mRootConfigItem);
 
+		initAttributeComposite();
+		addSelectionListenerToTree();
+
+		return mMainComposite;
+	}
+
+	private void initAttributeComposite() {
 		// 関連付け
-		mAttributeComposite = new Composite(wMainComposite, SWT.BORDER);
+		mAttributeComposite = new Composite(mMainComposite, SWT.BORDER);
 		mAttributeComposite.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		wGridData = new MyGridData(GridData.FILL, GridData.FILL, false, true).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, false, true).getMyGridData();
 		wGridData.widthHint = mRightHint;
 		mAttributeComposite.setLayoutData(wGridData);
 
 		Label wLabel = new Label(mAttributeComposite, SWT.NONE);
 		wLabel.setText("関連付け");
-		
+
 		Map<Integer, String> wBookNameMap = DbUtil.getBookNameMap();
 		mBookButtonMap = new LinkedHashMap<Integer, Button>();
 		for (Map.Entry<Integer, String> entry : wBookNameMap.entrySet()) {
@@ -167,62 +167,50 @@ class PreferencePageItem extends PreferencePage {
 			wButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
 					ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
-					if (wSelectedItem != null) {
-						Button wButton = (Button) e.getSource();
-						int wBookId = SystemData.getUndefinedInt();
-						for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
-							if (wButton == entry.getValue()) {
-								wBookId = entry.getKey();
-								break;
-							}
+					Button wButton = (Button) e.getSource();
+					int wBookId = SystemData.getUndefinedInt();
+					for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
+						if (wButton == entry.getValue()) {
+							wBookId = entry.getKey();
+							break;
 						}
-						DbUtil.updateItemRelation(wSelectedItem.getId(), wBookId, wButton.getSelection());
 					}
+					DbUtil.updateItemRelation(wSelectedItem.getId(), wBookId, wButton.getSelection());
 				}
 			});
 		}
-		
+
 		Label wSpaceLabel = new Label(mAttributeComposite, SWT.NONE);
 		wSpaceLabel.setText("");
-		
+
 		Label wSpecialAttributeLabel = new Label(mAttributeComposite, SWT.NONE);
 		wSpecialAttributeLabel.setText("特別収支系設定");
-		
+
 		mSpecialIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
 		mSpecialIncomeExpenseButton.setText("特別収支");
 		mSpecialIncomeExpenseButton.setVisible(false);
 		mSpecialIncomeExpenseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
-				if (wSelectedItem != null && wSelectedItem.isCategory()) {
+				if (wSelectedItem.isCategory()) {
 					Button wButton = (Button) e.getSource();
 					DbUtil.updateSpecialCategory(wSelectedItem.getId(), wButton.getSelection());
 				}
 			}
 		});
-		
+
 		mTempIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
 		mTempIncomeExpenseButton.setText("立替収支");
 		mTempIncomeExpenseButton.setVisible(false);
 		mTempIncomeExpenseButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
-				if (wSelectedItem != null && wSelectedItem.isCategory()) {
+				if (wSelectedItem.isCategory()) {
 					Button wButton = (Button) e.getSource();
 					DbUtil.updateTempCategory(wSelectedItem.getId(), wButton.getSelection());
 				}
 			}
 		});
-
-		mTreeViewerConfigItem.addSelectionChangedListener(new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent arg0) {
-				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
-				updateAttributeButtons(wConfigItem);
-			}
-		});
-
-		return wMainComposite;
 	}
 
 	protected void performApply() {
@@ -244,8 +232,18 @@ class PreferencePageItem extends PreferencePage {
 
 	}
 
+	private void addSelectionListenerToTree() {
+		mTreeViewerConfigItem.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent arg0) {
+				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
+				updateAttributeButtons(wConfigItem);
+			}
+		});
+	}
+
 	private void updateTreeOrder() {
-		mTreeViewerConfigItem.getTree().setRedraw(true);
+		mTreeViewerConfigItem.getTree().setRedraw(false);
 
 		try {
 			Object[] elements = mTreeViewerConfigItem.getExpandedElements();
@@ -255,8 +253,11 @@ class PreferencePageItem extends PreferencePage {
 			mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite, mRootConfigItem);
 			mTreeComposite.layout();
 
+			addSelectionListenerToTree();
+
 			mTreeViewerConfigItem.setExpandedElements(elements);
 			mTreeViewerConfigItem.setSelection(selection);
+
 		} finally {
 			mTreeViewerConfigItem.getTree().setRedraw(true);
 		}
@@ -268,24 +269,23 @@ class PreferencePageItem extends PreferencePage {
 		mTreeViewerConfigItem.getTree().dispose();
 		mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite, mRootConfigItem);
 		mTreeComposite.layout();
-
 		DbUtil.updateSortKeys(mRootConfigItem);
+		updateAttributeButtons(mTreeViewerConfigItem.getSelectedConfigItem());
 		mTreeOrderChanged = false;
 	}
 
 	protected void updateAttributeButtons(ConfigItem pConfigItem) {
-		if (pConfigItem == null || pConfigItem.isSpecial() || pConfigItem.isCategory()) {
+		if (pConfigItem.isSpecial() || pConfigItem.isCategory()) {
 			for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
 				Button wButton = entry.getValue();
 				wButton.setVisible(false);
 			}
-			if (pConfigItem != null && pConfigItem.isCategory()) {
-				mSpecialIncomeExpenseButton.setSelection(DbUtil.getSpecialCategoryIdList().contains(pConfigItem.getId()));
+			if (pConfigItem.isCategory()) {
+				mSpecialIncomeExpenseButton.setSelection(DbUtil.getSpecialCategoryIdList()
+						.contains(pConfigItem.getId()));
 				mTempIncomeExpenseButton.setSelection(DbUtil.getTempCategoryIdList().contains(pConfigItem.getId()));
 			}
-			mSpecialIncomeExpenseButton.setVisible(pConfigItem.isCategory());
-			mTempIncomeExpenseButton.setVisible(pConfigItem.isCategory());
-			
+
 		} else {
 			List<Integer> wBookIdList = DbUtil.getRelatedBookIdList(pConfigItem);
 			for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
@@ -293,9 +293,10 @@ class PreferencePageItem extends PreferencePage {
 				wButton.setVisible(true);
 				wButton.setSelection(wBookIdList.contains(entry.getKey()));
 			}
-			mSpecialIncomeExpenseButton.setVisible(false);
-			mTempIncomeExpenseButton.setVisible(false);
 		}
+
+		mSpecialIncomeExpenseButton.setVisible(pConfigItem.isCategory());
+		mTempIncomeExpenseButton.setVisible(pConfigItem.isCategory());
 
 	}
 

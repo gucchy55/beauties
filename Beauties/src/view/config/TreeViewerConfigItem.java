@@ -51,6 +51,9 @@ public class TreeViewerConfigItem extends TreeViewer {
 	}
 
 	protected ConfigItem getSelectedConfigItem() {
+		if (this.getSelection().isEmpty()) {
+			return new ConfigItem("");
+		}
 		IStructuredSelection sel = (IStructuredSelection) this.getSelection();
 		return (ConfigItem) sel.getFirstElement();
 	}

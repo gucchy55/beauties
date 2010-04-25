@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Display;
 
 import util.Util;
 
+import model.Book;
 import model.ConfigItem;
 import model.RecordTableItem;
 import model.SummaryTableItem;
@@ -1924,16 +1925,40 @@ public class DbUtil {
 		String wQuery;
 		wQuery = "update " + mCategoryTable + " set " + mCategorySpecialFlgCol + " = b'" + (isSelected ? 1 : 0)
 				+ "' where " + mCategoryIdCol + " = " + pCategoryId;
-//		System.out.println(wQuery);
+		// System.out.println(wQuery);
 		wDbAccess.executeUpdate(wQuery);
 	}
-	
+
 	public static void updateTempCategory(int pCategoryId, boolean isSelected) {
 		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery;
 		wQuery = "update " + mCategoryTable + " set " + mCategoryTempFlgCol + " = b'" + (isSelected ? 1 : 0)
 				+ "' where " + mCategoryIdCol + " = " + pCategoryId;
 		wDbAccess.executeUpdate(wQuery);
+	}
+
+	public static List<Book> getBookList() {
+		List<Book> wBookList = new ArrayList<Book>();
+		DbAccess wDbAccess = DbAccess.getInstance();
+		String wQuery = "select " + mBookIdCol + ", " + mBookNameCol + ", " + mBookBalanceCol;
+		wQuery += " from " + mBookTable + " where " + mDelFlgCol + " = b'0' " + " order by " + mSortKeyCol;
+		ResultSet wResultSet = wDbAccess.executeQuery(wQuery);
+
+		try {
+			while (wResultSet.next()) {
+				Book wBook = new Book(wResultSet.getInt(mBookIdCol), wResultSet.getString(mBookNameCol));
+				if (wResultSet.getInt(mBookBalanceCol) > 0) {
+					wBook.setBalance(wResultSet.getDouble(mBookBalanceCol));
+				}
+				wBookList.add(wBook);
+			}
+			wResultSet.close();
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		}
+
+		return wBookList;
+
 	}
 
 	// 立替残高（借入残高）
@@ -2228,13 +2253,10 @@ public class DbUtil {
 		return pNote;
 	}
 
-	// public static void main(String[] args) {
-	// for (int i : getSpecialCategoryIdList()) {
-	// System.out.println(i);
-	// }
-	// for (int i : getTempCategoryIdList()) {
-	// System.out.println(i);
-	// }
-	// }
+//	public static void main(String[] args) {
+//		for (Book wBook : getBookList()) {
+//			System.out.println(wBook.getName());
+//		}
+//	}
 
 }
