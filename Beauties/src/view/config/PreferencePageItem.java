@@ -191,9 +191,28 @@ class PreferencePageItem extends PreferencePage {
 		mSpecialIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
 		mSpecialIncomeExpenseButton.setText("特別収支");
 		mSpecialIncomeExpenseButton.setVisible(false);
+		mSpecialIncomeExpenseButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
+				if (wSelectedItem != null && wSelectedItem.isCategory()) {
+					Button wButton = (Button) e.getSource();
+					DbUtil.updateSpecialCategory(wSelectedItem.getId(), wButton.getSelection());
+				}
+			}
+		});
+		
 		mTempIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
 		mTempIncomeExpenseButton.setText("立替収支");
 		mTempIncomeExpenseButton.setVisible(false);
+		mTempIncomeExpenseButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
+				if (wSelectedItem != null && wSelectedItem.isCategory()) {
+					Button wButton = (Button) e.getSource();
+					DbUtil.updateTempCategory(wSelectedItem.getId(), wButton.getSelection());
+				}
+			}
+		});
 
 		mTreeViewerConfigItem.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
@@ -258,9 +277,11 @@ class PreferencePageItem extends PreferencePage {
 		if (pConfigItem == null || pConfigItem.isSpecial() || pConfigItem.isCategory()) {
 			for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
 				Button wButton = entry.getValue();
-				if (wButton.isVisible()) {
-					wButton.setVisible(false);
-				}
+				wButton.setVisible(false);
+			}
+			if (pConfigItem != null && pConfigItem.isCategory()) {
+				mSpecialIncomeExpenseButton.setSelection(DbUtil.getSpecialCategoryIdList().contains(pConfigItem.getId()));
+				mTempIncomeExpenseButton.setSelection(DbUtil.getTempCategoryIdList().contains(pConfigItem.getId()));
 			}
 			mSpecialIncomeExpenseButton.setVisible(pConfigItem.isCategory());
 			mTempIncomeExpenseButton.setVisible(pConfigItem.isCategory());
@@ -269,15 +290,11 @@ class PreferencePageItem extends PreferencePage {
 			List<Integer> wBookIdList = DbUtil.getRelatedBookIdList(pConfigItem);
 			for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
 				Button wButton = entry.getValue();
-				if (!wButton.isVisible()) {
-					wButton.setVisible(true);
-				}
-				if (wBookIdList.contains(entry.getKey())) {
-					wButton.setSelection(true);
-				} else {
-					wButton.setSelection(false);
-				}
+				wButton.setVisible(true);
+				wButton.setSelection(wBookIdList.contains(entry.getKey()));
 			}
+			mSpecialIncomeExpenseButton.setVisible(false);
+			mTempIncomeExpenseButton.setVisible(false);
 		}
 
 	}

@@ -1875,6 +1875,67 @@ public class DbUtil {
 		wDbAccess.executeUpdate(wQuery);
 	}
 
+	public static List<Integer> getSpecialCategoryIdList() {
+		List<Integer> wList = new ArrayList<Integer>();
+		DbAccess wDbAccess = DbAccess.getInstance();
+
+		String wQuery = "select " + mCategoryIdCol + " from " + mCategoryTable + " where " + mCategorySpecialFlgCol
+				+ " = b'1'" + " and " + mDelFlgCol + " = b'0'";
+
+		ResultSet wResultSet = wDbAccess.executeQuery(wQuery);
+
+		try {
+			while (wResultSet.next()) {
+				wList.add(wResultSet.getInt(mCategoryIdCol));
+			}
+			wResultSet.close();
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		}
+
+		return wList;
+
+	}
+
+	public static List<Integer> getTempCategoryIdList() {
+		List<Integer> wList = new ArrayList<Integer>();
+		DbAccess wDbAccess = DbAccess.getInstance();
+
+		String wQuery = "select " + mCategoryIdCol + " from " + mCategoryTable + " where " + mCategoryTempFlgCol
+				+ " = b'1'" + " and " + mDelFlgCol + " = b'0'";
+
+		ResultSet wResultSet = wDbAccess.executeQuery(wQuery);
+
+		try {
+			while (wResultSet.next()) {
+				wList.add(wResultSet.getInt(mCategoryIdCol));
+			}
+			wResultSet.close();
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		}
+
+		return wList;
+
+	}
+
+	public static void updateSpecialCategory(int pCategoryId, boolean isSelected) {
+		DbAccess wDbAccess = DbAccess.getInstance();
+		String wQuery;
+		wQuery = "update " + mCategoryTable + " set " + mCategorySpecialFlgCol + " = b'" + (isSelected ? 1 : 0)
+				+ "' where " + mCategoryIdCol + " = " + pCategoryId;
+//		System.out.println(wQuery);
+		wDbAccess.executeUpdate(wQuery);
+	}
+	
+	public static void updateTempCategory(int pCategoryId, boolean isSelected) {
+		DbAccess wDbAccess = DbAccess.getInstance();
+		String wQuery;
+		wQuery = "update " + mCategoryTable + " set " + mCategoryTempFlgCol + " = b'" + (isSelected ? 1 : 0)
+				+ "' where " + mCategoryIdCol + " = " + pCategoryId;
+		wDbAccess.executeUpdate(wQuery);
+	}
+
 	// 立替残高（借入残高）
 	private static double getTempBalance(DbAccess pDbAccess, Date pEndDate) {
 
@@ -2167,74 +2228,12 @@ public class DbUtil {
 		return pNote;
 	}
 
-	// public static String getCategoryNameById(int pCategoryId) {
-	// DbAccess wDbAccess = DbAccess.getInstance();
-	// ResultSet wResultSet = wDbAccess.executeQuery("select "
-	// + mCategoryNameCol + " from " + mCategoryTable + " where "
-	// + mCategoryIdCol + " = " + pCategoryId);
-	//
-	// String wCategoryName = "";
-	//
-	// try {
-	// wResultSet.next();
-	// wCategoryName = wResultSet.getString(mCategoryNameCol);
-	//
-	// wResultSet.close();
-	// } catch (SQLException e) {
-	// resultSetHandlingError(e);
-	// } finally {
-	// wDbAccess.closeConnection();
-	// }
-	// return wCategoryName;
-	//
-	// }
-	//
-	// public static String getCategoryNameByItemId(int pItemId) {
-	// DbAccess wDbAccess = DbAccess.getInstance();
-	// ResultSet wResultSet = wDbAccess.executeQuery("select "
-	// + mCategoryTable + "." + mCategoryNameCol + " from "
-	// + mCategoryTable + " inner join " + mItemTable + " on "
-	// + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable
-	// + "." + mCategoryIdCol + " where " + mItemTable + "."
-	// + mItemIdCol + " = " + pItemId);
-	//
-	// String wCategoryName = "";
-	//
-	// try {
-	// wResultSet.next();
-	// wCategoryName = wResultSet.getString(mCategoryNameCol);
-	// wResultSet.close();
-	//
-	// } catch (SQLException e) {
-	// resultSetHandlingError(e);
-	// } finally {
-	// wDbAccess.closeConnection();
-	// }
-	//
-	// return wCategoryName;
-	// }
-	//	
-	// public static RecordTableItem[] getRecordTableItems(Date pDate,
-	// int pBookId, boolean pUp) {
-	// Date[] wDates = Util.getPeriod(pDate);
-	// return getRecordTableItems(wDates[0], wDates[1], pBookId, pUp);
-	// }
-	// public static String getThisMonth(Date pDate) {
-	// Date[] wDates = getPeriod(pDate);
-	//
-	// DateFormat df = new SimpleDateFormat("yyyy/MM");
-	// return df.format(wDates[1]);
-	// }
-
 	// public static void main(String[] args) {
-	// ConfigItem[] wConfigItems = getConfigItems(true);
-	// for (ConfigItem c : wConfigItems) {
-	// System.out.println(c);
-	// if (c.hasItem()) {
-	// for (ConfigItem ci : c.getItems()) {
-	// System.out.println("  " + ci);
+	// for (int i : getSpecialCategoryIdList()) {
+	// System.out.println(i);
 	// }
-	// }
+	// for (int i : getTempCategoryIdList()) {
+	// System.out.println(i);
 	// }
 	// }
 
