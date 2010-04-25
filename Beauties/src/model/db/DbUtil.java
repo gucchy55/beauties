@@ -95,7 +95,7 @@ public class DbUtil {
 	public static int getCutOff() {
 		int wCutOff = -1;
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		ResultSet wResultSet = wDbAccess.executeQuery("select " + mSystemValueCol + " from " + mSystemTable + " where "
 				+ mSystemIDCol + " = '" + mCutOff + "'");
 
@@ -106,8 +106,6 @@ public class DbUtil {
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wCutOff;
@@ -117,7 +115,7 @@ public class DbUtil {
 	public static int getFisCalMonth() {
 		int wFiscalMonth = -1;
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		ResultSet wResultSet = wDbAccess.executeQuery("select " + mSystemValueCol + " from " + mSystemTable + " where "
 				+ mSystemIDCol + " = '" + mFiscalMonth + "'");
 
@@ -128,15 +126,13 @@ public class DbUtil {
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wFiscalMonth;
 	}
 
 	public static int getCategoryIdByItemId(int pItemId) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		ResultSet wResultSet = wDbAccess.executeQuery("select " + mCategoryIdCol + " from " + mItemTable + " where "
 				+ mItemIdCol + " = " + pItemId);
 
@@ -148,15 +144,13 @@ public class DbUtil {
 			wResultSet.close();
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wCategoryId;
 	}
 
 	public static String getItemNameById(int pItemId) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		ResultSet wResultSet = wDbAccess.executeQuery("select " + mItemNameCol + " from " + mItemTable + " where "
 				+ mItemIdCol + " = " + pItemId);
 
@@ -168,8 +162,6 @@ public class DbUtil {
 			wResultSet.close();
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wItemName;
@@ -190,7 +182,7 @@ public class DbUtil {
 			wMoveFlgWhere = " and " + mItemTable + "." + mMoveFlgCol + " = b'0'";
 		}
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 
 		double wBalance = getBalance(wDbAccess, pStartDate, pBookId, false);
 		RecordTableItem wBalanceRecord = new RecordTableItem(pStartDate, wBalance);
@@ -238,8 +230,6 @@ public class DbUtil {
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		RecordTableItem[][] wRet = new RecordTableItem[2][];
@@ -253,7 +243,7 @@ public class DbUtil {
 	public static Map<Integer, String> getBookNameMap() {
 		Map<Integer, String> wBookMap = new LinkedHashMap<Integer, String>();
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "select " + mBookIdCol + ", " + mBookNameCol + " from " + mBookTable + " where " + mDelFlgCol
 				+ " = b'0' " + " order by " + mSortKeyCol;
 
@@ -271,10 +261,7 @@ public class DbUtil {
 			wResultSet.close();
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
-
 		return wBookMap;
 	}
 
@@ -318,16 +305,15 @@ public class DbUtil {
 	}
 
 	public static RecordTableItem getRecordByActId(int pId) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		RecordTableItem wRecord = getRecordByActId(wDbAccess, pId);
-		wDbAccess.closeConnection();
 		return wRecord;
 	}
 
 	public static String[] getNotes(int pItemId) {
 		List<String> wResultList = new ArrayList<String>();
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "select " + mNoteNameCol + " from " + mNoteTable + " where " + mItemIdCol + " = " + pItemId
 				+ " and " + mDelFlgCol + " = b'0' " + " order by " + mNoteIdCol + " desc ";
 
@@ -342,8 +328,6 @@ public class DbUtil {
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wResultList.toArray(new String[0]);
@@ -358,7 +342,7 @@ public class DbUtil {
 			wRexp = mExpenseRexp;
 		}
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "select " + mItemTable + "." + mItemIdCol + ", " + mItemTable + "." + mItemNameCol;
 		wQuery += " from " + mItemTable + " , " + mBookItemTable + ", " + mCategoryTable;
 		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "." + mItemIdCol + " and "
@@ -378,8 +362,6 @@ public class DbUtil {
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wResultMap;
@@ -389,7 +371,7 @@ public class DbUtil {
 	public static Map<Integer, String> getItemNameMap(int pBookId, int pCategoryId) {
 		Map<Integer, String> wResultMap = new LinkedHashMap<Integer, String>();
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "select " + mItemTable + "." + mItemIdCol + ", " + mItemTable + "." + mItemNameCol;
 		wQuery += " from " + mItemTable + " , " + mBookItemTable + ", " + mCategoryTable;
 		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "." + mItemIdCol + " and "
@@ -409,8 +391,6 @@ public class DbUtil {
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wResultMap;
@@ -423,7 +403,7 @@ public class DbUtil {
 			wRexp = mExpenseRexp;
 		}
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "select count( " + mItemTable + "." + mItemNameCol + " ), " + mCategoryTable + "."
 				+ mCategoryIdCol + ", " + mCategoryTable + "." + mCategoryNameCol;
 		wQuery += " from " + mItemTable + ", " + mBookItemTable + ", " + mCategoryTable;
@@ -448,8 +428,6 @@ public class DbUtil {
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wResultMap;
@@ -463,7 +441,7 @@ public class DbUtil {
 			wRexp = mExpenseRexp;
 		}
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "select " + mCategoryIdCol + ", " + mCategoryNameCol;
 		wQuery += " from " + mCategoryTable;
 		wQuery += " where " + mCategoryRexpCol + " = " + wRexp + " and " + mDelFlgCol + " = b'0' " + " and "
@@ -481,8 +459,6 @@ public class DbUtil {
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wResultMap;
@@ -490,7 +466,7 @@ public class DbUtil {
 
 	public static boolean isIncomeCategory(int pCategoryId) {
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "select " + mCategoryRexpCol;
 		wQuery += " from " + mCategoryTable;
 		wQuery += " where " + mCategoryIdCol + " = " + pCategoryId + " and " + mDelFlgCol + " = b'0' ";
@@ -511,8 +487,6 @@ public class DbUtil {
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return false;
@@ -524,7 +498,7 @@ public class DbUtil {
 
 		pNote = getNoteStringWithEscape(pNote);
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQueryBase1 = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol + "," + mActDtCol
 				+ "," + mActIncomeCol + "," + mActExpenseCol;
 		String wQueryBase2 = " values(" + pBookId + "," + pItemId + ",'" + pYear + "-" + pMonth + "-" + pDay + "',"
@@ -570,8 +544,6 @@ public class DbUtil {
 			updateNoteTable(wDbAccess, pItemId, pNote);
 		}
 
-		wDbAccess.closeConnection();
-
 	}
 
 	public static void updateRecord(int pActId, int pBookId, int pItemId, int pYear, int pMonth, int pDay, int pIncome,
@@ -579,7 +551,7 @@ public class DbUtil {
 
 		pNote = getNoteStringWithEscape(pNote);
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 
 		RecordTableItem wOldRecord = getRecordByActId(wDbAccess, pActId);
 		int wOldGroupId = wOldRecord.getGroupId();
@@ -648,9 +620,6 @@ public class DbUtil {
 			if (!"".equals(pNote)) {
 				updateNoteTable(wDbAccess, pItemId, pNote);
 			}
-
-			wDbAccess.closeConnection();
-
 		}
 	}
 
@@ -659,7 +628,7 @@ public class DbUtil {
 
 		pNote = getNoteStringWithEscape(pNote);
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		int wGroupId = getNewGroupId(wDbAccess);
 
 		String wQueryBase = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol + "," + mActIncomeCol
@@ -712,9 +681,6 @@ public class DbUtil {
 		if (!"".equals(pNote)) {
 			updateNoteTable(wDbAccess, getMoveIncomeItemId(), pNote);
 		}
-
-		wDbAccess.closeConnection();
-
 	}
 
 	public static void updateMoveRecord(int pIncomeActId, int pBookFromId, int pBookToId, int pYear, int pMonth,
@@ -722,7 +688,7 @@ public class DbUtil {
 
 		pNote = getNoteStringWithEscape(pNote);
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 
 		RecordTableItem wOldIncomeRecord = getRecordByActId(wDbAccess, pIncomeActId);
 		RecordTableItem wOldExpenseRecord = getMovePairRecord(wDbAccess, wOldIncomeRecord);
@@ -812,9 +778,6 @@ public class DbUtil {
 			if (!"".equals(pNote)) {
 				updateNoteTable(wDbAccess, getMoveIncomeItemId(), pNote);
 			}
-
-			wDbAccess.closeConnection();
-
 		}
 	}
 
@@ -840,10 +803,8 @@ public class DbUtil {
 	}
 
 	public static void deleteRecord(int pActId) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		deleteRecord(wDbAccess, pActId);
-		wDbAccess.closeConnection();
-
 	}
 
 	public static int getMoveIncomeItemId() {
@@ -884,9 +845,8 @@ public class DbUtil {
 	}
 
 	public static RecordTableItem getMovePairRecord(RecordTableItem pRecord) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		RecordTableItem wRecord = getMovePairRecord(wDbAccess, pRecord);
-		wDbAccess.closeConnection();
 		return wRecord;
 	}
 
@@ -917,7 +877,7 @@ public class DbUtil {
 		String wStartDateString = getDateStrings(pStartDate);
 		String wEndDateString = getDateStrings(pEndDate);
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		ResultSet wResultSet;
 		String wQuery;
 
@@ -1077,8 +1037,6 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		wDbAccess.closeConnection();
-
 		// リストへ全結果を挿入
 		Iterator<Integer> wIt = wSummaryTableMap.keySet().iterator();
 		boolean wExpenseRow = false;
@@ -1125,7 +1083,7 @@ public class DbUtil {
 		// wSummaryTableItemList.add(wList);
 		// }
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		ResultSet wResultSet;
 		String wQuery;
 		String wPeriodName = "Period";
@@ -1272,8 +1230,6 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		wDbAccess.closeConnection();
-
 		List<SummaryTableItem[]> wReturnList = new ArrayList<SummaryTableItem[]>(wDatePeriodCount);
 
 		for (int i = 0; i < wDatePeriodCount; i++) {
@@ -1315,7 +1271,7 @@ public class DbUtil {
 		// wSummaryTableItemList.add(wList);
 		// }
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		ResultSet wResultSet;
 		String wQuery;
 		String wPeriodName = "Period";
@@ -1469,8 +1425,6 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		wDbAccess.closeConnection();
-
 		// int wRowCount = wSummaryTableItemListMap.get(0.0).size();
 		List<SummaryTableItem[]> wReturnList = new ArrayList<SummaryTableItem[]>(wDatePeriodCount);
 
@@ -1514,7 +1468,7 @@ public class DbUtil {
 			wSummaryTableItemList.add(wList);
 		}
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		ResultSet wResultSet;
 		String wQuery;
 		String wAppearedBalanceName = "AppearedBalance";
@@ -1709,8 +1663,6 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		wDbAccess.closeConnection();
-
 		List<SummaryTableItem[]> wReturnList = new ArrayList<SummaryTableItem[]>(wSummaryTableItemList.size());
 		for (List<SummaryTableItem> wList : wSummaryTableItemList) {
 			wReturnList.add((SummaryTableItem[]) wList.toArray(new SummaryTableItem[0]));
@@ -1719,11 +1671,10 @@ public class DbUtil {
 	}
 
 	public static ConfigItem getRootConfigItem() {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		ConfigItem wRootItem = new ConfigItem("");
 		wRootItem.addItem(getEachConfigItem(true, wDbAccess));
 		wRootItem.addItem(getEachConfigItem(false, wDbAccess));
-		wDbAccess.closeConnection();
 
 		return wRootItem;
 	}
@@ -1804,7 +1755,7 @@ public class DbUtil {
 		int wSortKeyItem = mInitialSortKeyItem;
 		String wQuery;
 
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 
 		List<ConfigItem> wConfigItemList = new ArrayList<ConfigItem>();
 		wConfigItemList.add(pConfigItem);
@@ -1837,13 +1788,10 @@ public class DbUtil {
 			}
 
 		}
-
-		wDbAccess.closeConnection();
-
 	}
 
 	public static void insertNewCategory(boolean isIncome, String pCategoryName) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "insert into " + mCategoryTable + " (" + mCategoryRexpCol + ", " + mCategoryNameCol + ", "
 				+ mSortKeyCol + ") values (";
 		wQuery += (isIncome) ? mIncomeRexp : mExpenseRexp;
@@ -1853,7 +1801,7 @@ public class DbUtil {
 	}
 
 	public static void insertNewItem(int pCategoryId, String pItemName) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "insert into " + mItemTable + " (" + mCategoryIdCol + ", " + mItemNameCol + ", " + mSortKeyCol
 				+ ") values (";
 		wQuery += pCategoryId + ", '" + pItemName + "', " + 9999 + ")";
@@ -1862,7 +1810,7 @@ public class DbUtil {
 	}
 
 	public static void updateCategory(int pCategoryId, String pCategoryName) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "update " + mCategoryTable + " set " + mCategoryNameCol + " = '" + pCategoryName + "' where "
 				+ mCategoryIdCol + " = " + pCategoryId;
 		// System.out.println(wQuery);
@@ -1870,7 +1818,7 @@ public class DbUtil {
 	}
 
 	public static void updateItem(int pCategoryId, int pItemId, String pItemName) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "update " + mItemTable + " set " + mCategoryIdCol + " = " + pCategoryId + ", " + mItemNameCol
 				+ " = '" + pItemName + "' " + " where " + mItemIdCol + " = " + pItemId;
 		// System.out.println(wQuery);
@@ -1878,7 +1826,7 @@ public class DbUtil {
 	}
 
 	public static void deleteCategoryItem(ConfigItem pConfigItem) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wTableName = (pConfigItem.isCategory()) ? mCategoryTable : mItemTable;
 		String wIdName = (pConfigItem.isCategory()) ? mCategoryIdCol : mItemIdCol;
 
@@ -1890,7 +1838,7 @@ public class DbUtil {
 
 	public static List<Integer> getRelatedBookIdList(ConfigItem pConfigItem) {
 		List<Integer> wList = new ArrayList<Integer>();
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 
 		String wQuery = "select " + mBookIdCol + " from " + mBookItemTable + " where " + mItemIdCol + " = "
 				+ pConfigItem.getId();
@@ -1903,15 +1851,13 @@ public class DbUtil {
 			wResultSet.close();
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
-		} finally {
-			wDbAccess.closeConnection();
 		}
 
 		return wList;
 	}
 
 	public static void updateItemRelation(int pItemId, int pBookId, boolean isSelected) {
-		DbAccess wDbAccess = new DbAccess();
+		DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery;
 
 		if (!isSelected) {
@@ -2101,7 +2047,7 @@ public class DbUtil {
 		String wBookWhere = getBookWhere(pBookId);
 		String wResultCol = "VALUE";
 
-		// DbAccess wDbAccess = new DbAccess();
+		// DbAccess wDbAccess = DbAccess.getInstance();
 		String wQuery = "";
 
 		if (pBookId == mAllBookId) {
@@ -2223,7 +2169,7 @@ public class DbUtil {
 	}
 
 	// public static String getCategoryNameById(int pCategoryId) {
-	// DbAccess wDbAccess = new DbAccess();
+	// DbAccess wDbAccess = DbAccess.getInstance();
 	// ResultSet wResultSet = wDbAccess.executeQuery("select "
 	// + mCategoryNameCol + " from " + mCategoryTable + " where "
 	// + mCategoryIdCol + " = " + pCategoryId);
@@ -2245,7 +2191,7 @@ public class DbUtil {
 	// }
 	//
 	// public static String getCategoryNameByItemId(int pItemId) {
-	// DbAccess wDbAccess = new DbAccess();
+	// DbAccess wDbAccess = DbAccess.getInstance();
 	// ResultSet wResultSet = wDbAccess.executeQuery("select "
 	// + mCategoryTable + "." + mCategoryNameCol + " from "
 	// + mCategoryTable + " inner join " + mItemTable + " on "
