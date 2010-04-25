@@ -39,6 +39,9 @@ class PreferencePageItem extends PreferencePage {
 	private Composite mAttributeComposite;
 
 	private Map<Integer, Button> mBookButtonMap;
+	
+	private Button mSpecialIncomeExpenseButton;
+	private Button mTempIncomeExpenseButton;
 
 	public PreferencePageItem() {
 		setTitle("項目設定");
@@ -185,10 +188,12 @@ class PreferencePageItem extends PreferencePage {
 		Label wSpecialAttributeLabel = new Label(mAttributeComposite, SWT.NONE);
 		wSpecialAttributeLabel.setText("特別収支系設定");
 		
-		Button wSpecialIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
-		wSpecialIncomeExpenseButton.setText("特別収支");
-		Button wTempIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
-		wTempIncomeExpenseButton.setText("立替収支");		
+		mSpecialIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
+		mSpecialIncomeExpenseButton.setText("特別収支");
+		mSpecialIncomeExpenseButton.setVisible(false);
+		mTempIncomeExpenseButton = new Button(mAttributeComposite, SWT.CHECK);
+		mTempIncomeExpenseButton.setText("立替収支");
+		mTempIncomeExpenseButton.setVisible(false);
 
 		mTreeViewerConfigItem.addSelectionChangedListener(new ISelectionChangedListener() {
 			@Override
@@ -257,6 +262,9 @@ class PreferencePageItem extends PreferencePage {
 					wButton.setVisible(false);
 				}
 			}
+			mSpecialIncomeExpenseButton.setVisible(pConfigItem.isCategory());
+			mTempIncomeExpenseButton.setVisible(pConfigItem.isCategory());
+			
 		} else {
 			List<Integer> wBookIdList = DbUtil.getRelatedBookIdList(pConfigItem);
 			for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {

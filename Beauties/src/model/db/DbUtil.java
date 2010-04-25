@@ -76,10 +76,13 @@ public class DbUtil {
 
 	private final static int mAllBookId = SystemData.getAllBookInt();
 
-	private final static int mSpecialIncomeCategoryId = 23;
-	private final static int mSpecialExpenseCategoryId = 44;
-	private final static int mTempIncomeCategoryId = 60;
-	private final static int mTempExpenseCategoryId = 61;
+	// private final static int mSpecialIncomeCategoryId = 23;
+	// private final static int mSpecialExpenseCategoryId = 44;
+	// private final static int mTempIncomeCategoryId = 60;
+	// private final static int mTempExpenseCategoryId = 61;
+
+	private final static String mCategorySpecialFlgCol = "SPECIAL_FLG";
+	private final static String mCategoryTempFlgCol = "TEMP_FLG";
 
 	// エスケープ文字
 	private final static String mEscapeChar = "\\";
@@ -1490,9 +1493,8 @@ public class DbUtil {
 		wQuery = "select COALESCE(sum(case when " + mActDtCol + " < " + wTotalStartDateString + " then "
 				+ mActIncomeCol + " - " + mActExpenseCol + " end),0) " + wAppearedBalanceName;
 		wQuery += ",  + COALESCE(sum(case when " + mActDtCol + " < " + wTotalStartDateString + " and ("
-				+ mCategoryTable + "." + mCategoryIdCol + " = " + mTempIncomeCategoryId + " or " + mCategoryTable + "."
-				+ mCategoryIdCol + " = " + mTempExpenseCategoryId + ") then " + mActIncomeCol + " - " + mActExpenseCol
-				+ " end),0) " + wTempBalanceName;
+				+ mCategoryTable + "." + mCategoryTempFlgCol + " = b'1' ) then " + mActIncomeCol + " - "
+				+ mActExpenseCol + " end),0) " + wTempBalanceName;
 		for (int i = 0; i < wDatePeriods.length; i++) {
 			Date[] wDates = wDatePeriods[i];
 			String wStartDateString = getDateStrings(wDates[0]);
@@ -1503,18 +1505,18 @@ public class DbUtil {
 					+ wEndDateString + " then " + mActExpenseCol + " end),0) " + wAppearedExpenseName + i;
 
 			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryIdCol + " = "
-					+ mSpecialIncomeCategoryId + " then " + mActIncomeCol + " end),0) " + wSpecialIncomeName + i;
+					+ wEndDateString + " and " + mCategoryTable + "." + mCategorySpecialFlgCol + " = b'1' then "
+					+ mActIncomeCol + " end),0) " + wSpecialIncomeName + i;
 			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryIdCol + " = "
-					+ mSpecialExpenseCategoryId + " then " + mActExpenseCol + " end),0) " + wSpecialExpenseName + i;
+					+ wEndDateString + " and " + mCategoryTable + "." + mCategorySpecialFlgCol + " = b'1' then "
+					+ mActExpenseCol + " end),0) " + wSpecialExpenseName + i;
 
 			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mTempIncomeCategoryId
-					+ " then " + mActIncomeCol + " end),0) " + wTempIncomeName + i;
+					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryTempFlgCol + " = b'1' then "
+					+ mActIncomeCol + " end),0) " + wTempIncomeName + i;
 			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mTempExpenseCategoryId
-					+ " then " + mActExpenseCol + " end),0) " + wTempExpenseName + i;
+					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryTempFlgCol + " = b'1' then "
+					+ mActExpenseCol + " end),0) " + wTempExpenseName + i;
 		}
 
 		wQuery += " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable;
@@ -1869,7 +1871,7 @@ public class DbUtil {
 			wQuery = "insert into " + mBookItemTable + " (" + mItemIdCol + ", " + mBookIdCol + ") values (" + pItemId
 					+ ", " + pBookId + ")";
 		}
-		
+
 		wDbAccess.executeUpdate(wQuery);
 	}
 
@@ -1884,9 +1886,8 @@ public class DbUtil {
 				+ mActTable + ", " + mItemTable + ", " + mCategoryTable + " where " + mActTable + "." + mItemIdCol
 				+ " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "." + mCategoryIdCol + " = "
 				+ mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "." + mDelFlgCol + " = b'0' and "
-				+ mActDtCol + " <= " + wEndDateString + " and (" + mCategoryTable + "." + mCategoryIdCol + " = "
-				+ mTempIncomeCategoryId + " or " + mCategoryTable + "." + mCategoryIdCol + " = "
-				+ mTempExpenseCategoryId + ")";
+				+ mActDtCol + " <= " + wEndDateString + " and " + mCategoryTable + "." + mCategoryTempFlgCol
+				+ " = b'1'";
 
 		// System.out.println(wQuery);
 		ResultSet wResultSet = pDbAccess.executeQuery(wQuery);
@@ -1916,9 +1917,8 @@ public class DbUtil {
 				+ mActTable + ", " + mItemTable + ", " + mCategoryTable + " where " + mActTable + "." + mItemIdCol
 				+ " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "." + mCategoryIdCol + " = "
 				+ mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "." + mDelFlgCol + " = b'0' and "
-				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and (" + mCategoryTable
-				+ "." + mCategoryIdCol + " = " + mTempIncomeCategoryId + " or " + mCategoryTable + "." + mCategoryIdCol
-				+ " = " + mTempExpenseCategoryId + ")";
+				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and " + mCategoryTable
+				+ "." + mCategoryTempFlgCol + " = b'1'";
 
 		// System.out.println(wQuery);
 		ResultSet wResultSet = pDbAccess.executeQuery(wQuery);
@@ -1948,9 +1948,8 @@ public class DbUtil {
 				+ mActTable + ", " + mItemTable + ", " + mCategoryTable + " where " + mActTable + "." + mItemIdCol
 				+ " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "." + mCategoryIdCol + " = "
 				+ mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "." + mDelFlgCol + " = b'0' and "
-				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and (" + mCategoryTable
-				+ "." + mCategoryIdCol + " = " + mSpecialIncomeCategoryId + " or " + mCategoryTable + "."
-				+ mCategoryIdCol + " = " + mSpecialExpenseCategoryId + ")";
+				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and " + mCategoryTable
+				+ "." + mCategorySpecialFlgCol + " = b'1'";
 
 		// System.out.println(wQuery);
 		ResultSet wResultSet = pDbAccess.executeQuery(wQuery);
