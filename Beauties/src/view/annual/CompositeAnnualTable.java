@@ -1,7 +1,6 @@
 package view.annual;
 
 import java.text.DateFormat;
-import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -20,6 +19,9 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.dnd.Clipboard;
+import org.eclipse.swt.dnd.TextTransfer;
+import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
@@ -29,6 +31,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn; //import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.TableItem;
 
 import util.Util;
 import view.util.MyGridData;
@@ -45,9 +48,6 @@ class CompositeAnnualTable extends Composite {
 
 	private CompositeAnnualMain mCompositeAnnualMain;
 
-	// private Color mColor1 = new Color(Display.getCurrent(), 255, 255, 255);
-	// private Color mColor2 = new Color(Display.getCurrent(), 255, 255, 234);
-
 	public CompositeAnnualTable(Composite pParent) {
 		super(pParent, SWT.NONE);
 		mCompositeAnnualMain = (CompositeAnnualMain) pParent;
@@ -58,7 +58,7 @@ class CompositeAnnualTable extends Composite {
 		// 年月列テーブル
 		TableViewer wRowHeader = new TableViewer(this, SWT.MULTI | SWT.BORDER | SWT.VIRTUAL);
 		mRowHeaderTable = wRowHeader.getTable();
-		mRowHeaderTable.setLinesVisible(true);
+		mRowHeaderTable.setLinesVisible(DbUtil.showGridLine());
 		mRowHeaderTable.setHeaderVisible(true);
 
 		MyGridData wRowHeaderGridData = new MyGridData(GridData.BEGINNING, GridData.BEGINNING, false, true);
@@ -109,7 +109,7 @@ class CompositeAnnualTable extends Composite {
 		mMainTable.setLayoutData(new MyGridData(GridData.BEGINNING, GridData.BEGINNING, true, true).getMyGridData());
 
 		// 線を表示する
-		mMainTable.setLinesVisible(true);
+		mMainTable.setLinesVisible(DbUtil.showGridLine());
 		// ヘッダを可視にする
 		mMainTable.setHeaderVisible(true);
 
@@ -159,6 +159,28 @@ class CompositeAnnualTable extends Composite {
 		});
 
 	}
+	
+	protected void copySelectedTextToClipboard() {
+		TableItem[] wSelectedRowItems = mRowHeaderTable.getSelection();
+		TableItem[] wSelectedAnnualItems = mMainTable.getSelection();
+		if (wSelectedAnnualItems.length == 0)
+			return;
+		Clipboard wClipboard = new Clipboard(getDisplay());
+		StringBuffer sb = new StringBuffer();
+		for (int i=0; i < wSelectedRowItems.length; i++) {
+			if (i > 0) {
+				sb.append("\n");
+			}
+			sb.append(wSelectedRowItems[i].getText());
+			for (int j=1;;j++) {
+				if ("".equals(wSelectedAnnualItems[i].getText(j))) 
+					break;
+				sb.append("\t" + wSelectedAnnualItems[i].getText(j));
+			}
+		}
+		wClipboard.setContents(new String[] {sb.toString()}, new Transfer[]{TextTransfer.getInstance()});
+		
+	}
 }
 
 class HeaderTableContentProvider implements IStructuredContentProvider {
@@ -202,23 +224,6 @@ class HeaderTableLabelProvider implements ITableLabelProvider, ITableColorProvid
 
 	@Override
 	public Color getBackground(Object pElement, int pColumnIndex) {
-		// SummaryTableItem wItem = (SummaryTableItem) pElement;
-		// if (wItem.isSpecial() && mCompositeAnnualMain.getAnnualViewType() !=
-		// AnnualViewType.Original) {
-		// // 残高、営業収支等（赤）
-		// return new Color(Display.getCurrent(), 255, 176, 176);
-		// }
-		// } else if (wItem.isAppearedSum()) {
-		// // みかけ収支等（緑）
-		// return new Color(mDisplay, 176, 255, 176);
-		// } else if (wItem.getItemId() == SystemData.getUndefinedInt()) {
-		// // カテゴリ（黄色）
-		// return new Color(mDisplay, 255, 255, 176);
-		// } else {
-		// アイテム（グレー）
-		// return new Color(mDisplay, 238, 227, 251);
-		// }
-		// return new Color(mDisplay, 200, 200, 255);
 		return null;
 	}
 
@@ -243,8 +248,6 @@ class SummaryTableContentProvider implements IStructuredContentProvider {
 }
 
 class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
-	private DecimalFormat mDecimalFormat = new DecimalFormat("###,###");
-
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
@@ -254,7 +257,7 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		if (columnIndex == 0 || wItem[columnIndex - 1].getValue() == SystemData.getUndefinedInt()) {
 			return "";
 		} else {
-			return mDecimalFormat.format(wItem[columnIndex - 1].getValue());
+			return SystemData.getFormatedFigures(wItem[columnIndex - 1].getValue());
 		}
 	}
 
@@ -279,24 +282,9 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 			SummaryTableItem[] wItems = (SummaryTableItem[]) pElement;
 			SummaryTableItem wItem = wItems[pColumnIndex - 1];
 			if (wItem.isAppearedIncomeExpense() || wItem.isAppearedSum()) {
-				// 赤
-				// return new Color(Display.getCurrent(), 255, 200, 200);
 				// 黄色
-				return new Color(Display.getCurrent(), 255, 255, 176);
+				return SystemData.getColorYellow();
 			}
-			// } else if (wItem.isAppearedIncomeExpense()) {
-			// // みかけ収入、支出（緑）
-			// return new Color(mDisplay, 200, 255, 200);
-			// } else if (wItem.isSpecial()) {
-			// // 残高、営業収支等（青）
-			// return new Color(mDisplay, 200, 200, 255);
-			// } else if (wItem.isCategory()) {
-			// // カテゴリ（黄色）
-			// return new Color(mDisplay, 255, 255, 176);
-			// } else {
-			// // アイテム（グレー）
-			// return new Color(mDisplay, 238, 227, 251);
-			// }
 			return null;
 		}
 	}

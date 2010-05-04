@@ -158,7 +158,6 @@ class CompositeMove extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
-
 			public void focusLost(FocusEvent event) {
 
 			}
@@ -175,7 +174,6 @@ class CompositeMove extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
-
 			public void focusLost(FocusEvent event) {
 
 			}
@@ -188,6 +186,13 @@ class CompositeMove extends Composite {
 		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
 		wGridData = new GridData(GridData.FILL_HORIZONTAL);
 		mNoteCombo.setLayoutData(wGridData);
+		mNoteCombo.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent event) {
+				getShell().setImeInputMode(SWT.NATIVE);
+			}
+			public void focusLost(FocusEvent event) {
+			}
+		});
 	}
 
 	private void initWidgets() {

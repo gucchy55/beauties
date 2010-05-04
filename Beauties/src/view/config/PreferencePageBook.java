@@ -1,20 +1,25 @@
 package view.config;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
 import model.Book;
-import model.ConfigItem;
+import model.SystemData;
 import model.db.DbUtil;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.dialogs.IInputValidator;
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
+import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
+import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
@@ -43,12 +48,13 @@ class PreferencePageBook extends PreferencePage {
 	private TableViewer mTableViewerBooks;
 	private boolean mOrderChanged = false;
 
+	private Label mBalanceLabel;
 	private Composite mAttributeComposite;
 
-	private Map<Integer, Button> mBookButtonMap;
+	private Map<Button, Integer> mItemButtonMap;
 	private List<Book> mBookList;
-	
-	public PreferencePageBook() {
+
+	protected PreferencePageBook() {
 		setTitle("帳簿設定");
 	}
 
@@ -56,7 +62,8 @@ class PreferencePageBook extends PreferencePage {
 		mMainComposite = new Composite(parent, SWT.NONE);
 
 		mMainComposite.setLayout(new MyGridLayout(2, false).getMyGridLayout());
-		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false)
+				.getMyGridData();
 		mMainComposite.setLayoutData(wGridData);
 
 		Composite wTopComposite = new Composite(mMainComposite, SWT.NONE);
@@ -64,32 +71,54 @@ class PreferencePageBook extends PreferencePage {
 		wGridData.horizontalSpan = 2;
 		wTopComposite.setLayoutData(wGridData);
 
-		Button wCategoryAddButton = new Button(wTopComposite, SWT.NULL);
-		wCategoryAddButton.setText("追加");
-		wCategoryAddButton.addSelectionListener(new SelectionAdapter() {
+		Button wBookAddButton = new Button(wTopComposite, SWT.NULL);
+		wBookAddButton.setText("追加");
+		wBookAddButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				InputDialog wInputDialog = new InputDialog(getShell(), "test", "追加する帳簿名", "", null);
+				InputDialog wInputDialog = new InputDialog(getShell(), "帳簿追加", "新しい帳簿名", "", null);
 				if (wInputDialog.open() == Dialog.OK) {
-					System.out.println(wInputDialog.getValue());
+					DbUtil.addNewBook(wInputDialog.getValue());
+					updateBookTableWithDb();
+					mTableViewerBooks.getTable().setSelection(
+							mTableViewerBooks.getTable().getItemCount() - 1);
+
+				}
+			}
+		});
+
+		Button wBookModifyButton = new Button(wTopComposite, SWT.NULL);
+		wBookModifyButton.setText("変更");
+		wBookModifyButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Book wBook = getSelectedBook();
+				if (wBook != null) {
+					InputDialog wInputDialog = new InputDialog(getShell(), "帳簿名変更", "", wBook
+							.getName(), null);
+					if (wInputDialog.open() == Dialog.OK) {
+						DbUtil.updateBook(wBook.getId(), wInputDialog.getValue(), wBook
+								.getBalance());
+						int wIndex = mTableViewerBooks.getTable().getSelectionIndex();
+						updateBookTableWithDb();
+						mTableViewerBooks.getTable().setSelection(wIndex);
+					}
 				}
 			}
 		});
 
 		Button wDeleteButton = new Button(wTopComposite, SWT.NULL);
 		wDeleteButton.setText("削除");
-//		wDeleteButton.addSelectionListener(new SelectionAdapter() {
-//			public void widgetSelected(SelectionEvent e) {
-//				if (mTreeViewerConfigItem.getSelectedConfigItem() != null) {
-//					ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
-//					if (!wConfigItem.isSpecial()) {
-//						if (MessageDialog.openConfirm(getShell(), "削除", wConfigItem.getName() + " - 本当に削除しますか？")) {
-////							DbUtil.deleteCategoryItem(wConfigItem);
-//							updateTree();
-//						}
-//					}
-//				}
-//			}
-//		});
+		wDeleteButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Book wBook = getSelectedBook();
+				if (wBook != null) {
+					if (MessageDialog.openConfirm(getShell(), "帳簿削除", wBook.getName()
+							+ " - 本当に削除しますか？")) {
+						DbUtil.removeBook(wBook.getId());
+						updateBookTableWithDb();
+					}
+				}
+			}
+		});
 
 		Button wUpButton = new Button(wTopComposite, SWT.NULL);
 		wUpButton.setText("↑");
@@ -102,7 +131,7 @@ class PreferencePageBook extends PreferencePage {
 						mBookList.remove(wBook);
 						mBookList.add(wOldIndex - 1, wBook);
 						mOrderChanged = true;
-						updateBookOrder();
+						updateBookTable();
 					}
 				}
 			}
@@ -119,94 +148,135 @@ class PreferencePageBook extends PreferencePage {
 						mBookList.remove(wBook);
 						mBookList.add(wOldIndex + 1, wBook);
 						mOrderChanged = true;
-						updateBookOrder();
+						updateBookTable();
 					}
 				}
 			}
 		});
 
-		// TreeViewer
+		// BookNameTable
 		mBookList = DbUtil.getBookList();
 		mTableComposite = new Composite(mMainComposite, SWT.BORDER);
 		mTableComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getMyFillLayout());
 		wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		mTableComposite.setLayoutData(wGridData);
 		initBookNameTable();
+		mTableViewerBooks.getTable().setSelection(0);
 
 		// 関連付け
 		mAttributeComposite = new Composite(mMainComposite, SWT.BORDER);
-		mAttributeComposite.setLayout(new MyGridLayout(1, false).getMyGridLayout());
+		mAttributeComposite.setLayout(new MyGridLayout(2, true).getMyGridLayout());
 		wGridData = new MyGridData(GridData.FILL, GridData.FILL, false, true).getMyGridData();
 		wGridData.widthHint = mRightHint;
 		mAttributeComposite.setLayoutData(wGridData);
+		initAttributes();
 
-		Label wLabel = new Label(mAttributeComposite, SWT.NONE);
-		wLabel.setText("関連付け");
-//		
-//		Map<Integer, String> wBookNameMap = DbUtil.getBookNameMap();
-//		mBookButtonMap = new LinkedHashMap<Integer, Button>();
-//		for (Map.Entry<Integer, String> entry : wBookNameMap.entrySet()) {
-//			Button wButton = new Button(mAttributeComposite, SWT.CHECK);
-//			wButton.setText(entry.getValue());
-//			wButton.setVisible(false);
-//			mBookButtonMap.put(entry.getKey(), wButton);
-//
-//			wButton.addSelectionListener(new SelectionAdapter() {
-//				public void widgetSelected(SelectionEvent e) {
-//					ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
-//					if (wSelectedItem != null) {
-//						Button wButton = (Button) e.getSource();
-//						int wBookId = SystemData.getUndefinedInt();
-//						for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
-//							if (wButton == entry.getValue()) {
-//								wBookId = entry.getKey();
-//								break;
-//							}
-//						}
-//						DbUtil.updateItemRelation(wSelectedItem.getId(), wBookId, wButton.getSelection());
-//					}
-//				}
-//			});
-//		}
-//		
-//		Label wSpaceLabel = new Label(mAttributeComposite, SWT.NONE);
-//		wSpaceLabel.setText("");
-//		
-//		Label wSpecialAttributeLabel = new Label(mAttributeComposite, SWT.NONE);
-//		wSpecialAttributeLabel.setText("特別収支系設定");
-//		
-//		mTreeViewerConfigItem.addSelectionChangedListener(new ISelectionChangedListener() {
-//			@Override
-//			public void selectionChanged(SelectionChangedEvent arg0) {
-//				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
-//				updateAttributeButtons(wConfigItem);
-//			}
-//		});
+		// 初期設定
+		mTableViewerBooks.getTable().setFocus();
+		updateAttributeButtons(mBookList.get(0).getId());
 
 		return mMainComposite;
 	}
-	
+
 	private void initBookNameTable() {
-		
-		mTableViewerBooks = new TableViewer(mTableComposite, SWT.NONE);
+		mTableViewerBooks = new TableViewer(mTableComposite, SWT.FULL_SELECTION);
 		Table wTable = mTableViewerBooks.getTable();
 		wTable.setHeaderVisible(false);
-		
+
 		// 列のヘッダの設定
 		TableColumn wBookNameCol = new TableColumn(wTable, SWT.LEFT);
 		wBookNameCol.setText("BookName");
 		wBookNameCol.pack();
-		
+
 		mTableViewerBooks.setContentProvider(new TableContentProvider());
-		mTableViewerBooks.setInput((Book[])mBookList.toArray(new Book[0]));
+		mTableViewerBooks.setInput((Book[]) mBookList.toArray(new Book[0]));
 
 		mTableViewerBooks.setLabelProvider(new TableLabelProvider());
+		addSelectionListenerToBookTable();
+	}
+
+	private void addSelectionListenerToBookTable() {
+		mTableViewerBooks.addSelectionChangedListener(new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent arg0) {
+				Book wBook = getSelectedBook();
+				if (wBook != null) {
+					updateAttributeButtons(wBook.getId());
+				}
+			}
+		});
+	}
+
+	private void initAttributes() {
+		mBalanceLabel = new Label(mAttributeComposite, SWT.NONE);
+
+		Button wBalanceModifyButton = new Button(mAttributeComposite, SWT.NONE);
+		wBalanceModifyButton.setText("変更");
+		wBalanceModifyButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Book wBook = getSelectedBook();
+				if (wBook == null) {
+					return;
+				}
+				InputDialog dlg = new InputDialog(getShell(), "初期値変更", "初期値を入力してください", Integer
+						.toString((int) wBook.getBalance()), new IInputValidator() {
+					public String isValid(String newText) {
+						if (newText.matches("[0-9]+"))
+							return null; // Valid
+						else {
+							if (newText.length() == 0)
+								return "Input figures"; // null
+							else
+								return "Error: only figures are allowed";
+						}
+					}
+				});
+				if (dlg.open() == Dialog.OK) {
+					wBook.setBalance(Double.parseDouble(dlg.getValue()));
+					DbUtil.updateBalance(wBook);
+					updateBalanceLabel();
+				}
+			}
+		});
+
+		Label wLabel = new Label(mAttributeComposite, SWT.NONE);
+		wLabel.setText("関連付け");
+		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false)
+				.getMyGridData();
+		wGridData.horizontalSpan = 2;
+		wLabel.setLayoutData(wGridData);
+
+		Composite wCompositeItemButtons = new Composite(mAttributeComposite, SWT.BORDER);
+		wCompositeItemButtons.setLayout(new MyGridLayout(1, false).getMyGridLayout());
+		wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
+		wGridData.horizontalSpan = 2;
+		wCompositeItemButtons.setLayoutData(wGridData);
+
+		mItemButtonMap = new HashMap<Button, Integer>();
+		Map<Integer, String> wItemNameMap = DbUtil.getItemNameMap(SystemData.getAllBookInt(), true);
+		wItemNameMap.putAll(DbUtil.getItemNameMap(SystemData.getAllBookInt(), false));
+		for (Map.Entry<Integer, String> entry : wItemNameMap.entrySet()) {
+			Button wButton = new Button(wCompositeItemButtons, SWT.CHECK);
+			wButton.setText(entry.getValue());
+			mItemButtonMap.put(wButton, entry.getKey());
+
+			wButton.addSelectionListener(new SelectionAdapter() {
+				public void widgetSelected(SelectionEvent e) {
+					Book wBook = getSelectedBook();
+					if (wBook == null)
+						return;
+					Button wButton = (Button) e.getSource();
+					int wBookId = wBook.getId();
+					int wItemId = mItemButtonMap.get(wButton);
+					DbUtil.updateItemRelation(wItemId, wBookId, wButton.getSelection());
+				}
+			});
+		}
 	}
 
 	protected void performApply() {
 		if (mOrderChanged) {
-//			DbUtil.updateSortKeys(mRootConfigItem);
-			mOrderChanged = false;
+			updateBookSortKeys();
 		}
 		if (getControl() == null) {
 			return;
@@ -218,11 +288,7 @@ class PreferencePageBook extends PreferencePage {
 		return true;
 	}
 
-	protected void performDefaults() {
-
-	}
-
-	private void updateBookOrder() {
+	private void updateBookTable() {
 		mTableViewerBooks.getTable().setRedraw(false);
 
 		try {
@@ -231,44 +297,37 @@ class PreferencePageBook extends PreferencePage {
 			mTableViewerBooks.getTable().dispose();
 			initBookNameTable();
 			mTableComposite.layout();
-
-//			addSelectionListenerToTree();
-
 			mTableViewerBooks.setSelection(selection);
 
 		} finally {
 			mTableViewerBooks.getTable().setRedraw(true);
 		}
-
 	}
 
-//	private void updateTree() {
-//		mRootConfigItem = DbUtil.getRootConfigItem();
-//		mTreeViewerConfigItem.getTree().dispose();
-//		mTreeViewerConfigItem = new TreeViewerConfigItem(mTableComposite, mRootConfigItem);
-//		mTableComposite.layout();
-//
-//		DbUtil.updateSortKeys(mRootConfigItem);
-//		mOrderChanged = false;
-//	}
+	private void updateBookTableWithDb() {
+		mBookList = DbUtil.getBookList();
+		updateBookTable();
+	}
 
-	protected void updateAttributeButtons(ConfigItem pConfigItem) {
-		if (pConfigItem == null || pConfigItem.isSpecial() || pConfigItem.isCategory()) {
-			for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
-				Button wButton = entry.getValue();
-				wButton.setVisible(false);
-			}
-		} else {
-			List<Integer> wBookIdList = DbUtil.getRelatedBookIdList(pConfigItem);
-			for (Map.Entry<Integer, Button> entry : mBookButtonMap.entrySet()) {
-				Button wButton = entry.getValue();
-				wButton.setVisible(true);
-				wButton.setSelection(wBookIdList.contains(entry.getKey()));
-			}
+	private void updateBookSortKeys() {
+		DbUtil.updateBookSortKeys(mBookList);
+		mOrderChanged = false;
+	}
+
+	private void updateAttributeButtons(int pBookId) {
+		updateBalanceLabel();
+		List<Integer> wItemIdList = DbUtil.getRelatedItemIdList(getSelectedBook().getId());
+		for (Map.Entry<Button, Integer> entry : mItemButtonMap.entrySet()) {
+			entry.getKey().setSelection(wItemIdList.contains(entry.getValue()));
 		}
-
 	}
-	
+
+	private void updateBalanceLabel() {
+		mBalanceLabel.setText("初期値: "
+				+ SystemData.getFormatedFigures(getSelectedBook().getBalance()) + "\t");
+		mBalanceLabel.pack();
+	}
+
 	private Book getSelectedBook() {
 		IStructuredSelection sel = (IStructuredSelection) mTableViewerBooks.getSelection();
 		return (Book) sel.getFirstElement();
@@ -296,7 +355,7 @@ class TableLabelProvider implements ITableLabelProvider {
 
 	public String getColumnText(Object element, int columnIndex) {
 		Book wBook = (Book) element;
-		
+
 		if (columnIndex == 0) {
 			return wBook.getName();
 		}
@@ -317,4 +376,3 @@ class TableLabelProvider implements ITableLabelProvider {
 	}
 
 }
-

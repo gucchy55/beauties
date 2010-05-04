@@ -1,5 +1,6 @@
 package io;
 
+import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
 import model.SystemData;
@@ -22,6 +23,8 @@ public class FileLoader {
 
 	private static final String mEntryHeightWeightUpKey = "heightWeightUp";
 	private static final String mEntryHeightWeightDownKey = "heightWeightDown";
+	
+	private static final String mMemoDirKey = "memoDirName";
 
 	public FileLoader(String pFileName) {
 		mFileName = pFileName;
@@ -41,7 +44,10 @@ public class FileLoader {
 					Integer.parseInt(prop.getProperty(mWindowYKey)), 
 					Integer.parseInt(prop.getProperty(mWindowWidthKey)), 
 					Integer.parseInt(prop.getProperty(mWindowHeightKey))));
-
+			SystemData.setWindowPoint(new Point(
+					Integer.parseInt(prop.getProperty(mWindowWidthKey)), 
+					Integer.parseInt(prop.getProperty(mWindowHeightKey))));
+			
 			if (Integer.parseInt(prop.getProperty(mWindowMaximiedKey)) == 1) {
 				SystemData.setWindowMaximized(true);
 			}
@@ -50,6 +56,10 @@ public class FileLoader {
 					Integer.parseInt(prop.getProperty(mEntryHeightWeightUpKey)),
 					Integer.parseInt(prop.getProperty(mEntryHeightWeightDownKey))
 			});
+			
+			if (!"".equals(prop.getProperty(mMemoDirKey)))
+				SystemData.setPathMemoDir(prop.getProperty(mMemoDirKey));
+			
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
 		}

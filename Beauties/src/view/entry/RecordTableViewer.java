@@ -1,7 +1,5 @@
 package view.entry;
 
-import java.text.DecimalFormat;
-
 import model.RecordTableItem;
 import model.SystemData;
 import model.action.DeleteRecord;
@@ -33,19 +31,20 @@ import org.eclipse.swt.widgets.TableItem;
 import view.util.MyGridData;
 
 class RecordTableViewer extends TableViewer {
-	
+
 	private CompositeEntry mCompositeEntry;
 
 	public RecordTableViewer(Composite pComp, CompositeEntry pCompositeEntry) {
 		super(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
 
 		mCompositeEntry = pCompositeEntry;
-		
+
 		// テーブルの作成
 		Table wTable = this.getTable();
-		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+				.getMyGridData());
 		// 線を表示する
-		wTable.setLinesVisible(true);
+		wTable.setLinesVisible(DbUtil.showGridLine());
 		// ヘッダを可視にする
 		wTable.setHeaderVisible(true);
 
@@ -93,7 +92,7 @@ class RecordTableViewer extends TableViewer {
 		wNoteCol.setText("備考");
 		wNoteCol.setWidth(250);
 	}
-	
+
 	public void setRecordTableItem(final RecordTableItem[] pRecordTableItems) {
 
 		final Table wTable = this.getTable();
@@ -106,12 +105,12 @@ class RecordTableViewer extends TableViewer {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				RecordTableItem wRecord = (RecordTableItem) sel.getFirstElement();
-				if (!wRecord.isBalanceRow()) {
-					if (wRecord.isMoveItem()) {
-						new OpenDialogModifyMove(mCompositeEntry).run();
-					} else {
-						new OpenDialogModifyRecord(mCompositeEntry).run();
-					}
+				if (wRecord.isBalanceRow())
+					return;
+				if (wRecord.isMoveItem()) {
+					new OpenDialogModifyMove(mCompositeEntry).run();
+				} else {
+					new OpenDialogModifyRecord(mCompositeEntry).run();
 				}
 			}
 		});
@@ -124,13 +123,14 @@ class RecordTableViewer extends TableViewer {
 				if (e.character == SWT.CR) {
 					int index = wTable.getSelectionIndex();
 					TableItem wItem = wTable.getItem(index);
-					if (!"".equals(wItem.getText(0))) {
-						if (DbUtil.isMoveItem(Integer.parseInt(wItem.getText(2)))) {
-							new OpenDialogModifyMove(mCompositeEntry).run();
-						} else {
-							new OpenDialogModifyRecord(mCompositeEntry).run();
-						}
+					if ("".equals(wItem.getText(0)))
+						return;
+					if (DbUtil.isMoveItem(Integer.parseInt(wItem.getText(2)))) {
+						new OpenDialogModifyMove(mCompositeEntry).run();
+					} else {
+						new OpenDialogModifyRecord(mCompositeEntry).run();
 					}
+
 				}
 
 				// DELキーが押されたら削除（確認ダイアログ）
@@ -150,7 +150,7 @@ class RecordTableViewer extends TableViewer {
 				if (e.stateMask == SWT.CTRL) {
 					if (e.keyCode == 'i') {
 						new OpenDialogNewRecord(mCompositeEntry).run();
-					} 
+					}
 					if (e.keyCode == 'm') {
 						new OpenDialogNewMove(mCompositeEntry).run();
 					}
@@ -175,8 +175,6 @@ class TableContentProvider implements IStructuredContentProvider {
 }
 
 class TableLabelProvider implements ITableLabelProvider {
-	private DecimalFormat mDecimalFormat = new DecimalFormat("###,###");
-
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
@@ -202,16 +200,16 @@ class TableLabelProvider implements ITableLabelProvider {
 			if (wRecord.isBalanceRow() || wRecord.getIncome() == 0) {
 				return "";
 			} else {
-				return mDecimalFormat.format(wRecord.getIncome());
+				return SystemData.getFormatedFigures(wRecord.getIncome());
 			}
 		case 6:
 			if (wRecord.isBalanceRow() || wRecord.getExpense() == 0) {
 				return "";
 			} else {
-				return mDecimalFormat.format(wRecord.getExpense());
+				return SystemData.getFormatedFigures(wRecord.getExpense());
 			}
 		case 7:
-			return mDecimalFormat.format(wRecord.getBalance());
+			return SystemData.getFormatedFigures(wRecord.getBalance());
 		case 8:
 			if (wRecord.getFrequency() == 0 || wRecord.isBalanceRow()) {
 				return "";
@@ -241,13 +239,13 @@ class TableLabelProvider implements ITableLabelProvider {
 }
 
 class IdFilter extends ViewerFilter {
-	
+
 	private CompositeEntry mCompositeEntry;
-	
+
 	public IdFilter(CompositeEntry pCompositeEntry) {
 		mCompositeEntry = pCompositeEntry;
 	}
-	
+
 	public boolean select(Viewer pViewer, Object pParent, Object pElement) {
 		RecordTableItem wRecord = (RecordTableItem) pElement;
 		if (mCompositeEntry.getCategoryId() != SystemData.getUndefinedInt()) {

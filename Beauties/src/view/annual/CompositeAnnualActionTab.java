@@ -28,6 +28,15 @@ class CompositeAnnualActionTab extends Composite {
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData());
 
+		
+		Button wCopyButton = new Button(this, SWT.NULL);
+		wCopyButton.setText("Copy");
+		wCopyButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				mCompositeAnnualMain.copyToClipboard();
+			}
+		});
+		
 		Button wAnnualPeriodButton = new Button(this, SWT.TOGGLE);
 		wAnnualPeriodButton.setText("年度表示");
 		if (mCompositeAnnualMain.isAnnualPeriod()) {

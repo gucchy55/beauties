@@ -104,5 +104,9 @@ public class CompositeAnnualMain extends Composite {
 	public void setMonthCount(int pMonthCount) {
 		this.mMonthCount = pMonthCount;
 	}
+	
+	public void copyToClipboard() {
+		mCompositeAnnualTable.copySelectedTextToClipboard();
+	}
 
 }

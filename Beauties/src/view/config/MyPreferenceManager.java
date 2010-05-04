@@ -20,9 +20,8 @@ public class MyPreferenceManager extends PreferenceManager {
 		this.addToRoot(mBookNode);
 		
 		mOtherNode = new PreferenceNode("その他");
-		mOtherNode.setPage(new PreferencePageBook());
+		mOtherNode.setPage(new PreferencePageSystem());
 		this.addToRoot(mOtherNode);
-
 	}
 	
 }

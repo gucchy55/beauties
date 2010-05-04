@@ -10,6 +10,7 @@ import model.RecordTableItem;
 import model.SystemData;
 import model.db.DbUtil;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.fieldassist.ComboContentAdapter;
 import org.eclipse.jface.fieldassist.ContentProposalAdapter;
 import org.eclipse.jface.fieldassist.IContentProposal;
@@ -186,9 +187,7 @@ class CompositeRecord extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
-
 			public void focusLost(FocusEvent event) {
-
 			}
 		});
 
@@ -203,9 +202,7 @@ class CompositeRecord extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
-
 			public void focusLost(FocusEvent event) {
-
 			}
 		});
 
@@ -216,6 +213,13 @@ class CompositeRecord extends Composite {
 		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
 		wGridData = new GridData(GridData.FILL_HORIZONTAL);
 		mNoteCombo.setLayoutData(wGridData);
+		mNoteCombo.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent event) {
+				getShell().setImeInputMode(SWT.NATIVE);
+			}
+			public void focusLost(FocusEvent event) {
+			}
+		});
 
 	}
 
@@ -348,7 +352,9 @@ class CompositeRecord extends Composite {
 		}
 
 		mItemCombo.select(0);
-		mItemId = mItemIdList.get(0);
+		if (!mItemIdList.isEmpty()) {
+			mItemId = mItemIdList.get(0);
+		}
 
 		mItemCombo.pack();
 		mItemCombo.setVisibleItemCount(10);
@@ -387,6 +393,10 @@ class CompositeRecord extends Composite {
 	public void insertRecord() {
 		// New/Update, Single/Multi records
 		// Common
+		if (mItemIdList.isEmpty()) {
+			MessageDialog.openError(getShell(), "設定された項目がありません", "設定画面から関連付ける項目を設定してください");
+			return;
+		}
 		int wBookId = mBookIdList.get(mBookCombo.getSelectionIndex());
 		int wItemId = mItemIdList.get(mItemCombo.getSelectionIndex());
 		int wYear = mDateTime.getYear();

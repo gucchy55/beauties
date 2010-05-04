@@ -17,7 +17,7 @@ public class TreeViewerConfigItem extends TreeViewer {
 //	private ConfigItem mSelectedConfigItem;
 	
 	public TreeViewerConfigItem(Composite pParent, ConfigItem pConfigItem) {
-		super(pParent, SWT.NONE);
+		super(pParent, SWT.VIRTUAL);
 		
 		this.setContentProvider(new TreeContentProvider());
 

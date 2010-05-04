@@ -76,7 +76,7 @@ public class Util {
 		Calendar wStartCal;
 		Calendar wEndCal;
 
-		int wCutOff = SystemData.getCutOff();
+		int wCutOff = DbUtil.getCutOff();
 		Calendar wInputCal = Calendar.getInstance();
 		wInputCal.setTime(pDate);
 		wStartCal = (Calendar) wInputCal.clone();

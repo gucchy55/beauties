@@ -11,6 +11,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
 import org.eclipse.swt.events.ControlEvent;
 import org.eclipse.swt.events.ControlListener;
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
@@ -33,9 +35,6 @@ class CompositeRecordTable extends Composite {
 	private RecordTableViewer mTableUp;
 	private RecordTableViewer mTableBottom;
 
-	// private Color mColor1 = new Color(Display.getCurrent(), 255, 255, 255);
-	// private Color mColor2 = new Color(Display.getCurrent(), 255, 255, 234);
-
 	public CompositeRecordTable(Composite pParent) {
 		super(pParent, SWT.NONE);
 		mCompositeEntry = (CompositeEntry) pParent;
@@ -43,14 +42,17 @@ class CompositeRecordTable extends Composite {
 		this.mEndDate = mCompositeEntry.getEndDate();
 
 		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+		this
+				.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+						.getMyGridData());
 
 		final SashForm wSashForm = new SashForm(this, SWT.VERTICAL);
 		wSashForm.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		wSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+		wSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+				.getMyGridData());
 
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mStartDate, mEndDate, mCompositeEntry
-				.getBookId());
+		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mStartDate, mEndDate,
+				mCompositeEntry.getBookId());
 
 		mRecordItemsUp = wRecordTableItemAll[0];
 		mRecordItemsBottom = wRecordTableItemAll[1];
@@ -62,13 +64,15 @@ class CompositeRecordTable extends Composite {
 
 		Composite wBottomComp = new Composite(wSashForm, SWT.NONE);
 		wBottomComp.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+				.getMyGridData());
 
 		wSashForm.setWeights(SystemData.getRecordTableWeights());
 
 		Label wLabel = new Label(wBottomComp, SWT.NONE);
 		wLabel.setText("当月の収支予定");
-		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER, true, false).getMyGridData());
+		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER, true, false)
+				.getMyGridData());
 
 		mTableBottom = new RecordTableViewer(wBottomComp, mCompositeEntry);
 
@@ -89,24 +93,38 @@ class CompositeRecordTable extends Composite {
 			}
 		});
 
+		mTableUp.getTable().addFocusListener(new FocusListener() {
+			public void focusLost(FocusEvent arg0) {
+			}
+
+			public void focusGained(FocusEvent arg0) {
+				// if (mTableBottom.getTable().getSelectionCount() > 0)
+				mTableBottom.getTable().deselectAll();
+			}
+		});
+		mTableBottom.getTable().addFocusListener(new FocusListener() {
+			public void focusLost(FocusEvent arg0) {
+			}
+
+			public void focusGained(FocusEvent arg0) {
+				// if (mTableUp.getTable().getSelectionCount() > 0)
+				mTableUp.getTable().deselectAll();
+			}
+		});
+
 	}
 
 	public int getSelectedActId() {
-		Table wTable = mTableUp.getTable();
-
-		if (mTableBottom.getTable().getSelectionIndex() > 0) {
-			wTable = mTableBottom.getTable();
-		} else if (mTableUp.getTable().getSelectionIndex() < 0) {
-			return SystemData.getUndefinedInt();
-		}
-		int index = wTable.getSelectionIndex();
-		TableItem wItem = wTable.getItem(index);
-		if (!"".equals(wItem.getText(0))) {
-			return Integer.parseInt(wItem.getText(0));
+		Table wTable;
+		if (mTableUp.getTable().getSelectionCount() > 0) {
+			wTable = mTableUp.getTable();
 		} else {
-			return SystemData.getUndefinedInt();
+			wTable = mTableBottom.getTable();
 		}
-
+		TableItem wItem = wTable.getItem(wTable.getSelectionIndex());
+		if ("".equals(wItem.getText(0)))
+			return SystemData.getUndefinedInt();
+		return Integer.parseInt(wItem.getText(0));
 	}
 
 	public void addFilter() {

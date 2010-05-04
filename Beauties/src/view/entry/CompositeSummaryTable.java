@@ -1,7 +1,5 @@
 package view.entry;
 
-import java.text.DecimalFormat;
-
 import model.SummaryTableItem;
 import model.SystemData;
 import model.db.DbUtil;
@@ -50,7 +48,7 @@ class CompositeSummaryTable extends Composite {
 		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
 		// 線を表示する
-		wTable.setLinesVisible(true);
+		wTable.setLinesVisible(DbUtil.showGridLine());
 		// ヘッダを可視にする
 		wTable.setHeaderVisible(true);
 
@@ -127,8 +125,6 @@ class SummaryTableContentProvider implements IStructuredContentProvider {
 }
 
 class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
-	private DecimalFormat mDecimalFormat = new DecimalFormat("###,###");
-
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
@@ -143,7 +139,7 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 				return ("  " + wItem.getItemName());
 			}
 		case 1:
-			return mDecimalFormat.format(wItem.getValue());
+			return SystemData.getFormatedFigures(wItem.getValue());
 		}
 		return null;
 	}
@@ -166,19 +162,19 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		SummaryTableItem wItem = (SummaryTableItem) pElement;
 		if (wItem.isAppearedSum()) {
 			// みかけ収支（赤）
-			return new Color(Display.getCurrent(), 255, 200, 200);
+			return SystemData.getColorRed();
 		} else if (wItem.isAppearedIncomeExpense()) {
 			// みかけ収入、支出（緑）
-			return new Color(Display.getCurrent(), 200, 255, 200);
+			return SystemData.getColorGreen();
 		} else if (wItem.isSpecial()) {
 			// 残高、営業収支等（青）
-			return new Color(Display.getCurrent(), 200, 200, 255);
+			return SystemData.getColorBlue();
 		} else if (wItem.isCategory()) {
 			// カテゴリ（黄色）
-			return new Color(Display.getCurrent(), 255, 255, 176);
+			return SystemData.getColorYellow();
 		} else {
 			// アイテム（グレー）
-			return new Color(Display.getCurrent(), 238, 227, 251);
+			return SystemData.getColorGray();
 		}
 	}
 

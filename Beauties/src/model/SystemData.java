@@ -1,10 +1,13 @@
 package model;
 
+import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 
 import model.db.DbUtil;
 
@@ -13,10 +16,6 @@ public class SystemData {
 	private static final int mUndefined = -1;
 	private static final int mAllBook = 0;
 
-	// For common
-	private static int mCutOff;
-	private static Map<Integer, String> mBookMap = new LinkedHashMap<Integer, String>();
-	
 	private static String mDbHost = "localhost";
 	private static int mDbPort = 3306;
 	private static String mDbUser = "root";
@@ -29,13 +28,17 @@ public class SystemData {
 	
 	private static int[] mRecordTableWeights = {80, 20};
 	
+	private static DecimalFormat mDecimalFormat = new DecimalFormat("###,###");
+	
+	private static final Color wColorRed = new Color(Display.getCurrent(), 255, 200, 200);
+	private static final Color wColorGreen = new Color(Display.getCurrent(), 200, 255, 200);
+	private static final Color wColorBlue = new Color(Display.getCurrent(), 200, 200, 255);
+	private static final Color wColorYellow = new Color(Display.getCurrent(), 255, 255, 176);
+	private static final Color wColorGray =	new Color(Display.getCurrent(), 238, 227, 251);
+	
+	private static String mPathMemoDir = "memo";
+	
 	private SystemData() {
-	}
-
-	public static void init() {
-		// System設定変更後のみ更新で充分
-		mCutOff = DbUtil.getCutOff();
-		mBookMap = DbUtil.getBookNameMap();
 	}
 
 	public static int getAllBookInt() {
@@ -46,21 +49,16 @@ public class SystemData {
 		return mUndefined;
 	}
 
-
-	// CutOff (getter only)
-	public static int getCutOff() {
-		return mCutOff;
-	}
-
 	// BookMap (getter only)
 	public static Map<Integer, String> getBookMap(boolean pWithAll) {
+		Map<Integer, String> wBookNameMap = DbUtil.getBookNameMap();
 		if (pWithAll) {
 			Map<Integer, String> wMap = new LinkedHashMap<Integer, String>();
 			wMap.put(mAllBook, "全て");
-			wMap.putAll(mBookMap);
+			wMap.putAll(wBookNameMap);
 			return wMap;
 		} else {
-			return mBookMap;
+			return wBookNameMap;
 		}
 	}
 
@@ -134,6 +132,38 @@ public class SystemData {
 	
 	public static void setWindowPoint(Point pWindowPoint) {
 		SystemData.mWindowPoint = pWindowPoint;
+	}
+	
+	public static String getFormatedFigures(double pValue) {
+		return mDecimalFormat.format(pValue);
+	}
+
+	public static Color getColorRed() {
+		return wColorRed;
+	}
+
+	public static Color getColorGreen() {
+		return wColorGreen;
+	}
+
+	public static Color getColorBlue() {
+		return wColorBlue;
+	}
+
+	public static Color getColorYellow() {
+		return wColorYellow;
+	}
+
+	public static Color getColorGray() {
+		return wColorGray;
+	}
+
+	public static String getPathMemoDir() {
+		return mPathMemoDir;
+	}
+
+	public static void setPathMemoDir(String pPathMemoDir) {
+		SystemData.mPathMemoDir = pPathMemoDir;
 	}
 	
 }
