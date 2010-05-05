@@ -118,8 +118,10 @@ class CompositeRecordTable extends Composite {
 		Table wTable;
 		if (mTableUp.getTable().getSelectionCount() > 0) {
 			wTable = mTableUp.getTable();
-		} else {
+		} else if (mTableBottom.getTable().getSelectionCount() > 0){
 			wTable = mTableBottom.getTable();
+		} else {
+			return SystemData.getUndefinedInt();
 		}
 		TableItem wItem = wTable.getItem(wTable.getSelectionIndex());
 		if ("".equals(wItem.getText(0)))

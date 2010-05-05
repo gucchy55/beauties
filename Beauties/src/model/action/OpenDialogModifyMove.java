@@ -1,5 +1,7 @@
 package model.action;
 
+import model.SystemData;
+
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import view.dialog.DialogMove;
@@ -17,6 +19,8 @@ public class OpenDialogModifyMove extends Action {
 
 	@Override
 	public void run() {
+		if (mCompositeEntry.getSelectedActId() == SystemData.getUndefinedInt())
+			return;
 		DialogMove wDialogMove = new DialogMove(mCompositeEntry.getShell(), mActId);
 		int wRet = wDialogMove.open();
 

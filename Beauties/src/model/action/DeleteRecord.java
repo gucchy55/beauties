@@ -1,5 +1,6 @@
 package model.action;
 
+import model.SystemData;
 import model.db.DbUtil;
 
 import org.eclipse.jface.action.Action;
@@ -19,6 +20,8 @@ public class DeleteRecord extends Action {
 
 	@Override
 	public void run() {
+		if(mCompositeEntry.getSelectedActId() == SystemData.getUndefinedInt())
+			return;
 		if (MessageDialog.openConfirm(mCompositeEntry.getShell(), "確認",
 				"削除していいですか？")) {
 			DbUtil.deleteRecord(mActId);
