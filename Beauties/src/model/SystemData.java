@@ -1,5 +1,6 @@
 package model;
 
+import java.io.IOException;
 import java.text.DecimalFormat;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -21,23 +22,25 @@ public class SystemData {
 	private static String mDbUser = "root";
 	private static String mDbPass = "";
 	private static String mDbName = "beauties";
-	
+
 	private static Rectangle mWindowRectangle = new Rectangle(0, 0, 1000, 700);
 	private static Point mWindowPoint = new Point(1000, 1000);
 	private static boolean mWindowMaximized = false;
-	
-	private static int[] mRecordTableWeights = {80, 20};
-	
+
+	private static int[] mRecordTableWeights = { 80, 20 };
+
 	private static DecimalFormat mDecimalFormat = new DecimalFormat("###,###");
-	
+
 	private static final Color wColorRed = new Color(Display.getCurrent(), 255, 200, 200);
 	private static final Color wColorGreen = new Color(Display.getCurrent(), 200, 255, 200);
 	private static final Color wColorBlue = new Color(Display.getCurrent(), 200, 200, 255);
 	private static final Color wColorYellow = new Color(Display.getCurrent(), 255, 255, 176);
-	private static final Color wColorGray =	new Color(Display.getCurrent(), 238, 227, 251);
-	
+	private static final Color wColorGray = new Color(Display.getCurrent(), 238, 227, 251);
+
 	private static String mPathMemoDir = "memo";
-	
+
+	private static boolean isDbUpdated = false;
+
 	private SystemData() {
 	}
 
@@ -125,15 +128,15 @@ public class SystemData {
 	public static void setWindowRectangle(Rectangle pWindowRectangle) {
 		SystemData.mWindowRectangle = pWindowRectangle;
 	}
-	
+
 	public static Point getWindowPoint() {
 		return mWindowPoint;
 	}
-	
+
 	public static void setWindowPoint(Point pWindowPoint) {
 		SystemData.mWindowPoint = pWindowPoint;
 	}
-	
+
 	public static String getFormatedFigures(double pValue) {
 		return mDecimalFormat.format(pValue);
 	}
@@ -165,5 +168,32 @@ public class SystemData {
 	public static void setPathMemoDir(String pPathMemoDir) {
 		SystemData.mPathMemoDir = pPathMemoDir;
 	}
+
+	public static void setDbUpdated(boolean pDbUpdated) {
+		isDbUpdated = pDbUpdated;
+	}
 	
+	public static boolean getDbUpdated() {
+		return isDbUpdated;
+	}
+
+	public static void dumpDb() {
+		if (!isDbUpdated)
+			return;
+		Runtime wRuntime = Runtime.getRuntime();
+		String wCommand = "mysqldump -u " + mDbUser + " " + (("".equals(mDbPass)) ? "" : "-p" + mDbPass) + " "
+				+ mDbName + " > " + mDbName + ".dump";
+		String[] wCommands;
+		if (System.getProperty("os.name").contains("Windows")) {
+			wCommands = new String[] { "cmd", "-c", wCommand };
+		} else {
+			wCommands = new String[] { "sh", "-c", wCommand };
+		}
+		try {
+			wRuntime.exec(wCommands);
+		} catch (IOException e) {
+			System.err.println("DB dump error: " + e.toString());
+		}
+	}
+
 }

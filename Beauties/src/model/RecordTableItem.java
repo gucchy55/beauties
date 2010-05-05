@@ -136,8 +136,5 @@ public class RecordTableItem {
 	public boolean isExpense() {
 		return (mExpense > 0);
 	}
-	
-	
-
 
 }

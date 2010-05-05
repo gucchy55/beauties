@@ -7,7 +7,6 @@ import io.FileLoader;
 import model.RightType;
 import model.SystemData;
 import model.action.InitMainWindow;
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
@@ -147,6 +146,7 @@ public class BeautiesMain extends ApplicationWindow {
 		this.mRightType = pRightType;
 	}
 
+	
 	public static void main(String[] args) {
 		if (args.length > 0) {
 			new FileLoader(args[0]);
@@ -156,6 +156,7 @@ public class BeautiesMain extends ApplicationWindow {
 		wWindow.setBlockOnOpen(true); // ウィンドウが閉じられるまでopen()メソッドをブロック
 		wWindow.open(); // 表示
 		Display.getCurrent().dispose();
+		SystemData.dumpDb();
 	}
 
 }
