@@ -185,7 +185,7 @@ public class SystemData {
 				+ mDbName + " > " + mDbName + ".dump";
 		String[] wCommands;
 		if (System.getProperty("os.name").contains("Windows")) {
-			wCommands = new String[] { "cmd", "-c", wCommand };
+			wCommands = new String[] { "cmd", "/c", wCommand };
 		} else {
 			wCommands = new String[] { "sh", "-c", wCommand };
 		}
