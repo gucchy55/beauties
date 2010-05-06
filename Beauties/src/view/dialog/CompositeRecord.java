@@ -138,6 +138,13 @@ class CompositeRecord extends Composite {
 		Label wDateLabel = new Label(this, SWT.NONE);
 		wDateLabel.setText("日付");
 		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER);
+		mDateTime.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent event) {
+				getShell().setImeInputMode(SWT.NONE);
+			}
+			public void focusLost(FocusEvent event) {
+			}
+		});
 
 		// InExLabel
 		Label wInExLabel = new Label(this, SWT.NONE);
