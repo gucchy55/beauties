@@ -1,7 +1,6 @@
 package view.dialog;
 
-import model.SystemData;
-
+import model.RecordTableItem;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -13,26 +12,26 @@ import org.eclipse.swt.widgets.Shell;
 public class DialogMove extends Dialog {
 
 	private CompositeMove mCompositeMove;
-	private int mActId = SystemData.getUndefinedInt();
 	private int mBookId;
+	private RecordTableItem mRecordTableItem;
 	
-	public DialogMove(Shell parentShell, int pBookId, boolean pBool) {
+	public DialogMove(Shell parentShell, int pBookId) {
 		super(parentShell);
 		mBookId = pBookId;
 	}
 	
-	public DialogMove(Shell parentShell, int pActId) {
+	public DialogMove(Shell parentShell, RecordTableItem pRecordTableItem) {
 		super(parentShell);
-		mActId = pActId;
+		mRecordTableItem = pRecordTableItem;
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		if (mActId == SystemData.getUndefinedInt()) {
-			mCompositeMove = new CompositeMove(parent, mBookId, true);
+		if (mRecordTableItem == null) {
+			mCompositeMove = new CompositeMove(parent, mBookId);
 			return mCompositeMove;
 		} else {
-			mCompositeMove = new CompositeMove(parent, mActId);
+			mCompositeMove = new CompositeMove(parent, mRecordTableItem);
 			return mCompositeMove;
 		}
 	}

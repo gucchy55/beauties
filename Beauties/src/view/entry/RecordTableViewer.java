@@ -26,8 +26,6 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
-import org.eclipse.swt.widgets.TableItem;
-
 import view.util.MyGridData;
 
 class RecordTableViewer extends TableViewer {
@@ -41,8 +39,7 @@ class RecordTableViewer extends TableViewer {
 
 		// テーブルの作成
 		Table wTable = this.getTable();
-		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
-				.getMyGridData());
+		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 		// 線を表示する
 		wTable.setLinesVisible(DbUtil.showGridLine());
 		// ヘッダを可視にする
@@ -50,19 +47,9 @@ class RecordTableViewer extends TableViewer {
 
 		// 列のヘッダの設定
 		TableColumn wActIdCol = new TableColumn(wTable, SWT.LEFT);
-		wActIdCol.setText("ActID");
+		wActIdCol.setText("帳簿");
 		wActIdCol.setWidth(0);
 		wActIdCol.setResizable(false);
-
-		TableColumn wCategoryIdCol = new TableColumn(wTable, SWT.LEFT);
-		wCategoryIdCol.setText("CategoryID");
-		wCategoryIdCol.setWidth(0);
-		wCategoryIdCol.setResizable(false);
-
-		TableColumn wItemIdCol = new TableColumn(wTable, SWT.LEFT);
-		wItemIdCol.setText("ItemID");
-		wItemIdCol.setWidth(0);
-		wItemIdCol.setResizable(false);
 
 		TableColumn wDateCol = new TableColumn(wTable, SWT.CENTER);
 		wDateCol.setText("日付");
@@ -93,7 +80,7 @@ class RecordTableViewer extends TableViewer {
 		wNoteCol.setWidth(250);
 	}
 
-	public void setRecordTableItem(final RecordTableItem[] pRecordTableItems) {
+	public void setRecordTableItem(RecordTableItem[] pRecordTableItems) {
 
 		final Table wTable = this.getTable();
 		this.setContentProvider(new TableContentProvider());
@@ -119,45 +106,39 @@ class RecordTableViewer extends TableViewer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
+				if (!mCompositeEntry.hasSelectedRecordTableItem())
+					return;
+
 				// Enterキーが押されたら変更ダイアログ
 				if (e.character == SWT.CR) {
-					int index = wTable.getSelectionIndex();
-					TableItem wItem = wTable.getItem(index);
-					if ("".equals(wItem.getText(0)))
-						return;
-					if (DbUtil.isMoveItem(Integer.parseInt(wItem.getText(2)))) {
+					if (mCompositeEntry.getSelectedRecordItem().isMoveItem())
 						new OpenDialogModifyMove(mCompositeEntry).run();
-					} else {
+					else
 						new OpenDialogModifyRecord(mCompositeEntry).run();
-					}
-
 				}
 
 				// DELキーが押されたら削除（確認ダイアログ）
-				if (e.character == SWT.DEL) {
-					int index = wTable.getSelectionIndex();
-					TableItem wItem = wTable.getItem(index);
-					if (!"".equals(wItem.getText(0))) {
-						new DeleteRecord(Integer.parseInt(wItem.getText(0)), mCompositeEntry).run();
-					}
-				}
-
+				if (e.character == SWT.DEL)
+					new DeleteRecord(mCompositeEntry).run();
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				// TODO Auto-generated method stub
 				if (e.stateMask == SWT.CTRL) {
-					if (e.keyCode == 'i') {
+					if (e.keyCode == 'i')
 						new OpenDialogNewRecord(mCompositeEntry).run();
-					}
-					if (e.keyCode == 'm') {
+					if (e.keyCode == 'm')
 						new OpenDialogNewMove(mCompositeEntry).run();
-					}
 				}
 			}
 
 		});
+	}
+
+	boolean hasSelectedItem() {
+		if (this.getTable().getItemCount() == 0 || this.getSelection().isEmpty())
+			return false;
+		return true;
 	}
 }
 
@@ -183,40 +164,33 @@ class TableLabelProvider implements ITableLabelProvider {
 		RecordTableItem wRecord = (RecordTableItem) element;
 		switch (columnIndex) {
 		case 0:
-			if (wRecord.isBalanceRow()) {
-				return "";
-			} else {
-				return Integer.toString(wRecord.getId());
-			}
+			return wRecord.getBookName();
+
 		case 1:
-			return Integer.toString(wRecord.getCategoryId());
-		case 2:
-			return Integer.toString(wRecord.getItemId());
-		case 3:
 			return wRecord.getDateString();
-		case 4:
+		case 2:
 			return wRecord.getItemName();
-		case 5:
+		case 3:
 			if (wRecord.isBalanceRow() || wRecord.getIncome() == 0) {
 				return "";
 			} else {
 				return SystemData.getFormatedFigures(wRecord.getIncome());
 			}
-		case 6:
+		case 4:
 			if (wRecord.isBalanceRow() || wRecord.getExpense() == 0) {
 				return "";
 			} else {
 				return SystemData.getFormatedFigures(wRecord.getExpense());
 			}
-		case 7:
+		case 5:
 			return SystemData.getFormatedFigures(wRecord.getBalance());
-		case 8:
+		case 6:
 			if (wRecord.getFrequency() == 0 || wRecord.isBalanceRow()) {
 				return "";
 			} else {
 				return Integer.toString(wRecord.getFrequency());
 			}
-		case 9:
+		case 7:
 			return wRecord.getNote();
 
 		}

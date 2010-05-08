@@ -16,8 +16,8 @@ public class RecordTableItem {
 	private int mBookId = mInitial;
 	private Date mDate;
 	private int mItemId = mInitial;
-	private String mItemName;
-	private int mCategoryId = mInitial;
+	// private String mItemName;
+	// private int mCategoryId = mInitial;
 	private double mIncome = mInitial;
 	private double mExpense = mInitial;
 	private int mGroupId = mInitial;
@@ -30,16 +30,15 @@ public class RecordTableItem {
 	private boolean isBalanceRow = false;
 
 	private DateFormat mDateFormat = new SimpleDateFormat("MM/dd");
-	
-	public RecordTableItem(int pId, int pBookId, Date pDate, int pItemId,
-			String pItemName, int pCategoryId, int pGroupId, double pIncome,
+
+	public RecordTableItem(int pId, int pBookId, Date pDate, int pItemId, int pGroupId, double pIncome,
 			double pExpense, double pBalance, int pFrequency, String pNote) {
 		this.mId = pId;
 		this.mBookId = pBookId;
 		this.mDate = pDate;
 		this.mItemId = pItemId;
-		this.mItemName = pItemName;
-		this.mCategoryId = pCategoryId;
+		// this.mItemName = pItemName;
+		// this.mCategoryId = pCategoryId;
 		this.mGroupId = pGroupId;
 		this.mIncome = pIncome;
 		this.mExpense = pExpense;
@@ -53,7 +52,7 @@ public class RecordTableItem {
 		this.mDate = pDate;
 		this.mBalance = pBalance;
 		this.isBalanceRow = true;
-		this.mItemName = mBalanceItem;
+		// this.mItemName = mBalanceItem;
 	}
 
 	public RecordTableItem() {
@@ -74,13 +73,18 @@ public class RecordTableItem {
 	public int getItemId() {
 		return mItemId;
 	}
-	
+
 	public String getItemName() {
-		return mItemName;
+		if (this.isBalanceRow)
+			return mBalanceItem;
+		return DbUtil.getItemNameById(mItemId);
 	}
-	
+
 	public int getCategoryId() {
-		return mCategoryId;
+		// return mCategoryId;
+		if (this.isBalanceRow)
+			return SystemData.getUndefinedInt();
+		return DbUtil.getCategoryIdByItemId(mItemId);
 	}
 
 	public int getGroupId() {
@@ -102,7 +106,7 @@ public class RecordTableItem {
 	public int getFrequency() {
 		return mFrequency;
 	}
-	
+
 	public String getNote() {
 		if (mNote == null) {
 			return "";
@@ -110,31 +114,33 @@ public class RecordTableItem {
 			return mNote;
 		}
 	}
-	
+
 	public String getDateString() {
 		String wDateString = mDateFormat.format(mDate);
 		wDateString += "(" + Util.getDayOfTheWeekShort(mDate) + ")";
 		return wDateString;
 	}
-	
+
 	public boolean isBalanceRow() {
 		return isBalanceRow;
 	}
-	
+
 	public boolean isMoveItem() {
-		if (DbUtil.isMoveItem(mItemId)) {
-			return true;
-		} else {
-			return false;
-		}
+		return DbUtil.isMoveItem(mItemId);
 	}
-	
+
 	public boolean isIncome() {
 		return (mIncome > 0);
 	}
-	
+
 	public boolean isExpense() {
 		return (mExpense > 0);
 	}
 
+	public String getBookName() {
+		if (isBalanceRow)
+			return "";
+		return DbUtil.getBookNameById(mBookId);
+	}
+	
 }

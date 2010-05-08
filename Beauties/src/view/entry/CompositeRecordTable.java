@@ -6,6 +6,7 @@ import model.RecordTableItem;
 import model.SystemData;
 import model.db.DbUtil;
 
+import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.custom.SashForm;
@@ -16,8 +17,6 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableItem;
 
 import view.util.MyGridData;
 import view.util.MyGridLayout;
@@ -98,7 +97,6 @@ class CompositeRecordTable extends Composite {
 			}
 
 			public void focusGained(FocusEvent arg0) {
-				// if (mTableBottom.getTable().getSelectionCount() > 0)
 				mTableBottom.getTable().deselectAll();
 			}
 		});
@@ -107,26 +105,23 @@ class CompositeRecordTable extends Composite {
 			}
 
 			public void focusGained(FocusEvent arg0) {
-				// if (mTableUp.getTable().getSelectionCount() > 0)
 				mTableUp.getTable().deselectAll();
 			}
 		});
 
 	}
 
-	public int getSelectedActId() {
-		Table wTable;
-		if (mTableUp.getTable().getSelectionCount() > 0) {
-			wTable = mTableUp.getTable();
-		} else if (mTableBottom.getTable().getSelectionCount() > 0){
-			wTable = mTableBottom.getTable();
-		} else {
-			return SystemData.getUndefinedInt();
-		}
-		TableItem wItem = wTable.getItem(wTable.getSelectionIndex());
-		if ("".equals(wItem.getText(0)))
-			return SystemData.getUndefinedInt();
-		return Integer.parseInt(wItem.getText(0));
+	RecordTableItem getSelectedRecordItem() {
+		if(!mTableUp.getSelection().isEmpty())
+			return (RecordTableItem)(((IStructuredSelection) mTableUp.getSelection()).getFirstElement());
+		else 
+			return (RecordTableItem)(((IStructuredSelection) mTableBottom.getSelection()).getFirstElement());
+	}
+	
+	boolean hasSelectedItem() {
+		if (!mTableUp.hasSelectedItem() && !mTableBottom.hasSelectedItem())
+			return false;
+		return !getSelectedRecordItem().isBalanceRow();
 	}
 
 	public void addFilter() {

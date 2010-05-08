@@ -1,7 +1,5 @@
 package model.action;
 
-import model.SystemData;
-
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import view.dialog.DialogModifyRecord;
@@ -9,19 +7,17 @@ import view.entry.CompositeEntry;
 
 public class OpenDialogModifyRecord extends Action {
 
-	private int mActId;
 	private CompositeEntry mCompositeEntry;
 
 	public OpenDialogModifyRecord(CompositeEntry pCompositeEntry) {
 		mCompositeEntry = pCompositeEntry;
-		mActId = mCompositeEntry.getSelectedActId();
 	}
 
 	@Override
 	public void run() {
-		if (mCompositeEntry.getSelectedActId() == SystemData.getUndefinedInt())
+		if (!mCompositeEntry.hasSelectedRecordTableItem())
 			return;
-		DialogModifyRecord wDialogModifyRecord = new DialogModifyRecord(mCompositeEntry.getShell(), mActId);
+		DialogModifyRecord wDialogModifyRecord = new DialogModifyRecord(mCompositeEntry.getShell(), mCompositeEntry.getSelectedRecordItem());
 		int wRet = wDialogModifyRecord.open();
 
 		if (wRet == IDialogConstants.OK_ID) {

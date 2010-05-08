@@ -1,5 +1,7 @@
 package view.dialog;
 
+import model.RecordTableItem;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.graphics.Point;
@@ -9,17 +11,17 @@ import org.eclipse.swt.widgets.Shell;
 
 public class DialogModifyRecord extends Dialog {
 
-	private int mActId;
 	private CompositeRecord mCompositeRecord;
+	private RecordTableItem mRecordTableItem;
 
-	public DialogModifyRecord(Shell parentShell, int pActId) {
+	public DialogModifyRecord(Shell parentShell, RecordTableItem pRecordTableItem) {
 		super(parentShell);
-		mActId = pActId;
+		mRecordTableItem = pRecordTableItem;
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		mCompositeRecord = new CompositeRecord(parent, mActId);
+		mCompositeRecord = new CompositeRecord(parent, mRecordTableItem);
 		return mCompositeRecord;
 	}
 

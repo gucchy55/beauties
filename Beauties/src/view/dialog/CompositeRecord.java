@@ -69,7 +69,7 @@ class CompositeRecord extends Composite {
 	private static final int mNoteCandidateCount = 10;
 	private static final int mVisibleComboItemCount = 10;
 
-	public CompositeRecord(Composite pParent, int pBookId, boolean pbool) {
+	public CompositeRecord(Composite pParent, int pBookId) {
 		super(pParent, SWT.NONE);
 		
 		mBookId = pBookId;
@@ -85,9 +85,9 @@ class CompositeRecord extends Composite {
 	}
 
 	// for modify
-	public CompositeRecord(Composite pParent, int pActId) {
+	public CompositeRecord(Composite pParent, RecordTableItem pRecordTableItem) {
 		super(pParent, SWT.NONE);
-		mRecordTableItem = DbUtil.getRecordByActId(pActId);
+		mRecordTableItem = pRecordTableItem;
 		mBookId = mRecordTableItem.getBookId();
 		if (DbUtil.isIncomeCategory(DbUtil
 				.getCategoryIdByItemId(mRecordTableItem.getItemId()))) {

@@ -55,7 +55,7 @@ class CompositeMove extends Composite {
 	private static final int mNoteCandidateCount = 10;
 	private static final int mVisibleComboItemCount = 10;
 
-	public CompositeMove(Composite pParent, int pBookId, boolean pBool) {
+	public CompositeMove(Composite pParent, int pBookId) {
 		super(pParent, SWT.NONE);
 		
 		mBookId = pBookId;
@@ -68,17 +68,15 @@ class CompositeMove extends Composite {
 	}
 
 	// for modify
-	public CompositeMove(Composite pParent, int pActId) {
+	public CompositeMove(Composite pParent, RecordTableItem pRecordTableItem) {
 		super(pParent, SWT.NONE);
 
-		RecordTableItem wRecord = DbUtil.getRecordByActId(pActId);
-
-		if (wRecord.getIncome() > 0) {
-			mIncomeRecord = wRecord;
-			mExpenseRecord = DbUtil.getMovePairRecord(wRecord);
+		if (pRecordTableItem.getIncome() > 0) {
+			mIncomeRecord = pRecordTableItem;
+			mExpenseRecord = DbUtil.getMovePairRecord(pRecordTableItem);
 		} else {
-			mExpenseRecord = wRecord;
-			mIncomeRecord = DbUtil.getMovePairRecord(wRecord);
+			mExpenseRecord = pRecordTableItem;
+			mIncomeRecord = DbUtil.getMovePairRecord(pRecordTableItem);
 		}
 		mExpenseRecord = DbUtil.getMovePairRecord(mIncomeRecord);
 

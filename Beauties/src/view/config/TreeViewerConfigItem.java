@@ -14,8 +14,6 @@ import org.eclipse.swt.widgets.Tree;
 
 public class TreeViewerConfigItem extends TreeViewer {
 
-//	private ConfigItem mSelectedConfigItem;
-	
 	public TreeViewerConfigItem(Composite pParent, ConfigItem pConfigItem) {
 		super(pParent, SWT.VIRTUAL);
 		
@@ -29,25 +27,6 @@ public class TreeViewerConfigItem extends TreeViewer {
 		final Tree wTree = this.getTree();
 		final TreeEditor wTreeEditor = new TreeEditor(wTree);
 		wTreeEditor.grabHorizontal = true;
-			
-//		this.addDoubleClickListener(new IDoubleClickListener() {
-//			public void doubleClick(DoubleClickEvent event) {
-//				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-//				ConfigItem wConfigItem = (ConfigItem) sel.getFirstElement();
-//				wConfigItem.moveUp();
-//			}
-//		});
-		
-//		this.addSelectionChangedListener(new ISelectionChangedListener() {
-//			@Override
-//			public void selectionChanged(SelectionChangedEvent event) {
-//				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-//				mSelectedConfigItem = (ConfigItem) sel.getFirstElement();
-//				
-//			}
-//		});
-		
-		
 	}
 
 	protected ConfigItem getSelectedConfigItem() {

@@ -2,6 +2,7 @@ package view.entry;
 
 import java.util.Date;
 
+import model.RecordTableItem;
 import model.SystemData;
 
 import org.eclipse.swt.SWT;
@@ -60,8 +61,16 @@ public class CompositeEntry extends Composite {
 
 	}
 
-	public int getSelectedActId() {
-		return mCompositeRecordTable.getSelectedActId();
+//	public int getSelectedActId() {
+//		return mCompositeRecordTable.getSelectedActId();
+//	}
+	
+	public RecordTableItem getSelectedRecordItem() {
+		return mCompositeRecordTable.getSelectedRecordItem();
+	}
+	
+	public boolean hasSelectedRecordTableItem() {
+		return mCompositeRecordTable.hasSelectedItem();
 	}
 
 	public void addFiltersToRecord() {

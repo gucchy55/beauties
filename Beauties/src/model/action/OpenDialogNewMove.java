@@ -16,7 +16,7 @@ public class OpenDialogNewMove extends Action {
 
 	@Override
 	public void run() {
-		DialogMove wDialogMove = new DialogMove(mCompositeEntry.getShell(), mCompositeEntry.getBookId(), true);
+		DialogMove wDialogMove = new DialogMove(mCompositeEntry.getShell(), mCompositeEntry.getBookId());
 		int wRet = wDialogMove.open();
 		if (wRet == IDialogConstants.OK_ID) {
 			new UpdateEntry(mCompositeEntry).run();

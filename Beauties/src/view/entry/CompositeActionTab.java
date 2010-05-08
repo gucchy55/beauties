@@ -1,6 +1,5 @@
 package view.entry;
 
-import model.SystemData;
 import model.action.DeleteRecord;
 import model.action.OpenDialogModifyMove;
 import model.action.OpenDialogModifyRecord;
@@ -19,16 +18,15 @@ import view.util.MyGridData;
 import view.util.MyRowLayout;
 
 class CompositeActionTab extends Composite {
-	
+
 	private CompositeEntry mCompositeEntry;
 
 	public CompositeActionTab(Composite pParent) {
 		super(pParent, SWT.NONE);
-		mCompositeEntry = (CompositeEntry)pParent;
-		
+		mCompositeEntry = (CompositeEntry) pParent;
+
 		this.setLayout(new MyRowLayout().getMyRowLayout());
-		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING,
-				false, false).getMyGridData());
+		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData());
 
 		Button wMoveButton = new Button(this, SWT.NONE);
 		wMoveButton.setText("移動");
@@ -53,13 +51,12 @@ class CompositeActionTab extends Composite {
 		wModifyButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				int wSelectedActId = mCompositeEntry.getSelectedActId();
-				if (wSelectedActId != SystemData.getUndefinedInt()) {
-					if (DbUtil.isMoveRecord(wSelectedActId)) {
-						new OpenDialogModifyMove(mCompositeEntry).run();
-					} else {
-						new OpenDialogModifyRecord(mCompositeEntry).run();
-					}
+				if (!mCompositeEntry.hasSelectedRecordTableItem())
+					return;
+				if (DbUtil.isMoveRecord(mCompositeEntry.getSelectedRecordItem().getId())) {
+					new OpenDialogModifyMove(mCompositeEntry).run();
+				} else {
+					new OpenDialogModifyRecord(mCompositeEntry).run();
 				}
 			}
 		});
@@ -69,11 +66,9 @@ class CompositeActionTab extends Composite {
 		wDeleteButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				CompositeEntry wCompositeEntry = (CompositeEntry)getParent();
-				int wSelectedActId = wCompositeEntry.getSelectedActId();
-				if (wSelectedActId != SystemData.getUndefinedInt()) {
-					new DeleteRecord(wSelectedActId, mCompositeEntry).run();
-				}
+				if ((!mCompositeEntry.hasSelectedRecordTableItem()))
+					return;
+				new DeleteRecord(mCompositeEntry).run();
 			}
 		});
 	}

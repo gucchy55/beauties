@@ -22,7 +22,7 @@ public class DialogNewRecord extends Dialog {
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		mCompositeRecord = new CompositeRecord(parent, mBookId, true);
+		mCompositeRecord = new CompositeRecord(parent, mBookId);
 		return mCompositeRecord;
 	}
 
