@@ -4,7 +4,10 @@ import java.util.Date;
 
 import model.RecordTableItem;
 import model.SystemData;
+import model.db.DbUtil;
 
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -21,11 +24,15 @@ public class CompositeEntry extends Composite {
 	private Date mEndDate = null;
 
 	private boolean isMonthPeriod = true;
+	private boolean isSearchResult = false;
 	private int mItemId;
 	private int mCategoryId;
 	private boolean mAllIncome = false;
 	private boolean mAllExpense = false;
+	
+	private CompositeBookTab mCompositeBookTab;
 	private CompositeRecordTable mCompositeRecordTable;
+	private CompositeSummaryTable mCompositeSummaryTable;
 
 	public CompositeEntry(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -44,10 +51,10 @@ public class CompositeEntry extends Composite {
 
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		new CompositeBookTab(this);
+		mCompositeBookTab = new CompositeBookTab(this);
 		new CompositeActionTab(this);
 		mCompositeRecordTable = new CompositeRecordTable(this);
-		new CompositeSummaryTable(this);
+		mCompositeSummaryTable = new CompositeSummaryTable(this);
 	}
 
 	public void updateView() {
@@ -60,10 +67,20 @@ public class CompositeEntry extends Composite {
 		this.layout();
 
 	}
+	
+	void updateForSearch(RecordTableItem[][] pRecordTableItems) {
+		mCompositeRecordTable.updateForSearch(pRecordTableItems);
+	}
 
-//	public int getSelectedActId() {
-//		return mCompositeRecordTable.getSelectedActId();
-//	}
+	void openSearchDialog() {
+		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
+		if (wInputDialog.open() != Dialog.OK) 
+			return;
+		mCompositeBookTab.setVisible(false);
+		mCompositeSummaryTable.setVisible(false);
+		this.isSearchResult = true;
+		this.updateForSearch(DbUtil.getSearchedRecordTableItemList(wInputDialog.getValue()));
+	}
 	
 	public RecordTableItem getSelectedRecordItem() {
 		return mCompositeRecordTable.getSelectedRecordItem();
@@ -143,5 +160,21 @@ public class CompositeEntry extends Composite {
 
 	public void setAllExpense(boolean pAllExpense) {
 		mAllExpense = pAllExpense;
+	}
+	
+	void setIsSearchResult(boolean pIsSearchResult) {
+		this.isSearchResult = pIsSearchResult;
+	}
+	
+	boolean isSearchResult() {
+		return this.isSearchResult;
+	}
+	
+	boolean showBookColumn() {
+		return this.getBookId() == SystemData.getAllBookInt() || this.isSearchResult;
+	}
+	
+	boolean showYear() {
+		return !this.isMonthPeriod || this.isSearchResult;
 	}
 }

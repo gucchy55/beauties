@@ -82,6 +82,7 @@ class CompositeRecord extends Composite {
 		initLayout();
 		initWidgets();
 		mDateTime.setFocus();
+		getShell().setImeInputMode(SWT.NONE);
 	}
 
 	// for modify
@@ -98,7 +99,7 @@ class CompositeRecord extends Composite {
 		initLayout();
 		initWidgets();
 		setWidgets();
-
+		getShell().setImeInputMode(SWT.NONE);
 	}
 
 	private void initLayout() {

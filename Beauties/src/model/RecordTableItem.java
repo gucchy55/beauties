@@ -1,12 +1,9 @@
 package model;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import model.db.DbUtil;
 
-import util.Util;
 
 public class RecordTableItem {
 	// 日付 項目 収支 残高 回数 備考
@@ -28,8 +25,6 @@ public class RecordTableItem {
 	private static final String mBalanceItem = "繰越残高";
 
 	private boolean isBalanceRow = false;
-
-	private DateFormat mDateFormat = new SimpleDateFormat("MM/dd");
 
 	public RecordTableItem(int pId, int pBookId, Date pDate, int pItemId, int pGroupId, double pIncome,
 			double pExpense, double pBalance, int pFrequency, String pNote) {
@@ -113,12 +108,6 @@ public class RecordTableItem {
 		} else {
 			return mNote;
 		}
-	}
-
-	public String getDateString() {
-		String wDateString = mDateFormat.format(mDate);
-		wDateString += "(" + Util.getDayOfTheWeekShort(mDate) + ")";
-		return wDateString;
 	}
 
 	public boolean isBalanceRow() {

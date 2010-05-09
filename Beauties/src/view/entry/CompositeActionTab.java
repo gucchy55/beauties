@@ -27,8 +27,22 @@ class CompositeActionTab extends Composite {
 
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData());
+		
+		Button wSearchButton = new Button(this, SWT.TOGGLE);
+		wSearchButton.setText("検索");
+		wSearchButton.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Button wButton = (Button)e.getSource();
+				if(wButton.getSelection()) 
+					mCompositeEntry.openSearchDialog();
+				else {
+					mCompositeEntry.setIsSearchResult(false);
+					mCompositeEntry.updateView();
+				}
+			}
+		});
 
-		Button wMoveButton = new Button(this, SWT.NONE);
+		Button wMoveButton = new Button(this, SWT.PUSH);
 		wMoveButton.setText("移動");
 		wMoveButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -37,7 +51,7 @@ class CompositeActionTab extends Composite {
 			}
 		});
 
-		Button wAddButton = new Button(this, SWT.NONE);
+		Button wAddButton = new Button(this, SWT.PUSH);
 		wAddButton.setText("追加");
 		wAddButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -46,7 +60,7 @@ class CompositeActionTab extends Composite {
 			}
 		});
 
-		Button wModifyButton = new Button(this, SWT.NONE);
+		Button wModifyButton = new Button(this, SWT.PUSH);
 		wModifyButton.setText("変更");
 		wModifyButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -61,7 +75,7 @@ class CompositeActionTab extends Composite {
 			}
 		});
 
-		Button wDeleteButton = new Button(this, SWT.NONE);
+		Button wDeleteButton = new Button(this, SWT.PUSH);
 		wDeleteButton.setText("削除");
 		wDeleteButton.addSelectionListener(new SelectionAdapter() {
 			@Override

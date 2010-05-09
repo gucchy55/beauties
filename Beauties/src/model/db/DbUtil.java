@@ -1922,7 +1922,7 @@ public class DbUtil {
 				wResultSet.close();
 				return result;
 			}
-		}  catch (SQLException e) {
+		} catch (SQLException e) {
 			resultSetHandlingError(e);
 		}
 		return "";
@@ -1983,43 +1983,41 @@ public class DbUtil {
 		mDbAccess.executeUpdate(wQuery);
 	}
 
-	public static void search(String pQueryString) {
-		String wQuery = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", " + mActTable + "."
+	public static RecordTableItem[][] getSearchedRecordTableItemList(String pQueryString) {
+		RecordTableItem[][] result = new RecordTableItem[2][];
+		Date wDate = new Date();
+		String wQueryBase = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", " + mActTable + "."
 				+ mItemIdCol + ", " + mGroupIdCol + ", " + mActIncomeCol + ", " + mActExpenseCol + ", " + mActFreqCol
 				+ ", " + mNoteNameCol + " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable + " where "
 				+ mItemTable + "." + mItemIdCol + " = " + mActTable + "." + mItemIdCol + " and " + mItemTable + "."
 				+ mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "."
-				+ mDelFlgCol + " = b'0' " + " and " + mNoteNameCol + " like '%" + pQueryString + "%'" + " order by "
-				+ mActDtCol + ", " + mCategoryTable + "." + mCategoryRexpCol + ", " + mCategoryTable + "."
-				+ mSortKeyCol + ", " + mItemTable + "." + mSortKeyCol;
+				+ mDelFlgCol + " = b'0' " + " and " + mNoteNameCol + " like '%" + pQueryString + "%'";
+		String wQueryPeriodBefore = " and " + mActDtCol + " <= " + getDateStrings(wDate);
+		String wQueryPeriodAfter = " and " + mActDtCol + " > " + getDateStrings(wDate);
+		String wQueryOrder = " order by " + mActDtCol + ", " + mCategoryTable + "." + mCategoryRexpCol + ", "
+				+ mCategoryTable + "." + mSortKeyCol + ", " + mItemTable + "." + mSortKeyCol;
 
-		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
+		result[0] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wQueryBase + wQueryPeriodBefore + wQueryOrder));
+		result[1] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wQueryBase + wQueryPeriodAfter + wQueryOrder));
 
+		return result;
+	}
+
+	private static RecordTableItem[] getRecordTableItemFromResultSet(ResultSet pResultSet) {
+		List<RecordTableItem> wList = new ArrayList<RecordTableItem>();
 		try {
-			while (wResultSet.next()) {
-
-				int wId = wResultSet.getInt(mActIdCol);
-				int wBookId = wResultSet.getInt(mBookIdCol);
-				Date wDate = wResultSet.getDate(mActDtCol);
-				int wItemId = wResultSet.getInt(mItemIdCol);
-				// String wItemName = wResultSet.getString(mItemTable + "." +
-				// mItemNameCol);
-				// int wCategoryId = wResultSet.getInt(mItemTable + "." +
-				// mCategoryIdCol);
-				int wGroupId = wResultSet.getInt(mGroupIdCol);
-				double wIncome = wResultSet.getDouble(mActIncomeCol);
-				double wExpense = wResultSet.getDouble(mActExpenseCol);
-				int wFrequency = wResultSet.getInt(mActFreqCol);
-				String wNote = wResultSet.getString(mNoteNameCol);
-				RecordTableItem wRecord = new RecordTableItem(wId, wBookId, wDate, wItemId, wGroupId, wIncome,
-						wExpense, 0, wFrequency, wNote);
-				System.out.println(wRecord.getDateString() + ", " + wRecord.getNote());
+			while (pResultSet.next()) {
+			wList.add(new RecordTableItem(pResultSet.getInt(mActIdCol), pResultSet.getInt(mBookIdCol), pResultSet
+					.getDate(mActDtCol), pResultSet.getInt(mItemIdCol), pResultSet.getInt(mGroupIdCol), pResultSet
+					.getDouble(mActIncomeCol), pResultSet.getDouble(mActExpenseCol), 0, pResultSet.getInt(mActFreqCol),
+					pResultSet.getString(mNoteNameCol)));
 			}
-			wResultSet.close();
-
+			pResultSet.close();
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
+		} finally {
 		}
+		return (RecordTableItem[]) wList.toArray(new RecordTableItem[0]);
 	}
 
 	// 立替残高（借入残高）
@@ -2312,4 +2310,9 @@ public class DbUtil {
 		}
 		return pNote;
 	}
+	
+//	public static void main(String[] args) {
+//		for (RecordTableItem[] items : getSearchedRecordTableItemList("牛乳"))
+//			System.out.println(items.length);
+//	}
 }

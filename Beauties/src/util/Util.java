@@ -5,6 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.Locale;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 
@@ -35,41 +36,8 @@ public class Util {
 	public static String getDayOfTheWeekShort(Date pDate) {
 		Calendar wCal = Calendar.getInstance();
 		wCal.setTime(pDate);
-		switch (wCal.get(Calendar.DAY_OF_WEEK)) {
-		case Calendar.SUNDAY:
-			return "日";
-		case Calendar.MONDAY:
-			return "月";
-		case Calendar.TUESDAY:
-			return "火";
-		case Calendar.WEDNESDAY:
-			return "水";
-		case Calendar.THURSDAY:
-			return "木";
-		case Calendar.FRIDAY:
-			return "金";
-		case Calendar.SATURDAY:
-			return "土";
-		}
-		throw new IllegalStateException();
-
+		return wCal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
 	}
-
-	// public static int[] getDateIntegersByDate(Date pDate) {
-	// Calendar wCal = new GregorianCalendar();
-	// wCal.setTime(pDate);
-	// return getDateIntegersByCal(wCal);
-	// }
-	//	
-	// public static int[] getDateIntegersByCal(Calendar pCal) {
-	// int[] wRet = new int[3]; // Year, Month, Day
-	// wRet[0] = pCal.get(Calendar.YEAR);
-	// wRet[1] = pCal.get(Calendar.MONTH) + 1;
-	// wRet[2] = pCal.get(Calendar.DAY_OF_MONTH);
-	//
-	// return wRet;
-	//	
-	// }
 
 	public static Date[] getPeriod(Date pDate) {
 		Date[] wDates = new Date[2];
@@ -155,8 +123,6 @@ public class Util {
 			final int pPosition, String[] pCandidates, int pMaxCount) {
 
 		if (pContent.length() == 0 || pPosition < pContent.length()) {
-//			|| !(0 < (pPosition - 3)
-//				|| "".equals(pContent.substring(pPosition - 3, pPosition))) {
 			return new IContentProposal[] {};
 		}
 
@@ -241,15 +207,4 @@ public class Util {
 		}
 		
 	}
-
-
-//	public static void main(String[] args) {
-//		
-//		Date[][] wDatePeriods = getDatePeriodsWithSummaion(getDatePairs(new Date(), 3));
-//		DateFormat df = new SimpleDateFormat("yyyy/MM/dd");
-//		for (Date[] wDatePeriod : wDatePeriods) {
-//			System.out.println(df.format(wDatePeriod[0]) + " - " + df.format(wDatePeriod[1]));
-//		}
-//	}
-
 }

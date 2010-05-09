@@ -1,5 +1,8 @@
 package view.entry;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+
 import model.RecordTableItem;
 import model.SystemData;
 import model.action.DeleteRecord;
@@ -26,6 +29,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
+
+import util.Util;
 import view.util.MyGridData;
 
 class RecordTableViewer extends TableViewer {
@@ -48,12 +53,12 @@ class RecordTableViewer extends TableViewer {
 		// 列のヘッダの設定
 		TableColumn wActIdCol = new TableColumn(wTable, SWT.LEFT);
 		wActIdCol.setText("帳簿");
-		wActIdCol.setWidth(0);
-		wActIdCol.setResizable(false);
+		wActIdCol.setWidth(mCompositeEntry.showBookColumn() ? 60 : 0);
+		wActIdCol.setResizable(mCompositeEntry.showBookColumn());
 
 		TableColumn wDateCol = new TableColumn(wTable, SWT.CENTER);
 		wDateCol.setText("日付");
-		wDateCol.setWidth(62);
+		wDateCol.setWidth(mCompositeEntry.showYear() ? 80 : 62);
 
 		TableColumn wItemNameCol = new TableColumn(wTable, SWT.LEFT);
 		wItemNameCol.setText("項目");
@@ -86,7 +91,7 @@ class RecordTableViewer extends TableViewer {
 		this.setContentProvider(new TableContentProvider());
 		this.setInput(pRecordTableItems);
 
-		this.setLabelProvider(new TableLabelProvider());
+		this.setLabelProvider(new TableLabelProvider(mCompositeEntry.showYear()));
 
 		this.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
@@ -129,6 +134,8 @@ class RecordTableViewer extends TableViewer {
 						new OpenDialogNewRecord(mCompositeEntry).run();
 					if (e.keyCode == 'm')
 						new OpenDialogNewMove(mCompositeEntry).run();
+					if (e.keyCode == 'f')
+						mCompositeEntry.openSearchDialog();
 				}
 			}
 
@@ -139,6 +146,10 @@ class RecordTableViewer extends TableViewer {
 		if (this.getTable().getItemCount() == 0 || this.getSelection().isEmpty())
 			return false;
 		return true;
+	}
+	
+	void setForSearchResults() {
+		
 	}
 }
 
@@ -156,6 +167,13 @@ class TableContentProvider implements IStructuredContentProvider {
 }
 
 class TableLabelProvider implements ITableLabelProvider {
+	private static DateFormat mDateFormat = new SimpleDateFormat("MM/dd");
+	private static DateFormat mDateFormatLong = new SimpleDateFormat("yyyy/MM/dd");
+	private boolean showYear;
+
+	public TableLabelProvider(boolean showYear) {
+		this.showYear = showYear;
+	}
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
@@ -167,7 +185,10 @@ class TableLabelProvider implements ITableLabelProvider {
 			return wRecord.getBookName();
 
 		case 1:
-			return wRecord.getDateString();
+			if (this.showYear)
+				return mDateFormatLong.format(wRecord.getDate());
+			else
+				return mDateFormat.format(wRecord.getDate()) + "(" + Util.getDayOfTheWeekShort(wRecord.getDate()) + ")";
 		case 2:
 			return wRecord.getItemName();
 		case 3:
