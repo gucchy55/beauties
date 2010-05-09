@@ -72,14 +72,15 @@ public class CompositeEntry extends Composite {
 		mCompositeRecordTable.updateForSearch(pRecordTableItems);
 	}
 
-	void openSearchDialog() {
+	boolean openSearchDialog() {
 		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
 		if (wInputDialog.open() != Dialog.OK) 
-			return;
+			return false;
 		mCompositeBookTab.setVisible(false);
 		mCompositeSummaryTable.setVisible(false);
 		this.isSearchResult = true;
 		this.updateForSearch(DbUtil.getSearchedRecordTableItemList(wInputDialog.getValue()));
+		return true;
 	}
 	
 	public RecordTableItem getSelectedRecordItem() {
