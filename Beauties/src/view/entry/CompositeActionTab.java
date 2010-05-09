@@ -34,7 +34,7 @@ class CompositeActionTab extends Composite {
 		mSearchButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Button wButton = (Button)e.getSource();
-				if(!mCompositeEntry.isSearchResult()) 
+				if(wButton.getSelection()) 
 					wButton.setSelection(mCompositeEntry.openSearchDialog());
 				else {
 					mCompositeEntry.setIsSearchResult(false);
