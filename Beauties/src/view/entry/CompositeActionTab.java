@@ -20,6 +20,7 @@ import view.util.MyRowLayout;
 class CompositeActionTab extends Composite {
 
 	private CompositeEntry mCompositeEntry;
+	private Button mSearchButton;
 
 	public CompositeActionTab(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -28,12 +29,12 @@ class CompositeActionTab extends Composite {
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData());
 		
-		Button wSearchButton = new Button(this, SWT.TOGGLE);
-		wSearchButton.setText("検索");
-		wSearchButton.addSelectionListener(new SelectionAdapter() {
+		mSearchButton = new Button(this, SWT.TOGGLE);
+		mSearchButton.setText("検索");
+		mSearchButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Button wButton = (Button)e.getSource();
-				if(wButton.getSelection()) 
+				if(!mCompositeEntry.isSearchResult()) 
 					wButton.setSelection(mCompositeEntry.openSearchDialog());
 				else {
 					mCompositeEntry.setIsSearchResult(false);
@@ -86,4 +87,9 @@ class CompositeActionTab extends Composite {
 			}
 		});
 	}
+	
+	void updateForSearch() {
+		mSearchButton.setSelection(true);
+	}
+
 }

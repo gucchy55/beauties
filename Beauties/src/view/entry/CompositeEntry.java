@@ -33,6 +33,7 @@ public class CompositeEntry extends Composite {
 	private CompositeBookTab mCompositeBookTab;
 	private CompositeRecordTable mCompositeRecordTable;
 	private CompositeSummaryTable mCompositeSummaryTable;
+	private CompositeActionTab mCompositeActionTab;
 
 	public CompositeEntry(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -52,7 +53,7 @@ public class CompositeEntry extends Composite {
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
 		mCompositeBookTab = new CompositeBookTab(this);
-		new CompositeActionTab(this);
+		mCompositeActionTab = new CompositeActionTab(this);
 		mCompositeRecordTable = new CompositeRecordTable(this);
 		mCompositeSummaryTable = new CompositeSummaryTable(this);
 	}
@@ -69,6 +70,7 @@ public class CompositeEntry extends Composite {
 	}
 	
 	void updateForSearch(RecordTableItem[][] pRecordTableItems) {
+		mCompositeActionTab.updateForSearch();
 		mCompositeRecordTable.updateForSearch(pRecordTableItems);
 	}
 
