@@ -2,6 +2,8 @@ package model.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.SWT;
+
 import view.dialog.DialogModifyRecord;
 import view.entry.CompositeEntry;
 
@@ -17,6 +19,7 @@ public class OpenDialogModifyRecord extends Action {
 	public void run() {
 		if (!mCompositeEntry.hasSelectedRecordTableItem())
 			return;
+		mCompositeEntry.getShell().setImeInputMode(SWT.NONE);
 		DialogModifyRecord wDialogModifyRecord = new DialogModifyRecord(mCompositeEntry.getShell(), mCompositeEntry.getSelectedRecordItem());
 		int wRet = wDialogModifyRecord.open();
 

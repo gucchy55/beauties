@@ -2,6 +2,8 @@ package model.action;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.SWT;
+
 import view.dialog.DialogPeriod;
 import view.entry.CompositeEntry;
 
@@ -15,6 +17,7 @@ public class OpenDialogPeriod extends Action {
 
 	@Override
 	public void run() {
+		mCompositeEntry.getShell().setImeInputMode(SWT.NONE);
 		DialogPeriod wDialogPeriod = new DialogPeriod(mCompositeEntry.getShell(), mCompositeEntry);
 		int wRet = wDialogPeriod.open();
 

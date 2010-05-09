@@ -75,6 +75,7 @@ public class CompositeEntry extends Composite {
 	}
 
 	boolean openSearchDialog() {
+		this.getShell().setImeInputMode(SWT.NATIVE);
 		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
 		if (wInputDialog.open() != Dialog.OK) 
 			return false;
