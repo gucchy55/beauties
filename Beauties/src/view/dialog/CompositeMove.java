@@ -96,7 +96,7 @@ class CompositeMove extends Composite {
 		// DateTime
 		Label wDateLabel = new Label(this, SWT.NONE);
 		wDateLabel.setText("日付");
-		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER);
+		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
 		mDateTime.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
@@ -195,6 +195,7 @@ class CompositeMove extends Composite {
 				getShell().setImeInputMode(SWT.NATIVE);
 			}
 			public void focusLost(FocusEvent event) {
+				getShell().setImeInputMode(SWT.NONE);
 			}
 		});
 	}
