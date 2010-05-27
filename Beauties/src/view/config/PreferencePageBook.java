@@ -232,7 +232,7 @@ class PreferencePageBook extends PreferencePage {
 					}
 				});
 				if (dlg.open() == Dialog.OK) {
-					wBook.setBalance(Double.parseDouble(dlg.getValue()));
+					wBook.setBalance(Integer.parseInt(dlg.getValue()));
 					DbUtil.updateBalance(wBook);
 					updateBalanceLabel();
 				}

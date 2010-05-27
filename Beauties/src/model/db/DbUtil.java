@@ -95,7 +95,8 @@ public class DbUtil {
 
 	public static int getCutOff() {
 		int wCutOff = SystemData.getUndefinedInt();
-		ResultSet wResultSet = mDbAccess.executeQuery("select " + mSystemValueCol + " from " + mSystemTable + " where "
+		ResultSet wResultSet = mDbAccess.executeQuery("select " + mSystemValueCol + " from "
+				+ mSystemTable + " where "
 				+ mSystemIDCol + " = " + mCutOff);
 		try {
 			wResultSet.next();
@@ -109,14 +110,16 @@ public class DbUtil {
 	}
 
 	public static void updateCutOff(int pCutOff) {
-		String wQuery = "update " + mSystemTable + " set " + mSystemValueCol + " = " + pCutOff + " where "
+		String wQuery = "update " + mSystemTable + " set " + mSystemValueCol + " = " + pCutOff
+				+ " where "
 				+ mSystemIDCol + " = " + mCutOff;
 		mDbAccess.executeUpdate(wQuery);
 	}
 
 	public static int getFisCalMonth() {
 		int wFiscalMonth = SystemData.getUndefinedInt();
-		ResultSet wResultSet = mDbAccess.executeQuery("select " + mSystemValueCol + " from " + mSystemTable + " where "
+		ResultSet wResultSet = mDbAccess.executeQuery("select " + mSystemValueCol + " from "
+				+ mSystemTable + " where "
 				+ mSystemIDCol + " = " + mFiscalMonth);
 
 		try {
@@ -132,14 +135,16 @@ public class DbUtil {
 	}
 
 	public static void updateFisCalMonth(int pFiscalMonth) {
-		String wQuery = "update " + mSystemTable + " set " + mSystemValueCol + " = " + pFiscalMonth + " where "
+		String wQuery = "update " + mSystemTable + " set " + mSystemValueCol + " = " + pFiscalMonth
+				+ " where "
 				+ mSystemIDCol + " = " + mFiscalMonth;
 		mDbAccess.executeUpdate(wQuery);
 	}
 
 	public static boolean showGridLine() {
 		int wShowGridLine = 0;
-		ResultSet wResultSet = mDbAccess.executeQuery("select " + mSystemValueCol + " from " + mSystemTable + " where "
+		ResultSet wResultSet = mDbAccess.executeQuery("select " + mSystemValueCol + " from "
+				+ mSystemTable + " where "
 				+ mSystemIDCol + " = " + mShowGridLine);
 
 		try {
@@ -153,13 +158,15 @@ public class DbUtil {
 	}
 
 	public static void updateShowGridLine(boolean pShowGridLine) {
-		String wQuery = "update " + mSystemTable + " set " + mSystemValueCol + " = " + (pShowGridLine ? 1 : 0)
+		String wQuery = "update " + mSystemTable + " set " + mSystemValueCol + " = "
+				+ (pShowGridLine ? 1 : 0)
 				+ " where " + mSystemIDCol + " = " + mShowGridLine;
 		mDbAccess.executeUpdate(wQuery);
 	}
 
 	public static int getCategoryIdByItemId(int pItemId) {
-		ResultSet wResultSet = mDbAccess.executeQuery("select " + mCategoryIdCol + " from " + mItemTable + " where "
+		ResultSet wResultSet = mDbAccess.executeQuery("select " + mCategoryIdCol + " from "
+				+ mItemTable + " where "
 				+ mItemIdCol + " = " + pItemId);
 
 		int wCategoryId = -1;
@@ -176,7 +183,8 @@ public class DbUtil {
 	}
 
 	public static String getItemNameById(int pItemId) {
-		ResultSet wResultSet = mDbAccess.executeQuery("select " + mItemNameCol + " from " + mItemTable + " where "
+		ResultSet wResultSet = mDbAccess.executeQuery("select " + mItemNameCol + " from "
+				+ mItemTable + " where "
 				+ mItemIdCol + " = " + pItemId);
 
 		String wItemName = "";
@@ -193,7 +201,8 @@ public class DbUtil {
 
 	}
 
-	public static RecordTableItem[][] getRecordTableItems(Date pStartDate, Date pEndDate, int pBookId) {
+	public static RecordTableItem[][] getRecordTableItems(Date pStartDate, Date pEndDate,
+			int pBookId) {
 		List<RecordTableItem> wRecordTableItemListUp = new ArrayList<RecordTableItem>();
 		List<RecordTableItem> wRecordTableItemListBottom = new ArrayList<RecordTableItem>();
 
@@ -207,17 +216,24 @@ public class DbUtil {
 			wMoveFlgWhere = " and " + mItemTable + "." + mMoveFlgCol + " = b'0'";
 		}
 
-		double wBalance = getBalance(pStartDate, pBookId, false);
+		long wBalance = getBalance(pStartDate, pBookId, false);
 		RecordTableItem wBalanceRecord = new RecordTableItem(pStartDate, wBalance);
 		wRecordTableItemListUp.add(wBalanceRecord);
 
-		String wQuery = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", " + mActTable + "."
-				+ mItemIdCol + ", " + mGroupIdCol + ", " + mActIncomeCol + ", " + mActExpenseCol + ", " + mActFreqCol
-				+ ", " + mNoteNameCol + " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable + " where "
-				+ mItemTable + "." + mItemIdCol + " = " + mActTable + "." + mItemIdCol + " and " + mItemTable + "."
-				+ mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol + " and " + mActDtCol + " between "
-				+ wStart + " and " + wEnd + " and " + mActTable + "." + mDelFlgCol + " = b'0' " + wMoveFlgWhere
-				+ " and " + wBookWhere + " order by " + mActDtCol + ", " + mCategoryTable + "." + mCategoryRexpCol
+		String wQuery = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", "
+				+ mActTable + "."
+				+ mItemIdCol + ", " + mGroupIdCol + ", " + mActIncomeCol + ", " + mActExpenseCol
+				+ ", " + mActFreqCol
+				+ ", " + mNoteNameCol + " from " + mActTable + ", " + mItemTable + ", "
+				+ mCategoryTable + " where "
+				+ mItemTable + "." + mItemIdCol + " = " + mActTable + "." + mItemIdCol + " and "
+				+ mItemTable + "."
+				+ mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol + " and "
+				+ mActDtCol + " between "
+				+ wStart + " and " + wEnd + " and " + mActTable + "." + mDelFlgCol + " = b'0' "
+				+ wMoveFlgWhere
+				+ " and " + wBookWhere + " order by " + mActDtCol + ", " + mCategoryTable + "."
+				+ mCategoryRexpCol
 				+ ", " + mCategoryTable + "." + mSortKeyCol + ", " + mItemTable + "." + mSortKeyCol;
 
 		// System.out.println(wQuery);
@@ -237,12 +253,13 @@ public class DbUtil {
 				// int wCategoryId = wResultSet.getInt(mItemTable + "." +
 				// mCategoryIdCol);
 				int wGroupId = wResultSet.getInt(mGroupIdCol);
-				double wIncome = wResultSet.getDouble(mActIncomeCol);
-				double wExpense = wResultSet.getDouble(mActExpenseCol);
+				int wIncome = wResultSet.getInt(mActIncomeCol);
+				int wExpense = wResultSet.getInt(mActExpenseCol);
 				wBalance += wIncome - wExpense;
 				int wFrequency = wResultSet.getInt(mActFreqCol);
 				String wNote = wResultSet.getString(mNoteNameCol);
-				RecordTableItem wRecord = new RecordTableItem(wId, wBookId, wDate, wItemId, wGroupId, wIncome,
+				RecordTableItem wRecord = new RecordTableItem(wId, wBookId, wDate, wItemId,
+						wGroupId, wIncome,
 						wExpense, wBalance, wFrequency, wNote);
 				if (wDate.after(wDateNow)) {
 					wRecordTableItemListBottom.add(wRecord);
@@ -267,7 +284,8 @@ public class DbUtil {
 	public static Map<Integer, String> getBookNameMap() {
 		Map<Integer, String> wBookMap = new LinkedHashMap<Integer, String>();
 
-		String wQuery = "select " + mBookIdCol + ", " + mBookNameCol + " from " + mBookTable + " where " + mDelFlgCol
+		String wQuery = "select " + mBookIdCol + ", " + mBookNameCol + " from " + mBookTable
+				+ " where " + mDelFlgCol
 				+ " = b'0' " + " order by " + mSortKeyCol;
 
 		// System.out.println(wQuery);
@@ -291,8 +309,10 @@ public class DbUtil {
 	private static RecordTableItem getRecordByActId(int pId) {
 		RecordTableItem wRecordTableItem = new RecordTableItem();
 
-		String wQuery = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", " + mActTable + "."
-				+ mItemIdCol + ", " + mGroupIdCol + ", " + mActIncomeCol + ", " + mActExpenseCol + ", " + mActFreqCol
+		String wQuery = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", "
+				+ mActTable + "."
+				+ mItemIdCol + ", " + mGroupIdCol + ", " + mActIncomeCol + ", " + mActExpenseCol
+				+ ", " + mActFreqCol
 				+ ", " + mNoteNameCol + " from " + mActTable + " where " + mActIdCol + " = " + pId;
 
 		// System.out.println(wQuery);
@@ -311,11 +331,12 @@ public class DbUtil {
 			// int wCategoryId = wResultSet.getInt(mItemTable + "." +
 			// mCategoryIdCol);
 			int wGroupId = wResultSet.getInt(mGroupIdCol);
-			double wIncome = wResultSet.getDouble(mActIncomeCol);
-			double wExpense = wResultSet.getDouble(mActExpenseCol);
+			int wIncome = wResultSet.getInt(mActIncomeCol);
+			int wExpense = wResultSet.getInt(mActExpenseCol);
 			int wFrequency = wResultSet.getInt(mActFreqCol);
 			String wNote = wResultSet.getString(mNoteNameCol);
-			wRecordTableItem = new RecordTableItem(wId, wBookId, wDate, wItemId, wGroupId, wIncome, wExpense, 0,
+			wRecordTableItem = new RecordTableItem(wId, wBookId, wDate, wItemId, wGroupId, wIncome,
+					wExpense, 0,
 					wFrequency, wNote);
 			wResultSet.close();
 
@@ -330,7 +351,8 @@ public class DbUtil {
 	public static String[] getNotes(int pItemId) {
 		List<String> wResultList = new ArrayList<String>();
 
-		String wQuery = "select " + mNoteNameCol + " from " + mNoteTable + " where " + mItemIdCol + " = " + pItemId
+		String wQuery = "select " + mNoteNameCol + " from " + mNoteTable + " where " + mItemIdCol
+				+ " = " + pItemId
 				+ " and " + mDelFlgCol + " = b'0' " + " order by " + mNoteIdCol + " desc ";
 
 		// System.out.println(wQuery);
@@ -358,14 +380,17 @@ public class DbUtil {
 			wRexp = mExpenseRexp;
 		}
 
-		String wQuery = "select " + mItemTable + "." + mItemIdCol + ", " + mItemTable + "." + mItemNameCol;
+		String wQuery = "select " + mItemTable + "." + mItemIdCol + ", " + mItemTable + "."
+				+ mItemNameCol;
 		wQuery += " from " + mItemTable + " , " + mBookItemTable + ", " + mCategoryTable;
-		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "." + mItemIdCol + " and "
+		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "."
+				+ mItemIdCol + " and "
 				+ mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol;
 		if (pBookId != SystemData.getAllBookInt()) {
 			wQuery += " and " + mBookItemTable + "." + mBookIdCol + " = " + pBookId;
 		}
-		wQuery += " and " + mCategoryTable + "." + mCategoryRexpCol + " = " + wRexp + " and " + mBookItemTable + "."
+		wQuery += " and " + mCategoryTable + "." + mCategoryRexpCol + " = " + wRexp + " and "
+				+ mBookItemTable + "."
 				+ mDelFlgCol + " = b'0' " + " and " + mItemTable + "." + mDelFlgCol + " = b'0' ";
 		wQuery += " order by " + mItemTable + "." + mSortKeyCol;
 		// System.out.println(wQuery);
@@ -388,12 +413,17 @@ public class DbUtil {
 	public static Map<Integer, String> getItemNameMap(int pBookId, int pCategoryId) {
 		Map<Integer, String> wResultMap = new LinkedHashMap<Integer, String>();
 
-		String wQuery = "select " + mItemTable + "." + mItemIdCol + ", " + mItemTable + "." + mItemNameCol;
+		String wQuery = "select " + mItemTable + "." + mItemIdCol + ", " + mItemTable + "."
+				+ mItemNameCol;
 		wQuery += " from " + mItemTable + " , " + mBookItemTable + ", " + mCategoryTable;
-		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "." + mItemIdCol + " and "
-				+ mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol + " and "
-				+ mBookItemTable + "." + mBookIdCol + " = " + pBookId + " and " + mCategoryTable + "." + mCategoryIdCol
-				+ " = " + pCategoryId + " and " + mBookItemTable + "." + mDelFlgCol + " = b'0' " + " and " + mItemTable
+		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "."
+				+ mItemIdCol + " and "
+				+ mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol
+				+ " and "
+				+ mBookItemTable + "." + mBookIdCol + " = " + pBookId + " and " + mCategoryTable
+				+ "." + mCategoryIdCol
+				+ " = " + pCategoryId + " and " + mBookItemTable + "." + mDelFlgCol + " = b'0' "
+				+ " and " + mItemTable
 				+ "." + mDelFlgCol + " = b'0' ";
 		wQuery += " order by " + mItemTable + "." + mSortKeyCol;
 		// System.out.println(wQuery);
@@ -419,15 +449,18 @@ public class DbUtil {
 			wRexp = mExpenseRexp;
 		}
 
-		String wQuery = "select count( " + mItemTable + "." + mItemNameCol + " ), " + mCategoryTable + "."
+		String wQuery = "select count( " + mItemTable + "." + mItemNameCol + " ), "
+				+ mCategoryTable + "."
 				+ mCategoryIdCol + ", " + mCategoryTable + "." + mCategoryNameCol;
 		wQuery += " from " + mItemTable + ", " + mBookItemTable + ", " + mCategoryTable;
-		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "." + mItemIdCol + " and "
+		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "."
+				+ mItemIdCol + " and "
 				+ mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol;
 		if (pBookId != SystemData.getAllBookInt()) {
 			wQuery += " and " + mBookItemTable + "." + mBookIdCol + " = " + pBookId;
 		}
-		wQuery += " and " + mCategoryTable + "." + mCategoryRexpCol + " = " + wRexp + " and " + mBookItemTable + "."
+		wQuery += " and " + mCategoryTable + "." + mCategoryRexpCol + " = " + wRexp + " and "
+				+ mBookItemTable + "."
 				+ mDelFlgCol + " = b'0' " + " and " + mItemTable + "." + mDelFlgCol + " = b'0' ";
 		wQuery += " group by " + mCategoryTable + "." + mCategoryNameCol;
 		wQuery += " order by " + mCategoryTable + "." + mSortKeyCol;
@@ -437,7 +470,8 @@ public class DbUtil {
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
 		try {
 			while (wResultSet.next()) {
-				wResultMap.put(wResultSet.getInt(mCategoryIdCol), wResultSet.getString(mCategoryNameCol));
+				wResultMap.put(wResultSet.getInt(mCategoryIdCol), wResultSet
+						.getString(mCategoryNameCol));
 			}
 			wResultSet.close();
 
@@ -457,7 +491,8 @@ public class DbUtil {
 		}
 		String wQuery = "select " + mCategoryIdCol + ", " + mCategoryNameCol;
 		wQuery += " from " + mCategoryTable;
-		wQuery += " where " + mCategoryRexpCol + " = " + wRexp + " and " + mDelFlgCol + " = b'0' " + " and "
+		wQuery += " where " + mCategoryRexpCol + " = " + wRexp + " and " + mDelFlgCol + " = b'0' "
+				+ " and "
 				+ mSortKeyCol + " > " + 0;
 		wQuery += " order by " + mSortKeyCol;
 
@@ -466,7 +501,8 @@ public class DbUtil {
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
 		try {
 			while (wResultSet.next()) {
-				wResultMap.put(wResultSet.getInt(mCategoryIdCol), wResultSet.getString(mCategoryNameCol));
+				wResultMap.put(wResultSet.getInt(mCategoryIdCol), wResultSet
+						.getString(mCategoryNameCol));
 			}
 			wResultSet.close();
 
@@ -480,7 +516,8 @@ public class DbUtil {
 	public static boolean isIncomeCategory(int pCategoryId) {
 		String wQuery = "select " + mCategoryRexpCol;
 		wQuery += " from " + mCategoryTable;
-		wQuery += " where " + mCategoryIdCol + " = " + pCategoryId + " and " + mDelFlgCol + " = b'0' ";
+		wQuery += " where " + mCategoryIdCol + " = " + pCategoryId + " and " + mDelFlgCol
+				+ " = b'0' ";
 
 		// System.out.println(wQuery);
 
@@ -504,14 +541,17 @@ public class DbUtil {
 
 	}
 
-	public static void insertNewRecord(int pBookId, int pItemId, int pYear, int pMonth, int pDay, int pIncome,
+	public static void insertNewRecord(int pBookId, int pItemId, int pYear, int pMonth, int pDay,
+			int pIncome,
 			int pExpense, int pFrequency, String pNote) {
 
 		pNote = getNoteStringWithEscape(pNote);
 
-		String wQueryBase1 = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol + "," + mActDtCol
+		String wQueryBase1 = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol
+				+ "," + mActDtCol
 				+ "," + mActIncomeCol + "," + mActExpenseCol;
-		String wQueryBase2 = " values(" + pBookId + "," + pItemId + ",'" + pYear + "-" + pMonth + "-" + pDay + "',"
+		String wQueryBase2 = " values(" + pBookId + "," + pItemId + ",'" + pYear + "-" + pMonth
+				+ "-" + pDay + "',"
 				+ pIncome + "," + pExpense;
 		String wQueryNote1 = "";
 		String wQueryNote2 = "";
@@ -535,10 +575,13 @@ public class DbUtil {
 				wCal.add(Calendar.MONTH, +i);
 				String wDate = getDateStrings(wCal.getTime());
 
-				wQueryBase1 = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol + "," + mActDtCol
-						+ "," + mActIncomeCol + "," + mActExpenseCol + "," + mGroupIdCol + "," + mActFreqCol;
+				wQueryBase1 = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol
+						+ "," + mActDtCol
+						+ "," + mActIncomeCol + "," + mActExpenseCol + "," + mGroupIdCol + ","
+						+ mActFreqCol;
 
-				wQueryBase2 = " values(" + pBookId + "," + pItemId + "," + wDate + "," + pIncome + "," + pExpense + ","
+				wQueryBase2 = " values(" + pBookId + "," + pItemId + "," + wDate + "," + pIncome
+						+ "," + pExpense + ","
 						+ wGroupId + "," + (pFrequency - i);
 
 				wQuery = wQueryBase1 + wQueryNote1 + ") " + wQueryBase2 + wQueryNote2 + ")";
@@ -556,7 +599,8 @@ public class DbUtil {
 
 	}
 
-	public static void updateRecord(int pActId, int pBookId, int pItemId, int pYear, int pMonth, int pDay, int pIncome,
+	public static void updateRecord(int pActId, int pBookId, int pItemId, int pYear, int pMonth,
+			int pDay, int pIncome,
 			int pExpense, int pFrequency, String pNote) {
 
 		pNote = getNoteStringWithEscape(pNote);
@@ -573,9 +617,12 @@ public class DbUtil {
 
 		// 　ともに繰り返し0ならUpdateのみ
 		if (pFrequency == 0 && wOldGroupId == 0) {
-			wQuery = "update " + mActTable + " set " + mBookIdCol + " = " + pBookId + ", " + mItemIdCol + " = "
-					+ pItemId + ", " + mActDtCol + " = " + wDate + ", " + mActIncomeCol + " = " + pIncome + ", "
-					+ mActExpenseCol + " = " + pExpense + ", " + mNoteNameCol + " = '" + pNote + "' ";
+			wQuery = "update " + mActTable + " set " + mBookIdCol + " = " + pBookId + ", "
+					+ mItemIdCol + " = "
+					+ pItemId + ", " + mActDtCol + " = " + wDate + ", " + mActIncomeCol + " = "
+					+ pIncome + ", "
+					+ mActExpenseCol + " = " + pExpense + ", " + mNoteNameCol + " = '" + pNote
+					+ "' ";
 			wQuery += " where " + mActIdCol + " = " + pActId;
 			// System.out.println(wQuery);
 			mDbAccess.executeUpdate(wQuery);
@@ -606,15 +653,19 @@ public class DbUtil {
 				wCal.add(Calendar.MONTH, +i);
 				wDate = getDateStrings(wCal.getTime());
 
-				String wQueryBase = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol + ","
-						+ mActDtCol + "," + mActIncomeCol + "," + mActExpenseCol + "," + mGroupIdCol + ","
+				String wQueryBase = "insert into  " + mActTable + " ( " + mBookIdCol + ","
+						+ mItemIdCol + ","
+						+ mActDtCol + "," + mActIncomeCol + "," + mActExpenseCol + ","
+						+ mGroupIdCol + ","
 						+ mActFreqCol;
 
-				String wQueryValues = " values(" + pBookId + "," + pItemId + "," + wDate + "," + pIncome + ","
+				String wQueryValues = " values(" + pBookId + "," + pItemId + "," + wDate + ","
+						+ pIncome + ","
 						+ pExpense + "," + wGroupId + "," + (pFrequency - i);
 
 				if (!"".equals(pNote)) {
-					wQuery = wQueryBase + "," + mNoteNameCol + ")" + wQueryValues + ",'" + pNote + "')";
+					wQuery = wQueryBase + "," + mNoteNameCol + ")" + wQueryValues + ",'" + pNote
+							+ "')";
 				} else {
 					wQuery = wQueryBase + ") " + wQueryValues + ")";
 				}
@@ -631,18 +682,22 @@ public class DbUtil {
 		}
 	}
 
-	public static void insertNewMoveRecord(int pBookFromId, int pBookToId, int pYear, int pMonth, int pDay, int pValue,
+	public static void insertNewMoveRecord(int pBookFromId, int pBookToId, int pYear, int pMonth,
+			int pDay, int pValue,
 			int pFrequency, String pNote) {
 
 		pNote = getNoteStringWithEscape(pNote);
 
 		int wGroupId = getNewGroupId();
 
-		String wQueryBase = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol + "," + mActIncomeCol
+		String wQueryBase = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol
+				+ "," + mActIncomeCol
 				+ "," + mActExpenseCol + "," + mGroupIdCol + "," + mActDtCol;
-		String wQueryFromValues = " values(" + pBookFromId + "," + getMoveExpenseItemId() + ",'0'," + pValue + ","
+		String wQueryFromValues = " values(" + pBookFromId + "," + getMoveExpenseItemId() + ",'0',"
+				+ pValue + ","
 				+ wGroupId;
-		String wQueryToValues = " values(" + pBookToId + "," + getMoveIncomeItemId() + "," + pValue + ",'0',"
+		String wQueryToValues = " values(" + pBookToId + "," + getMoveIncomeItemId() + "," + pValue
+				+ ",'0',"
 				+ wGroupId;
 
 		String wQueryNote1 = "";
@@ -657,7 +712,8 @@ public class DbUtil {
 
 		if (pFrequency == 0) {
 			String wDate = ",'" + pYear + "-" + pMonth + "-" + pDay + "'";
-			wQueryFrom = wQueryBase + wQueryNote1 + ") " + wQueryFromValues + wDate + wQueryNote2 + ")";
+			wQueryFrom = wQueryBase + wQueryNote1 + ") " + wQueryFromValues + wDate + wQueryNote2
+					+ ")";
 			// System.out.println(wQueryFrom);
 			mDbAccess.executeUpdate(wQueryFrom);
 			wQueryTo = wQueryBase + wQueryNote1 + ") " + wQueryToValues + wDate + wQueryNote2 + ")";
@@ -672,11 +728,13 @@ public class DbUtil {
 				wCal.add(Calendar.MONTH, +i);
 				String wDate = getDateStrings(wCal.getTime());
 
-				wQueryFrom = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryFromValues + wDate + wQueryNote2
+				wQueryFrom = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryFromValues
+						+ wDate + wQueryNote2
 						+ "," + (pFrequency - i) + ")";
 				// System.out.println(wQueryFrom);
 				mDbAccess.executeUpdate(wQueryFrom);
-				wQueryTo = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryToValues + wDate + wQueryNote2 + ","
+				wQueryTo = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryToValues + wDate
+						+ wQueryNote2 + ","
 						+ (pFrequency - i) + ")";
 				// System.out.println(wQueryTo);
 				mDbAccess.executeUpdate(wQueryTo);
@@ -690,7 +748,8 @@ public class DbUtil {
 		}
 	}
 
-	public static void updateMoveRecord(int pIncomeActId, int pBookFromId, int pBookToId, int pYear, int pMonth,
+	public static void updateMoveRecord(int pIncomeActId, int pBookFromId, int pBookToId,
+			int pYear, int pMonth,
 			int pDay, int pValue, int pFrequency, String pNote) {
 
 		pNote = getNoteStringWithEscape(pNote);
@@ -710,16 +769,22 @@ public class DbUtil {
 		// ともに繰り返し0ならUpdateのみ
 		if (isSingleMoveRecordPair(wOldGroupId) && pFrequency == 0) {
 			wDate = "'" + pYear + "-" + pMonth + "-" + pDay + "'";
-			wQueryFrom = "update " + mActTable + " set " + mBookIdCol + " = " + pBookFromId + ", " + mItemIdCol + " = "
-					+ getMoveExpenseItemId() + ", " + mActDtCol + " = " + wDate + ", " + mActIncomeCol + " = "
-					+ "'0', " + mActExpenseCol + " = " + pValue + ", " + mNoteNameCol + " = '" + pNote + "' "
+			wQueryFrom = "update " + mActTable + " set " + mBookIdCol + " = " + pBookFromId + ", "
+					+ mItemIdCol + " = "
+					+ getMoveExpenseItemId() + ", " + mActDtCol + " = " + wDate + ", "
+					+ mActIncomeCol + " = "
+					+ "'0', " + mActExpenseCol + " = " + pValue + ", " + mNoteNameCol + " = '"
+					+ pNote + "' "
 					+ " where " + mActIdCol + " = " + wExpenseActId;
 			// System.out.println(wQueryFrom);
 
 			mDbAccess.executeUpdate(wQueryFrom);
-			wQueryTo = "update " + mActTable + " set " + mBookIdCol + " = " + pBookToId + ", " + mItemIdCol + " = "
-					+ getMoveIncomeItemId() + ", " + mActDtCol + " = " + wDate + ", " + mActIncomeCol + " = " + +pValue
-					+ ", " + mActExpenseCol + " = " + "'0'" + ", " + mNoteNameCol + " = '" + pNote + "' " + " where "
+			wQueryTo = "update " + mActTable + " set " + mBookIdCol + " = " + pBookToId + ", "
+					+ mItemIdCol + " = "
+					+ getMoveIncomeItemId() + ", " + mActDtCol + " = " + wDate + ", "
+					+ mActIncomeCol + " = " + +pValue
+					+ ", " + mActExpenseCol + " = " + "'0'" + ", " + mNoteNameCol + " = '" + pNote
+					+ "' " + " where "
 					+ mActIdCol + " = " + pIncomeActId;
 			// System.out.println(wQueryTo);
 			mDbAccess.executeUpdate(wQueryTo);
@@ -752,14 +817,18 @@ public class DbUtil {
 				wDate = "'" + wCal.get(Calendar.YEAR) + "-" + (wCal.get(Calendar.MONDAY) + 1) + "-"
 						+ wCal.get(Calendar.DAY_OF_MONTH) + "'";
 
-				String wQueryBase = "insert into " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol + ","
-						+ mActDtCol + "," + mActIncomeCol + "," + mActExpenseCol + "," + mGroupIdCol + ","
+				String wQueryBase = "insert into " + mActTable + " ( " + mBookIdCol + ","
+						+ mItemIdCol + ","
+						+ mActDtCol + "," + mActIncomeCol + "," + mActExpenseCol + ","
+						+ mGroupIdCol + ","
 						+ mActFreqCol;
 
-				String wQueryFromValue = " values(" + pBookFromId + "," + getMoveExpenseItemId() + "," + wDate + ","
+				String wQueryFromValue = " values(" + pBookFromId + "," + getMoveExpenseItemId()
+						+ "," + wDate + ","
 						+ "'0'" + "," + pValue + "," + wGroupId + "," + (pFrequency - i);
 
-				String wQueryToValue = " values(" + pBookToId + "," + getMoveIncomeItemId() + "," + wDate + ","
+				String wQueryToValue = " values(" + pBookToId + "," + getMoveIncomeItemId() + ","
+						+ wDate + ","
 						+ pValue + "," + "'0'" + "," + wGroupId + "," + (pFrequency - i);
 
 				String wQueryNote1 = ")";
@@ -821,7 +890,8 @@ public class DbUtil {
 
 		int wPairActId = 0;
 
-		String wQuery = "select " + mActIdCol + " from " + mActTable + " where " + mGroupIdCol + " = " + wGroupId
+		String wQuery = "select " + mActIdCol + " from " + mActTable + " where " + mGroupIdCol
+				+ " = " + wGroupId
 				+ " and " + mActDtCol + " = " + wDate + " and " + mActIdCol + " <> " + wActId;
 
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
@@ -854,7 +924,8 @@ public class DbUtil {
 		return pCategoryId == getMoveIncomeItemId() || pCategoryId == getMoveExpenseItemId();
 	}
 
-	public static SummaryTableItem[] getSummaryTableItems(int pBookId, Date pStartDate, Date pEndDate) {
+	public static SummaryTableItem[] getSummaryTableItems(int pBookId, Date pStartDate,
+			Date pEndDate) {
 		List<SummaryTableItem> wSummaryTableItemList = new ArrayList<SummaryTableItem>();
 
 		String wStartDateString = getDateStrings(pStartDate);
@@ -864,20 +935,20 @@ public class DbUtil {
 		String wQuery;
 
 		// for all books
-		double wTempBalance = 0;
-		double wAppearedBalance = 0;
-		double wActualBalance = 0;
+		int wTempBalance = 0;
+		int wAppearedBalance = 0;
+		int wActualBalance = 0;
 
-		double wTotalAppearedProfit = 0;
-		double wSpecialProfit = 0;
-		double wTempProfit = 0;
-		double wActualProfit = 0;
-		double wOperatingProfit = 0;
+		int wTotalAppearedProfit = 0;
+		int wSpecialProfit = 0;
+		int wTempProfit = 0;
+		int wActualProfit = 0;
+		int wOperatingProfit = 0;
 
 		// for each book
-		double wBookAppearedProfit = 0;
-		double wBookAppearedIncome = 0;
-		double wBookAppearedExpense = 0;
+		int wBookAppearedProfit = 0;
+		int wBookAppearedIncome = 0;
+		int wBookAppearedExpense = 0;
 
 		// 立替残高（借入残高）
 		wTempBalance = getTempBalance(pEndDate);
@@ -887,7 +958,8 @@ public class DbUtil {
 		wActualBalance = wAppearedBalance - wTempBalance;
 
 		// みかけ収支（Total）
-		double[] wTotalAppearedIncomeExpense = getAppearedIncomeExpense(pStartDate, pEndDate, mAllBookId);
+		int[] wTotalAppearedIncomeExpense = getAppearedIncomeExpense(pStartDate, pEndDate,
+				mAllBookId);
 		wTotalAppearedProfit = wTotalAppearedIncomeExpense[0] - wTotalAppearedIncomeExpense[1];
 
 		// 立替収支
@@ -910,7 +982,8 @@ public class DbUtil {
 			wBookAppearedIncome = wTotalAppearedIncomeExpense[0];
 			wBookAppearedExpense = wTotalAppearedIncomeExpense[1];
 		} else {
-			double[] wBookAppearedIncomeExpense = getAppearedIncomeExpense(pStartDate, pEndDate, pBookId);
+			int[] wBookAppearedIncomeExpense = getAppearedIncomeExpense(pStartDate, pEndDate,
+					pBookId);
 			wBookAppearedIncome = wBookAppearedIncomeExpense[0];
 			wBookAppearedExpense = wBookAppearedIncomeExpense[1];
 		}
@@ -934,17 +1007,25 @@ public class DbUtil {
 		// CategoryId-SummaryTableItemList
 		Map<Integer, List<SummaryTableItem>> wSummaryTableMap = new LinkedHashMap<Integer, List<SummaryTableItem>>();
 
-		wQuery = "select " + mCategoryTable + "." + mCategoryIdCol + ", " + mCategoryTable + "." + mCategoryNameCol
-				+ ", sum(" + mActIncomeCol + ") as " + mActIncomeCol + ", sum(" + mActExpenseCol + ") as "
-				+ mActExpenseCol + " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable + " where "
-				+ mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol + " and " + mCategoryTable + "."
-				+ mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol + " and " + mActDtCol + " between "
-				+ wStartDateString + " and " + wEndDateString + " and " + mActTable + "." + mDelFlgCol + " = b'0'"
-				+ " and (" + mActTable + "." + mActIncomeCol + " + " + mActTable + "." + mActExpenseCol + ") > 0";
+		wQuery = "select " + mCategoryTable + "." + mCategoryIdCol + ", " + mCategoryTable + "."
+				+ mCategoryNameCol
+				+ ", sum(" + mActIncomeCol + ") as " + mActIncomeCol + ", sum(" + mActExpenseCol
+				+ ") as "
+				+ mActExpenseCol + " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable
+				+ " where "
+				+ mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol + " and "
+				+ mCategoryTable + "."
+				+ mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol + " and " + mActDtCol
+				+ " between "
+				+ wStartDateString + " and " + wEndDateString + " and " + mActTable + "."
+				+ mDelFlgCol + " = b'0'"
+				+ " and (" + mActTable + "." + mActIncomeCol + " + " + mActTable + "."
+				+ mActExpenseCol + ") > 0";
 		if (pBookId != mAllBookId) {
 			wQuery += " and " + mActTable + "." + mBookIdCol + " = " + pBookId;
 		}
-		wQuery += " group by " + mCategoryTable + "." + mCategoryIdCol + " order by " + mCategoryTable + "."
+		wQuery += " group by " + mCategoryTable + "." + mCategoryIdCol + " order by "
+				+ mCategoryTable + "."
 				+ mCategoryRexpCol + ", " + mCategoryTable + "." + mSortKeyCol;
 		// System.out.println(wQuery);
 
@@ -955,16 +1036,19 @@ public class DbUtil {
 				if (pBookId == mAllBookId && (DbUtil.isMoveCategory(wCategoryId))) {
 
 				} else {
-					String wCategoryName = wResultSet.getString(mCategoryTable + "." + mCategoryNameCol);
-					double wIncome = wResultSet.getDouble(mActIncomeCol);
-					double wExpense = wResultSet.getDouble(mActExpenseCol);
+					String wCategoryName = wResultSet.getString(mCategoryTable + "."
+							+ mCategoryNameCol);
+					int wIncome = wResultSet.getInt(mActIncomeCol);
+					int wExpense = wResultSet.getInt(mActExpenseCol);
 					// System.out.println(wCategoryName + ", " + wIncome + ", "
 					// + wExpense);
 					List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
 					if (wIncome > 0) {
 						wList.add(new SummaryTableItem(wCategoryId, wCategoryName, wIncome, true));
 					} else {
-						wList.add(new SummaryTableItem(wCategoryId, wCategoryName, wExpense, false));
+						wList
+								.add(new SummaryTableItem(wCategoryId, wCategoryName, wExpense,
+										false));
 					}
 					wSummaryTableMap.put(wCategoryId, wList);
 				}
@@ -976,18 +1060,26 @@ public class DbUtil {
 		}
 
 		// Item集計
-		wQuery = "select " + mCategoryTable + "." + mCategoryIdCol + ", " + mActTable + "." + mItemIdCol + ", "
-				+ mItemTable + "." + mItemNameCol + ", sum(" + mActIncomeCol + ") as " + mActIncomeCol + ", sum("
-				+ mActExpenseCol + ") as " + mActExpenseCol + " from " + mActTable + ", " + mItemTable + ", "
-				+ mCategoryTable + " where " + mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol
-				+ " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol + " and "
-				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and " + mActTable + "."
-				+ mDelFlgCol + " = b'0'" + " and (" + mActTable + "." + mActIncomeCol + " + " + mActTable + "."
+		wQuery = "select " + mCategoryTable + "." + mCategoryIdCol + ", " + mActTable + "."
+				+ mItemIdCol + ", "
+				+ mItemTable + "." + mItemNameCol + ", sum(" + mActIncomeCol + ") as "
+				+ mActIncomeCol + ", sum("
+				+ mActExpenseCol + ") as " + mActExpenseCol + " from " + mActTable + ", "
+				+ mItemTable + ", "
+				+ mCategoryTable + " where " + mActTable + "." + mItemIdCol + " = " + mItemTable
+				+ "." + mItemIdCol
+				+ " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "."
+				+ mCategoryIdCol + " and "
+				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and "
+				+ mActTable + "."
+				+ mDelFlgCol + " = b'0'" + " and (" + mActTable + "." + mActIncomeCol + " + "
+				+ mActTable + "."
 				+ mActExpenseCol + ") > 0";
 		if (pBookId != mAllBookId) {
 			wQuery += " and " + mActTable + "." + mBookIdCol + " = " + pBookId;
 		}
-		wQuery += " group by " + mActTable + "." + mItemIdCol + " order by " + mCategoryTable + "." + mCategoryRexpCol
+		wQuery += " group by " + mActTable + "." + mItemIdCol + " order by " + mCategoryTable + "."
+				+ mCategoryRexpCol
 				+ ", " + mCategoryTable + "." + mSortKeyCol + ", " + mItemTable + "." + mSortKeyCol;
 
 		// System.out.println(wQuery);
@@ -1002,14 +1094,16 @@ public class DbUtil {
 					List<SummaryTableItem> wList = wSummaryTableMap.get(wCategoryId);
 					int wItemId = wResultSet.getInt(mActTable + "." + mItemIdCol);
 					String wItemName = wResultSet.getString(mItemTable + "." + mItemNameCol);
-					double wIncome = wResultSet.getDouble(mActIncomeCol);
-					double wExpense = wResultSet.getDouble(mActExpenseCol);
+					int wIncome = wResultSet.getInt(mActIncomeCol);
+					int wExpense = wResultSet.getInt(mActExpenseCol);
 					// System.out.println(wItemName + ", " + wIncome + ", "
 					// + wExpense);
 					if (wIncome > 0) {
-						wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wIncome, true));
+						wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wIncome,
+								true));
 					} else {
-						wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wExpense, false));
+						wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wExpense,
+								false));
 					}
 				}
 			}
@@ -1044,7 +1138,8 @@ public class DbUtil {
 	}
 
 	// Categoryのみの年度集計を一括取得
-	public static List<SummaryTableItem[]> getAnnualSummaryTableItemsCategory(int pBookId, Date[][] pDatePeriods) {
+	public static List<SummaryTableItem[]> getAnnualSummaryTableItemsCategory(int pBookId,
+			Date[][] pDatePeriods) {
 
 		String wTotalStartDateString = getDateStrings(pDatePeriods[0][0]);
 		String wTotalEndDateString = getDateStrings(pDatePeriods[pDatePeriods.length - 1][1]);
@@ -1053,12 +1148,13 @@ public class DbUtil {
 		int wSummationIndex = Util.getSummationIndex(pDatePeriods);
 		Date[][] wDatePeriods = Util.getDatePeriodsWithSummaion(pDatePeriods);
 		// Summation + Average
-		int wDatePeriodCount = pDatePeriods.length + 2 * (wDatePeriods.length - pDatePeriods.length);
+		int wDatePeriodCount = pDatePeriods.length + 2
+				* (wDatePeriods.length - pDatePeriods.length);
 
 		// 結果を挿入するリスト
 		// List<List<SummaryTableItem>> wSummaryTableItemList = new
 		// ArrayList<List<SummaryTableItem>>(wDatePeriodCount);
-		Map<Double, List<SummaryTableItem>> wSummaryTableItemListMap = new TreeMap<Double, List<SummaryTableItem>>();
+		Map<Integer, List<SummaryTableItem>> wSummaryTableItemListMap = new TreeMap<Integer, List<SummaryTableItem>>();
 
 		// for (int i = 0; i < wDatePeriodCount; i++) {
 		// List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
@@ -1070,36 +1166,47 @@ public class DbUtil {
 		String wPeriodName = "Period";
 
 		// // for each book
-		// double wBookAppearedProfit = 0;
-		// double wBookAppearedIncome = 0;
-		// double wBookAppearedExpense = 0;
+		// int wBookAppearedProfit = 0;
+		// int wBookAppearedIncome = 0;
+		// int wBookAppearedExpense = 0;
 
 		// カテゴリ集計
 		// CategoryId-SummaryTableItemList
 
-		wQuery = "select " + mCategoryTable + "." + mCategoryRexpCol + ", " + mCategoryTable + "." + mSortKeyCol + ", "
-				+ mCategoryTable + "." + mCategoryIdCol + ", " + mCategoryTable + "." + mCategoryNameCol;
+		wQuery = "select " + mCategoryTable + "." + mCategoryRexpCol + ", " + mCategoryTable + "."
+				+ mSortKeyCol + ", "
+				+ mCategoryTable + "." + mCategoryIdCol + ", " + mCategoryTable + "."
+				+ mCategoryNameCol;
 
 		for (int i = 0; i < wDatePeriods.length; i++) {
 			Date[] wDates = wDatePeriods[i];
 			String wStartDateString = getDateStrings(wDates[0]);
 			String wEndDateString = getDateStrings(wDates[1]);
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " then " + mActIncomeCol + " end),0) '" + mActIncomeCol + wPeriodName + i + "'";
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " then " + mActExpenseCol + " end),0) '" + mActExpenseCol + wPeriodName + i
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " then " + mActIncomeCol + " end),0) '" + mActIncomeCol
+					+ wPeriodName + i + "'";
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " then " + mActExpenseCol + " end),0) '" + mActExpenseCol
+					+ wPeriodName + i
 					+ "'";
 		}
 
 		wQuery += " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable;
 		wQuery += " where " + mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol;
-		wQuery += " and " + mItemTable + "." + mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol;
+		wQuery += " and " + mItemTable + "." + mCategoryIdCol + " = " + mCategoryTable + "."
+				+ mCategoryIdCol;
 		wQuery += " and " + mActIncomeCol + " + " + mActExpenseCol + " > 0 ";
 		wQuery += " and " + mActTable + "." + mDelFlgCol + " = b'0'";
-		wQuery += " and " + mActDtCol + " between " + wTotalStartDateString + " and " + wTotalEndDateString;
-		if (pBookId != mAllBookId) {
+		wQuery += " and " + mActDtCol + " between " + wTotalStartDateString + " and "
+				+ wTotalEndDateString;
+
+		if (pBookId == mAllBookId)
+			wQuery += " and " + mItemTable + "." + mMoveFlgCol + " = b'0' ";
+		else
 			wQuery += " and " + mActTable + "." + mBookIdCol + " = " + pBookId;
-		}
+
 		wQuery += " group by " + mCategoryTable + "." + mCategoryIdCol + " with rollup";
 		// wQuery += " order by " + mCategoryRexpCol + ", " + mCategoryTable +
 		// "." + mSortKeyCol;
@@ -1109,100 +1216,67 @@ public class DbUtil {
 		try {
 			while (wResultSet.next()) {
 				int wCategoryId = wResultSet.getInt(mCategoryTable + "." + mCategoryIdCol);
-				if (pBookId == mAllBookId && (DbUtil.isMoveCategory(wCategoryId))) {
+				int wRexpDiv = wResultSet.getInt(mCategoryTable + "." + mCategoryRexpCol);
+				int wCategorySortKey = wResultSet.getInt(mCategoryTable + "." + mSortKeyCol);
+				List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
+
+				String wCategoryName = wResultSet.getString(mCategoryTable + "."
+							+ mCategoryNameCol);
+				// boolean isSummationInput = false;
+
+				// 集計行
+				if (wCategoryId == 0) {
+					List<SummaryTableItem> wListIncome = new ArrayList<SummaryTableItem>();
+					List<SummaryTableItem> wListExpense = new ArrayList<SummaryTableItem>();
+					for (int i = 0; i < wDatePeriods.length; i++) {
+						int wIncome = wResultSet.getInt(mActIncomeCol + wPeriodName + i);
+						int wExpense = wResultSet.getInt(mActExpenseCol + wPeriodName + i);
+
+						wList.add(new SummaryTableItem("総収支", wIncome - wExpense, true));
+						wListIncome.add(new SummaryTableItem("総収入", wIncome, true));
+						wListExpense.add(new SummaryTableItem("総支出", wExpense, true));
+
+						if (i == wSummationIndex) {
+							wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i,
+										true));
+							wListIncome.add(new SummaryTableItem("総収入", wIncome / i, true));
+							wListExpense.add(new SummaryTableItem("総支出", wExpense / i, true));
+						}
+					}
+
+					wSummaryTableItemListMap.put(0, wList);
+					wSummaryTableItemListMap.put(1, wListIncome);
+					int wKey = mExpenseRexp * (int) Math.pow(10, 3);
+					// System.out.println(wKey);
+					wSummaryTableItemListMap.put(wKey, wListExpense);
 
 				} else {
 
-					int wRexpDiv = wResultSet.getInt(mCategoryTable + "." + mCategoryRexpCol);
-					int wCategorySortKey = wResultSet.getInt(mCategoryTable + "." + mSortKeyCol);
-					List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
+					for (int i = 0; i < wDatePeriods.length; i++) {
+						int wIncome = wResultSet.getInt(mActIncomeCol + wPeriodName + i);
+						int wExpense = wResultSet.getInt(mActExpenseCol + wPeriodName + i);
 
-					String wCategoryName = wResultSet.getString(mCategoryTable + "." + mCategoryNameCol);
-					// boolean isSummationInput = false;
-
-					// 集計行
-					if (wCategoryId == 0) {
-						List<SummaryTableItem> wListIncome = new ArrayList<SummaryTableItem>();
-						List<SummaryTableItem> wListExpense = new ArrayList<SummaryTableItem>();
-						for (int i = 0; i < wDatePeriods.length; i++) {
-							double wIncome = wResultSet.getDouble(mActIncomeCol + wPeriodName + i);
-							double wExpense = wResultSet.getDouble(mActExpenseCol + wPeriodName + i);
-
-							wList.add(new SummaryTableItem("総収支", wIncome - wExpense, true));
-							wListIncome.add(new SummaryTableItem("総収入", wIncome, true));
-							wListExpense.add(new SummaryTableItem("総支出", wExpense, true));
-
+						if (wRexpDiv == mIncomeRexp) {
+							wList.add(new SummaryTableItem(wCategoryId, wCategoryName, wIncome,
+										true));
 							if (i == wSummationIndex) {
-								wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i, true));
-								wListIncome.add(new SummaryTableItem("総収入", wIncome / i, true));
-								wListExpense.add(new SummaryTableItem("総支出", wExpense / i, true));
+								wList.add(new SummaryTableItem(wCategoryId, wCategoryName,
+											wIncome / i, true));
+							}
+						} else {
+							wList.add(new SummaryTableItem(wCategoryId, wCategoryName,
+										wExpense, false));
+							if (i == wSummationIndex) {
+								wList.add(new SummaryTableItem(wCategoryId, wCategoryName,
+											wExpense / i, false));
 							}
 						}
-
-						wSummaryTableItemListMap.put(0.0, wList);
-						wSummaryTableItemListMap.put(1.0, wListIncome);
-						double wKey = mExpenseRexp * Math.pow(10, 5);
-						// System.out.println(wKey);
-						wSummaryTableItemListMap.put(wKey, wListExpense);
-
-					} else {
-
-						for (int i = 0; i < wDatePeriods.length; i++) {
-							double wIncome = wResultSet.getDouble(mActIncomeCol + wPeriodName + i);
-							double wExpense = wResultSet.getDouble(mActExpenseCol + wPeriodName + i);
-
-							if (wRexpDiv == mIncomeRexp) {
-								wList.add(new SummaryTableItem(wCategoryId, wCategoryName, wIncome, true));
-								if (i == wSummationIndex) {
-									wList.add(new SummaryTableItem(wCategoryId, wCategoryName, wIncome / i, true));
-								}
-							} else {
-								wList.add(new SummaryTableItem(wCategoryId, wCategoryName, wExpense, false));
-								if (i == wSummationIndex) {
-									wList.add(new SummaryTableItem(wCategoryId, wCategoryName, wExpense / i, false));
-								}
-							}
-
-							// if (wIncome > 0) {
-							// if (isSummationInput) {
-							// wSummaryTableItemList.get(i + 1).add(
-							// new SummaryTableItem(wCategoryId, wCategoryName,
-							// wIncome, true));
-							// } else {
-							// wSummaryTableItemList.get(i).add(
-							// new SummaryTableItem(wCategoryId, wCategoryName,
-							// wIncome, true));
-							// }
-							// } else {
-							// if (isSummationInput) {
-							// wSummaryTableItemList.get(i + 1).add(
-							// new SummaryTableItem(wCategoryId, wCategoryName,
-							// wExpense, false));
-							// } else {
-							// wSummaryTableItemList.get(i).add(
-							// new SummaryTableItem(wCategoryId, wCategoryName,
-							// wExpense, false));
-							// }
-							// }
-							// if (i == wSummationIndex) {
-							// if (wIncome > 0) {
-							// wSummaryTableItemList.get(i + 1).add(
-							// new SummaryTableItem(wCategoryId, wCategoryName,
-							// wIncome / i, true));
-							// } else {
-							// wSummaryTableItemList.get(i + 1).add(
-							// new SummaryTableItem(wCategoryId, wCategoryName,
-							// wExpense / i, false));
-							// }
-							// isSummationInput = true;
-							// }
-						}
-
-						double wKey = wRexpDiv * Math.pow(10, 5) + wCategorySortKey;
-						// System.out.println(wKey);
-						wSummaryTableItemListMap.put(wKey, wList);
-
 					}
+
+					int wKey = wRexpDiv * (int) Math.pow(10, 3) + wCategorySortKey;
+					// System.out.println(wKey);
+					wSummaryTableItemListMap.put(wKey, wList);
+
 				}
 			}
 			wResultSet.close();
@@ -1215,7 +1289,8 @@ public class DbUtil {
 
 		for (int i = 0; i < wDatePeriodCount; i++) {
 			List<SummaryTableItem> wRowList = new ArrayList<SummaryTableItem>();
-			for (Map.Entry<Double, List<SummaryTableItem>> wEntry : wSummaryTableItemListMap.entrySet()) {
+			for (Map.Entry<Integer, List<SummaryTableItem>> wEntry : wSummaryTableItemListMap
+					.entrySet()) {
 				// System.out.println(wEntry.getKey());
 				List<SummaryTableItem> wColList = wEntry.getValue();
 				wRowList.add(wColList.get(i));
@@ -1231,7 +1306,8 @@ public class DbUtil {
 	}
 
 	// Itemのみの年度集計を一括取得
-	public static List<SummaryTableItem[]> getAnnualSummaryTableItems(int pBookId, Date[][] pDatePeriods) {
+	public static List<SummaryTableItem[]> getAnnualSummaryTableItems(int pBookId,
+			Date[][] pDatePeriods) {
 
 		String wTotalStartDateString = getDateStrings(pDatePeriods[0][0]);
 		String wTotalEndDateString = getDateStrings(pDatePeriods[pDatePeriods.length - 1][1]);
@@ -1240,12 +1316,13 @@ public class DbUtil {
 		int wSummationIndex = Util.getSummationIndex(pDatePeriods);
 		Date[][] wDatePeriods = Util.getDatePeriodsWithSummaion(pDatePeriods);
 		// Summation + Average
-		int wDatePeriodCount = pDatePeriods.length + 2 * (wDatePeriods.length - pDatePeriods.length);
+		int wDatePeriodCount = pDatePeriods.length + 2
+				* (wDatePeriods.length - pDatePeriods.length);
 
 		// 結果を挿入するリスト
 		// List<List<SummaryTableItem>> wSummaryTableItemList = new
 		// ArrayList<List<SummaryTableItem>>(wDatePeriodCount);
-		Map<Double, List<SummaryTableItem>> wSummaryTableItemListMap = new TreeMap<Double, List<SummaryTableItem>>();
+		Map<Integer, List<SummaryTableItem>> wSummaryTableItemListMap = new TreeMap<Integer, List<SummaryTableItem>>();
 
 		// for (int i = 0; i < wDatePeriodCount; i++) {
 		// List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
@@ -1257,37 +1334,46 @@ public class DbUtil {
 		String wPeriodName = "Period";
 
 		// // for each book
-		// double wBookAppearedProfit = 0;
-		// double wBookAppearedIncome = 0;
-		// double wBookAppearedExpense = 0;
+		// int wBookAppearedProfit = 0;
+		// int wBookAppearedIncome = 0;
+		// int wBookAppearedExpense = 0;
 
 		// カテゴリ集計
 		// CategoryId-SummaryTableItemList
 
-		wQuery = "select " + mCategoryTable + "." + mCategoryRexpCol + ", " + mCategoryTable + "." + mCategoryIdCol
-				+ ", " + mCategoryTable + "." + mSortKeyCol + ", " + mItemTable + "." + mSortKeyCol + ", " + mItemTable
+		wQuery = "select " + mCategoryTable + "." + mCategoryRexpCol + ", " + mCategoryTable + "."
+				+ mCategoryIdCol
+				+ ", " + mCategoryTable + "." + mSortKeyCol + ", " + mItemTable + "." + mSortKeyCol
+				+ ", " + mItemTable
 				+ "." + mItemIdCol + ", " + mItemTable + "." + mItemNameCol;
 
 		for (int i = 0; i < wDatePeriods.length; i++) {
 			Date[] wDates = wDatePeriods[i];
 			String wStartDateString = getDateStrings(wDates[0]);
 			String wEndDateString = getDateStrings(wDates[1]);
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " then " + mActIncomeCol + " end),0) '" + mActIncomeCol + wPeriodName + i + "'";
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " then " + mActExpenseCol + " end),0) '" + mActExpenseCol + wPeriodName + i
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " then " + mActIncomeCol + " end),0) '" + mActIncomeCol
+					+ wPeriodName + i + "'";
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " then " + mActExpenseCol + " end),0) '" + mActExpenseCol
+					+ wPeriodName + i
 					+ "'";
 		}
 
 		wQuery += " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable;
 		wQuery += " where " + mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol;
-		wQuery += " and " + mItemTable + "." + mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol;
+		wQuery += " and " + mItemTable + "." + mCategoryIdCol + " = " + mCategoryTable + "."
+				+ mCategoryIdCol;
 		wQuery += " and " + mActIncomeCol + " + " + mActExpenseCol + " > 0 ";
 		wQuery += " and " + mActTable + "." + mDelFlgCol + " = b'0'";
-		wQuery += " and " + mActDtCol + " between " + wTotalStartDateString + " and " + wTotalEndDateString;
-		if (pBookId != mAllBookId) {
+		wQuery += " and " + mActDtCol + " between " + wTotalStartDateString + " and "
+				+ wTotalEndDateString;
+		if (pBookId == mAllBookId)
+			wQuery += " and " + mItemTable + "." + mMoveFlgCol + " = b'0' ";
+		else
 			wQuery += " and " + mActTable + "." + mBookIdCol + " = " + pBookId;
-		}
 		wQuery += " group by " + mItemTable + "." + mItemIdCol + " with rollup";
 		// wQuery += " order by " + mCategoryRexpCol + ", " + mCategoryTable +
 		// "."
@@ -1299,104 +1385,69 @@ public class DbUtil {
 			while (wResultSet.next()) {
 				int wCategoryId = wResultSet.getInt(mCategoryTable + "." + mCategoryIdCol);
 				int wItemId = wResultSet.getInt(mItemTable + "." + mItemIdCol);
+				int wRexpDiv = wResultSet.getInt(mCategoryTable + "." + mCategoryRexpCol);
+				int wCategorySortKey = wResultSet.getInt(mCategoryTable + "." + mSortKeyCol);
+				int wItemSortKey = wResultSet.getInt(mItemTable + "." + mSortKeyCol);
+				List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
+				String wItemName = wResultSet.getString(mItemTable + "." + mItemNameCol);
+				// boolean isSummationInput = false;
 
-				// 全帳簿なら移動項目は除く
-				if (pBookId == mAllBookId && (DbUtil.isMoveCategory(wCategoryId))) {
+				// 集計行
+				if (wItemId == 0) {
+					List<SummaryTableItem> wListIncome = new ArrayList<SummaryTableItem>();
+					List<SummaryTableItem> wListExpense = new ArrayList<SummaryTableItem>();
+					for (int i = 0; i < wDatePeriods.length; i++) {
+						int wIncome = wResultSet.getInt(mActIncomeCol + wPeriodName + i);
+						int wExpense = wResultSet.getInt(mActExpenseCol + wPeriodName + i);
+
+						wList.add(new SummaryTableItem("総収支", wIncome - wExpense, true));
+						wListIncome.add(new SummaryTableItem("総収入", wIncome, true));
+						wListExpense.add(new SummaryTableItem("総支出", wExpense, true));
+
+						if (i == wSummationIndex) {
+							wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i,
+										true));
+							wListIncome.add(new SummaryTableItem("総収入", wIncome / i, true));
+							wListExpense.add(new SummaryTableItem("総支出", wExpense / i, true));
+						}
+					}
+
+					wSummaryTableItemListMap.put(0, wList);
+					wSummaryTableItemListMap.put(1, wListIncome);
+					int wKey = mExpenseRexp * (int) Math.pow(10, 6);
+					// System.out.println(wKey);
+					wSummaryTableItemListMap.put(wKey, wListExpense);
 
 				} else {
 
-					int wRexpDiv = wResultSet.getInt(mCategoryTable + "." + mCategoryRexpCol);
-					int wCategorySortKey = wResultSet.getInt(mCategoryTable + "." + mSortKeyCol);
-					int wItemSortKey = wResultSet.getInt(mItemTable + "." + mSortKeyCol);
-					List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
-					String wItemName = wResultSet.getString(mItemTable + "." + mItemNameCol);
-					// boolean isSummationInput = false;
+					for (int i = 0; i < wDatePeriods.length; i++) {
+						int wIncome = wResultSet.getInt(mActIncomeCol + wPeriodName + i);
+						int wExpense = wResultSet.getInt(mActExpenseCol + wPeriodName + i);
 
-					// 集計行
-					if (wItemId == 0) {
-						List<SummaryTableItem> wListIncome = new ArrayList<SummaryTableItem>();
-						List<SummaryTableItem> wListExpense = new ArrayList<SummaryTableItem>();
-						for (int i = 0; i < wDatePeriods.length; i++) {
-							double wIncome = wResultSet.getDouble(mActIncomeCol + wPeriodName + i);
-							double wExpense = wResultSet.getDouble(mActExpenseCol + wPeriodName + i);
-
-							wList.add(new SummaryTableItem("総収支", wIncome - wExpense, true));
-							wListIncome.add(new SummaryTableItem("総収入", wIncome, true));
-							wListExpense.add(new SummaryTableItem("総支出", wExpense, true));
-
+						if (wRexpDiv == mIncomeRexp) {
+							wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId,
+										wIncome, true));
 							if (i == wSummationIndex) {
-								wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i, true));
-								wListIncome.add(new SummaryTableItem("総収入", wIncome / i, true));
-								wListExpense.add(new SummaryTableItem("総支出", wExpense / i, true));
+								wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId,
+											wIncome / i, true));
 							}
-						}
-
-						wSummaryTableItemListMap.put(0.0, wList);
-						wSummaryTableItemListMap.put(1.0, wListIncome);
-						double wKey = mExpenseRexp * Math.pow(10, 10);
-						// System.out.println(wKey);
-						wSummaryTableItemListMap.put(wKey, wListExpense);
-
-					} else {
-
-						for (int i = 0; i < wDatePeriods.length; i++) {
-							double wIncome = wResultSet.getDouble(mActIncomeCol + wPeriodName + i);
-							double wExpense = wResultSet.getDouble(mActExpenseCol + wPeriodName + i);
-
-							if (wRexpDiv == mIncomeRexp) {
-								wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wIncome, true));
-								if (i == wSummationIndex) {
-									wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wIncome / i, true));
-								}
-							} else {
-								wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wExpense, false));
-								if (i == wSummationIndex) {
-									wList
-											.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wExpense / i,
+						} else {
+							wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId,
+										wExpense, false));
+							if (i == wSummationIndex) {
+								wList
+											.add(new SummaryTableItem(wItemId, wItemName,
+													wCategoryId, wExpense / i,
 													false));
-								}
 							}
-
-							// if (wIncome > 0) {
-							// if (isSummationInput) {
-							// wSummaryTableItemList.get(i + 1).add(
-							// new SummaryTableItem(wItemId, wItemName,
-							// wCategoryId, wIncome, true));
-							// } else {
-							// wSummaryTableItemList.get(i).add(
-							// new SummaryTableItem(wItemId, wItemName,
-							// wCategoryId, wIncome, true));
-							// }
-							// } else {
-							// if (isSummationInput) {
-							// wSummaryTableItemList.get(i + 1).add(
-							// new SummaryTableItem(wItemId, wItemName,
-							// wCategoryId, wExpense, false));
-							// } else {
-							// wSummaryTableItemList.get(i).add(
-							// new SummaryTableItem(wItemId, wItemName,
-							// wCategoryId, wExpense, false));
-							// }
-							// }
-							// if (i == wSummationIndex) {
-							// if (wIncome > 0) {
-							// wSummaryTableItemList.get(i + 1).add(
-							// new SummaryTableItem(wItemId, wItemName,
-							// wCategoryId, wIncome / i, true));
-							// } else {
-							// wSummaryTableItemList.get(i + 1).add(
-							// new SummaryTableItem(wItemId, wItemName,
-							// wCategoryId, wExpense / i, false));
-							// }
-							// isSummationInput = true;
-							// }
 						}
-
-						double wKey = wRexpDiv * Math.pow(10, 10) + wCategorySortKey * Math.pow(10, 5) + wItemSortKey;
-						// System.out.println(wKey);
-						wSummaryTableItemListMap.put(wKey, wList);
-
 					}
+
+					int wKey = wRexpDiv * (int) Math.pow(10, 6) + wCategorySortKey
+								* (int) Math.pow(10, 3) + wItemSortKey;
+					// System.out.println(wKey);
+					wSummaryTableItemListMap.put(wKey, wList);
+
 				}
 			}
 			wResultSet.close();
@@ -1415,7 +1466,8 @@ public class DbUtil {
 
 		for (int i = 0; i < wDatePeriodCount; i++) {
 			List<SummaryTableItem> wRowList = new ArrayList<SummaryTableItem>();
-			for (Map.Entry<Double, List<SummaryTableItem>> wEntry : wSummaryTableItemListMap.entrySet()) {
+			for (Map.Entry<Integer, List<SummaryTableItem>> wEntry : wSummaryTableItemListMap
+					.entrySet()) {
 				// System.out.println(wEntry.getKey());
 				List<SummaryTableItem> wColList = wEntry.getValue();
 				wRowList.add(wColList.get(i));
@@ -1439,10 +1491,12 @@ public class DbUtil {
 		int wSummationIndex = Util.getSummationIndex(pDatePeriods);
 		Date[][] wDatePeriods = Util.getDatePeriodsWithSummaion(pDatePeriods);
 		// Summation + Average
-		int wDatePeriodCount = pDatePeriods.length + 2 * (wDatePeriods.length - pDatePeriods.length);
+		int wDatePeriodCount = pDatePeriods.length + 2
+				* (wDatePeriods.length - pDatePeriods.length);
 
 		// 結果を挿入するリスト
-		List<List<SummaryTableItem>> wSummaryTableItemList = new ArrayList<List<SummaryTableItem>>(wDatePeriodCount);
+		List<List<SummaryTableItem>> wSummaryTableItemList = new ArrayList<List<SummaryTableItem>>(
+				wDatePeriodCount);
 		for (int i = 0; i < wDatePeriodCount; i++) {
 			List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
 			wSummaryTableItemList.add(wList);
@@ -1459,45 +1513,61 @@ public class DbUtil {
 		String wTempIncomeName = "TempIncome";
 		String wTempExpenseName = "TempExpense";
 
-		double wAppearedBalance = getInitialBalance(SystemData.getAllBookInt());
-		double wActualBalance = 0;
-		double wTempBalance = 0;
+		int wAppearedBalance = getInitialBalance(SystemData.getAllBookInt());
+		int wActualBalance = 0;
+		int wTempBalance = 0;
 
 		// カテゴリ集計
 		// CategoryId-SummaryTableItemList
 
-		wQuery = "select COALESCE(sum(case when " + mActDtCol + " < " + wTotalStartDateString + " then "
+		wQuery = "select COALESCE(sum(case when " + mActDtCol + " < " + wTotalStartDateString
+				+ " then "
 				+ mActIncomeCol + " - " + mActExpenseCol + " end),0) " + wAppearedBalanceName;
-		wQuery += ",  + COALESCE(sum(case when " + mActDtCol + " < " + wTotalStartDateString + " and ("
-				+ mCategoryTable + "." + mCategoryTempFlgCol + " = b'1' ) then " + mActIncomeCol + " - "
+		wQuery += ",  + COALESCE(sum(case when " + mActDtCol + " < " + wTotalStartDateString
+				+ " and ("
+				+ mCategoryTable + "." + mCategoryTempFlgCol + " = b'1' ) then " + mActIncomeCol
+				+ " - "
 				+ mActExpenseCol + " end),0) " + wTempBalanceName;
 		for (int i = 0; i < wDatePeriods.length; i++) {
 			Date[] wDates = wDatePeriods[i];
 			String wStartDateString = getDateStrings(wDates[0]);
 			String wEndDateString = getDateStrings(wDates[1]);
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " then " + mActIncomeCol + " end),0) " + wAppearedIncomeName + i;
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " then " + mActExpenseCol + " end),0) " + wAppearedExpenseName + i;
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " then " + mActIncomeCol + " end),0) " + wAppearedIncomeName
+					+ i;
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " then " + mActExpenseCol + " end),0) "
+					+ wAppearedExpenseName + i;
 
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " and " + mCategoryTable + "." + mCategorySpecialFlgCol + " = b'1' then "
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " and " + mCategoryTable + "." + mCategorySpecialFlgCol
+					+ " = b'1' then "
 					+ mActIncomeCol + " end),0) " + wSpecialIncomeName + i;
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " and " + mCategoryTable + "." + mCategorySpecialFlgCol + " = b'1' then "
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " and " + mCategoryTable + "." + mCategorySpecialFlgCol
+					+ " = b'1' then "
 					+ mActExpenseCol + " end),0) " + wSpecialExpenseName + i;
 
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryTempFlgCol + " = b'1' then "
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryTempFlgCol
+					+ " = b'1' then "
 					+ mActIncomeCol + " end),0) " + wTempIncomeName + i;
-			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString + " and "
-					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryTempFlgCol + " = b'1' then "
+			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
+					+ " and "
+					+ wEndDateString + " and " + mCategoryTable + "." + mCategoryTempFlgCol
+					+ " = b'1' then "
 					+ mActExpenseCol + " end),0) " + wTempExpenseName + i;
 		}
 
 		wQuery += " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable;
 		wQuery += " where " + mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol;
-		wQuery += " and " + mItemTable + "." + mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol;
+		wQuery += " and " + mItemTable + "." + mCategoryIdCol + " = " + mCategoryTable + "."
+				+ mCategoryIdCol;
 		wQuery += " and " + mActTable + "." + mDelFlgCol + " = b'0'";
 		wQuery += " and " + mItemTable + "." + mMoveFlgCol + " = b'0'";
 		// System.out.println(wQuery);
@@ -1505,29 +1575,29 @@ public class DbUtil {
 		wResultSet = mDbAccess.executeQuery(wQuery);
 		try {
 			while (wResultSet.next()) {
-				wAppearedBalance += wResultSet.getDouble(wAppearedBalanceName);
-				wTempBalance += wResultSet.getDouble(wTempBalanceName);
+				wAppearedBalance += wResultSet.getInt(wAppearedBalanceName);
+				wTempBalance += wResultSet.getInt(wTempBalanceName);
 				wActualBalance += wAppearedBalance - wTempBalance;
 				boolean isSummationInput = false;
 
 				for (int i = 0; i < wDatePeriods.length; i++) {
-					double wAppearedIncome = wResultSet.getDouble(wAppearedIncomeName + i);
-					double wAppearedExpense = wResultSet.getDouble(wAppearedExpenseName + i);
-					double wSpecialIncome = wResultSet.getDouble(wSpecialIncomeName + i);
-					double wSpecialExpense = wResultSet.getDouble(wSpecialExpenseName + i);
-					double wTempIncome = wResultSet.getDouble(wTempIncomeName + i);
-					double wTempExpense = wResultSet.getDouble(wTempExpenseName + i);
+					int wAppearedIncome = wResultSet.getInt(wAppearedIncomeName + i);
+					int wAppearedExpense = wResultSet.getInt(wAppearedExpenseName + i);
+					int wSpecialIncome = wResultSet.getInt(wSpecialIncomeName + i);
+					int wSpecialExpense = wResultSet.getInt(wSpecialExpenseName + i);
+					int wTempIncome = wResultSet.getInt(wTempIncomeName + i);
+					int wTempExpense = wResultSet.getInt(wTempExpenseName + i);
 					int wListIndex;
 					if (isSummationInput) {
 						wListIndex = i + 1;
 					} else {
 						wListIndex = i;
 					}
-					double wAppearedProfit = wAppearedIncome - wAppearedExpense;
-					double wTempProfit = wTempIncome - wTempExpense;
-					double wSpecialProfit = wSpecialIncome - wSpecialExpense;
-					double wActualProfit = wAppearedProfit - wTempProfit;
-					double wOperationProfit = wAppearedProfit - wTempProfit - wSpecialProfit;
+					int wAppearedProfit = wAppearedIncome - wAppearedExpense;
+					int wTempProfit = wTempIncome - wTempExpense;
+					int wSpecialProfit = wSpecialIncome - wSpecialExpense;
+					int wActualProfit = wAppearedProfit - wTempProfit;
+					int wOperationProfit = wAppearedProfit - wTempProfit - wSpecialProfit;
 
 					if (i == wSummationIndex) {
 						wSummaryTableItemList.get(wListIndex).add(
@@ -1535,16 +1605,20 @@ public class DbUtil {
 						wSummaryTableItemList.get(wListIndex + 1).add(
 								new SummaryTableItem("繰越残高", SystemData.getUndefinedInt()));
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("みかけ収支", wAppearedProfit));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("みかけ収支", wAppearedProfit));
 						wSummaryTableItemList.get(wListIndex + 1).add(
 								new SummaryTableItem("みかけ収支", wAppearedProfit / i));
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("営業収支", wOperationProfit));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("営業収支", wOperationProfit));
 						wSummaryTableItemList.get(wListIndex + 1).add(
 								new SummaryTableItem("営業収支", wOperationProfit / i));
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("実質収支", wActualProfit));
-						wSummaryTableItemList.get(wListIndex + 1).add(new SummaryTableItem("実質収支", wActualProfit / i));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("実質収支", wActualProfit));
+						wSummaryTableItemList.get(wListIndex + 1).add(
+								new SummaryTableItem("実質収支", wActualProfit / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
 								new SummaryTableItem("実質残高", SystemData.getUndefinedInt()));
@@ -1562,14 +1636,18 @@ public class DbUtil {
 								new SummaryTableItem("立替累計", SystemData.getUndefinedInt()));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業収入", (wAppearedIncome - wSpecialIncome - wTempIncome)));
+								new SummaryTableItem("営業収入",
+										(wAppearedIncome - wSpecialIncome - wTempIncome)));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("営業収入", (wAppearedIncome - wSpecialIncome - wTempIncome) / i));
+								new SummaryTableItem("営業収入",
+										(wAppearedIncome - wSpecialIncome - wTempIncome) / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業支出", (wAppearedExpense - wSpecialExpense - wTempExpense)));
+								new SummaryTableItem("営業支出",
+										(wAppearedExpense - wSpecialExpense - wTempExpense)));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("営業支出", (wAppearedExpense - wSpecialExpense - wTempExpense) / i));
+								new SummaryTableItem("営業支出",
+										(wAppearedExpense - wSpecialExpense - wTempExpense) / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
 								new SummaryTableItem("実質収入", wAppearedIncome - wTempIncome));
@@ -1578,59 +1656,85 @@ public class DbUtil {
 
 						wSummaryTableItemList.get(wListIndex).add(
 								new SummaryTableItem("実質支出", wAppearedExpense - wTempExpense));
-						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("実質支出", (wAppearedExpense - wTempExpense) / i));
+						wSummaryTableItemList.get(wListIndex + 1)
+								.add(
+										new SummaryTableItem("実質支出",
+												(wAppearedExpense - wTempExpense) / i));
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("みかけ収入", wAppearedIncome));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("みかけ収入", wAppearedIncome));
 						wSummaryTableItemList.get(wListIndex + 1).add(
 								new SummaryTableItem("みかけ収入", wAppearedIncome / i));
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("みかけ支出", wAppearedExpense));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("みかけ支出", wAppearedExpense));
 						wSummaryTableItemList.get(wListIndex + 1).add(
 								new SummaryTableItem("みかけ支出", wAppearedExpense / i));
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("特別収入", wSpecialIncome));
-						wSummaryTableItemList.get(wListIndex + 1).add(new SummaryTableItem("特別収入", wSpecialIncome / i));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("特別収入", wSpecialIncome));
+						wSummaryTableItemList.get(wListIndex + 1).add(
+								new SummaryTableItem("特別収入", wSpecialIncome / i));
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("特別支出", wSpecialExpense));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("特別支出", wSpecialExpense));
 						wSummaryTableItemList.get(wListIndex + 1)
 								.add(new SummaryTableItem("特別支出", wSpecialExpense / i));
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("立替収入", wTempIncome));
-						wSummaryTableItemList.get(wListIndex + 1).add(new SummaryTableItem("立替収入", wTempIncome / i));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("立替収入", wTempIncome));
+						wSummaryTableItemList.get(wListIndex + 1).add(
+								new SummaryTableItem("立替収入", wTempIncome / i));
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("立替支出", wTempExpense));
-						wSummaryTableItemList.get(wListIndex + 1).add(new SummaryTableItem("立替支出", wTempExpense / i));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("立替支出", wTempExpense));
+						wSummaryTableItemList.get(wListIndex + 1).add(
+								new SummaryTableItem("立替支出", wTempExpense / i));
 
 						isSummationInput = true;
 
 					} else { // SummationIndex以外
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("繰越残高", wAppearedBalance));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("繰越残高", wAppearedBalance));
 
 						wAppearedBalance += wAppearedProfit;
 						wActualBalance += wActualProfit;
 						wTempBalance += wTempProfit;
 
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("みかけ収支", wAppearedProfit));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("営業収支", wOperationProfit));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("実質収支", wActualProfit));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("実質残高", wActualBalance));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("みかけ残高", wAppearedBalance));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("立替累計", wTempBalance));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業収入", wAppearedIncome - wSpecialIncome - wTempIncome));
+								new SummaryTableItem("みかけ収支", wAppearedProfit));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業支出", wAppearedExpense - wSpecialExpense - wTempExpense));
+								new SummaryTableItem("営業収支", wOperationProfit));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("実質収支", wActualProfit));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("実質残高", wActualBalance));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("みかけ残高", wAppearedBalance));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("立替累計", wTempBalance));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("営業収入", wAppearedIncome - wSpecialIncome
+										- wTempIncome));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("営業支出", wAppearedExpense - wSpecialExpense
+										- wTempExpense));
 						wSummaryTableItemList.get(wListIndex).add(
 								new SummaryTableItem("実質収入", wAppearedIncome - wTempIncome));
 						wSummaryTableItemList.get(wListIndex).add(
 								new SummaryTableItem("実質支出", wAppearedExpense - wTempExpense));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("みかけ収入", wAppearedIncome));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("みかけ支出", wAppearedExpense));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("特別収入", wSpecialIncome));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("特別支出", wSpecialExpense));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("立替収入", wTempIncome));
-						wSummaryTableItemList.get(wListIndex).add(new SummaryTableItem("立替支出", wTempExpense));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("みかけ収入", wAppearedIncome));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("みかけ支出", wAppearedExpense));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("特別収入", wSpecialIncome));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("特別支出", wSpecialExpense));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("立替収入", wTempIncome));
+						wSummaryTableItemList.get(wListIndex).add(
+								new SummaryTableItem("立替支出", wTempExpense));
 
 					}
 				}
@@ -1641,7 +1745,8 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		List<SummaryTableItem[]> wReturnList = new ArrayList<SummaryTableItem[]>(wSummaryTableItemList.size());
+		List<SummaryTableItem[]> wReturnList = new ArrayList<SummaryTableItem[]>(
+				wSummaryTableItemList.size());
 		for (List<SummaryTableItem> wList : wSummaryTableItemList) {
 			wReturnList.add((SummaryTableItem[]) wList.toArray(new SummaryTableItem[0]));
 		}
@@ -1670,7 +1775,8 @@ public class DbUtil {
 		Map<Integer, ConfigItem> wResultMap = new LinkedHashMap<Integer, ConfigItem>();
 
 		// Category一覧の取得
-		String wQuery = "select " + mCategoryIdCol + ", " + mCategoryNameCol + " from " + mCategoryTable;
+		String wQuery = "select " + mCategoryIdCol + ", " + mCategoryNameCol + " from "
+				+ mCategoryTable;
 		wQuery += " where " + mDelFlgCol + " = b'0' and " + mCategoryRexpCol + " = " + wRexp;
 		wQuery += " and " + mSortKeyCol + " > 0";
 		wQuery += " order by " + mSortKeyCol;
@@ -1693,7 +1799,8 @@ public class DbUtil {
 
 		// Item一覧の取得
 
-		wQuery = "select " + mCategoryIdCol + ", " + mItemIdCol + ", " + mItemIdCol + ", " + mItemNameCol;
+		wQuery = "select " + mCategoryIdCol + ", " + mItemIdCol + ", " + mItemIdCol + ", "
+				+ mItemNameCol;
 		wQuery += " from " + mItemTable;
 		wQuery += " where " + mDelFlgCol + " = b'0' and " + mMoveFlgCol + " = b'0'";
 		wQuery += " order by " + mSortKeyCol;
@@ -1744,11 +1851,13 @@ public class DbUtil {
 				// 自身のアップデート
 
 				if (wCurrentItem.isCategory()) {
-					wQuery = "update " + mCategoryTable + " set " + mSortKeyCol + " = " + wSortKeyCategory + " where "
+					wQuery = "update " + mCategoryTable + " set " + mSortKeyCol + " = "
+							+ wSortKeyCategory + " where "
 							+ mCategoryIdCol + " = " + wCurrentItem.getId();
 					wSortKeyCategory++;
 				} else {
-					wQuery = "update " + mItemTable + " set " + mSortKeyCol + " = " + wSortKeyItem + " where "
+					wQuery = "update " + mItemTable + " set " + mSortKeyCol + " = " + wSortKeyItem
+							+ " where "
 							+ mItemIdCol + " = " + wCurrentItem.getId();
 					wSortKeyItem++;
 				}
@@ -1766,7 +1875,8 @@ public class DbUtil {
 	}
 
 	public static void insertNewCategory(boolean isIncome, String pCategoryName) {
-		String wQuery = "insert into " + mCategoryTable + " (" + mCategoryRexpCol + ", " + mCategoryNameCol + ", "
+		String wQuery = "insert into " + mCategoryTable + " (" + mCategoryRexpCol + ", "
+				+ mCategoryNameCol + ", "
 				+ mSortKeyCol + ") values (";
 		wQuery += (isIncome) ? mIncomeRexp : mExpenseRexp;
 		wQuery += ", '" + pCategoryName + "', " + 9999 + ")";
@@ -1775,7 +1885,8 @@ public class DbUtil {
 	}
 
 	public static void insertNewItem(int pCategoryId, String pItemName) {
-		String wQuery = "insert into " + mItemTable + " (" + mCategoryIdCol + ", " + mItemNameCol + ", " + mSortKeyCol
+		String wQuery = "insert into " + mItemTable + " (" + mCategoryIdCol + ", " + mItemNameCol
+				+ ", " + mSortKeyCol
 				+ ") values (";
 		wQuery += pCategoryId + ", '" + pItemName + "', " + 9999 + ")";
 		// System.out.println(wQuery);
@@ -1783,14 +1894,16 @@ public class DbUtil {
 	}
 
 	public static void updateCategory(int pCategoryId, String pCategoryName) {
-		String wQuery = "update " + mCategoryTable + " set " + mCategoryNameCol + " = '" + pCategoryName + "' where "
+		String wQuery = "update " + mCategoryTable + " set " + mCategoryNameCol + " = '"
+				+ pCategoryName + "' where "
 				+ mCategoryIdCol + " = " + pCategoryId;
 		// System.out.println(wQuery);
 		mDbAccess.executeUpdate(wQuery);
 	}
 
 	public static void updateItem(int pCategoryId, int pItemId, String pItemName) {
-		String wQuery = "update " + mItemTable + " set " + mCategoryIdCol + " = " + pCategoryId + ", " + mItemNameCol
+		String wQuery = "update " + mItemTable + " set " + mCategoryIdCol + " = " + pCategoryId
+				+ ", " + mItemNameCol
 				+ " = '" + pItemName + "' " + " where " + mItemIdCol + " = " + pItemId;
 		// System.out.println(wQuery);
 		mDbAccess.executeUpdate(wQuery);
@@ -1800,7 +1913,8 @@ public class DbUtil {
 		String wTableName = (pConfigItem.isCategory()) ? mCategoryTable : mItemTable;
 		String wIdName = (pConfigItem.isCategory()) ? mCategoryIdCol : mItemIdCol;
 
-		String wQuery = "update " + wTableName + " set " + mDelFlgCol + " = b'1' where " + wIdName + " = "
+		String wQuery = "update " + wTableName + " set " + mDelFlgCol + " = b'1' where " + wIdName
+				+ " = "
 				+ pConfigItem.getId();
 		// System.out.println(wQuery);
 		mDbAccess.executeUpdate(wQuery);
@@ -1808,7 +1922,8 @@ public class DbUtil {
 
 	public static List<Integer> getRelatedBookIdList(ConfigItem pConfigItem) {
 		List<Integer> wList = new ArrayList<Integer>();
-		String wQuery = "select " + mBookIdCol + " from " + mBookItemTable + " where " + mItemIdCol + " = "
+		String wQuery = "select " + mBookIdCol + " from " + mBookItemTable + " where " + mItemIdCol
+				+ " = "
 				+ pConfigItem.getId();
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
 
@@ -1826,7 +1941,8 @@ public class DbUtil {
 
 	public static List<Integer> getRelatedItemIdList(int pBookId) {
 		List<Integer> wList = new ArrayList<Integer>();
-		String wQuery = "select " + mItemIdCol + " from " + mBookItemTable + " where " + mBookIdCol + " = " + pBookId;
+		String wQuery = "select " + mItemIdCol + " from " + mBookItemTable + " where " + mBookIdCol
+				+ " = " + pBookId;
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
 
 		try {
@@ -1846,11 +1962,13 @@ public class DbUtil {
 
 		if (!isSelected) {
 			// 削除
-			wQuery = "delete from " + mBookItemTable + " where " + mItemIdCol + " = " + pItemId + " and " + mBookIdCol
+			wQuery = "delete from " + mBookItemTable + " where " + mItemIdCol + " = " + pItemId
+					+ " and " + mBookIdCol
 					+ " = " + pBookId;
 		} else {
 			// 追加
-			wQuery = "insert into " + mBookItemTable + " (" + mItemIdCol + ", " + mBookIdCol + ") values (" + pItemId
+			wQuery = "insert into " + mBookItemTable + " (" + mItemIdCol + ", " + mBookIdCol
+					+ ") values (" + pItemId
 					+ ", " + pBookId + ")";
 		}
 		// System.out.println(wQuery);
@@ -1859,7 +1977,8 @@ public class DbUtil {
 
 	public static List<Integer> getSpecialCategoryIdList() {
 		List<Integer> wList = new ArrayList<Integer>();
-		String wQuery = "select " + mCategoryIdCol + " from " + mCategoryTable + " where " + mCategorySpecialFlgCol
+		String wQuery = "select " + mCategoryIdCol + " from " + mCategoryTable + " where "
+				+ mCategorySpecialFlgCol
 				+ " = b'1'" + " and " + mDelFlgCol + " = b'0'";
 
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
@@ -1880,7 +1999,8 @@ public class DbUtil {
 	public static List<Integer> getTempCategoryIdList() {
 		List<Integer> wList = new ArrayList<Integer>();
 
-		String wQuery = "select " + mCategoryIdCol + " from " + mCategoryTable + " where " + mCategoryTempFlgCol
+		String wQuery = "select " + mCategoryIdCol + " from " + mCategoryTable + " where "
+				+ mCategoryTempFlgCol
 				+ " = b'1'" + " and " + mDelFlgCol + " = b'0'";
 
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
@@ -1900,7 +2020,8 @@ public class DbUtil {
 
 	public static void updateSpecialCategory(int pCategoryId, boolean isSelected) {
 		String wQuery;
-		wQuery = "update " + mCategoryTable + " set " + mCategorySpecialFlgCol + " = b'" + (isSelected ? 1 : 0)
+		wQuery = "update " + mCategoryTable + " set " + mCategorySpecialFlgCol + " = b'"
+				+ (isSelected ? 1 : 0)
 				+ "' where " + mCategoryIdCol + " = " + pCategoryId;
 		// System.out.println(wQuery);
 		mDbAccess.executeUpdate(wQuery);
@@ -1908,13 +2029,15 @@ public class DbUtil {
 
 	public static void updateTempCategory(int pCategoryId, boolean isSelected) {
 		String wQuery;
-		wQuery = "update " + mCategoryTable + " set " + mCategoryTempFlgCol + " = b'" + (isSelected ? 1 : 0)
+		wQuery = "update " + mCategoryTable + " set " + mCategoryTempFlgCol + " = b'"
+				+ (isSelected ? 1 : 0)
 				+ "' where " + mCategoryIdCol + " = " + pCategoryId;
 		mDbAccess.executeUpdate(wQuery);
 	}
 
 	public static String getBookNameById(int pBookId) {
-		ResultSet wResultSet = mDbAccess.executeQuery("select " + mBookNameCol + " from " + mBookTable + " where "
+		ResultSet wResultSet = mDbAccess.executeQuery("select " + mBookNameCol + " from "
+				+ mBookTable + " where "
 				+ mBookIdCol + " = " + pBookId);
 		try {
 			if (wResultSet.next()) {
@@ -1931,14 +2054,16 @@ public class DbUtil {
 	public static List<Book> getBookList() {
 		List<Book> wBookList = new ArrayList<Book>();
 		String wQuery = "select " + mBookIdCol + ", " + mBookNameCol + ", " + mBookBalanceCol;
-		wQuery += " from " + mBookTable + " where " + mDelFlgCol + " = b'0' " + " order by " + mSortKeyCol;
+		wQuery += " from " + mBookTable + " where " + mDelFlgCol + " = b'0' " + " order by "
+				+ mSortKeyCol;
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
 
 		try {
 			while (wResultSet.next()) {
-				Book wBook = new Book(wResultSet.getInt(mBookIdCol), wResultSet.getString(mBookNameCol));
+				Book wBook = new Book(wResultSet.getInt(mBookIdCol), wResultSet
+						.getString(mBookNameCol));
 				if (wResultSet.getInt(mBookBalanceCol) > 0) {
-					wBook.setBalance(wResultSet.getDouble(mBookBalanceCol));
+					wBook.setBalance(wResultSet.getInt(mBookBalanceCol));
 				}
 				wBookList.add(wBook);
 			}
@@ -1950,12 +2075,14 @@ public class DbUtil {
 	}
 
 	public static void addNewBook(String pBookName) {
-		String wQuery = "insert into " + mBookTable + " (" + mBookNameCol + ") values('" + pBookName + "')";
+		String wQuery = "insert into " + mBookTable + " (" + mBookNameCol + ") values('"
+				+ pBookName + "')";
 		mDbAccess.executeUpdate(wQuery);
 	}
 
-	public static void updateBook(int pBookId, String pBookName, double pBalance) {
-		String wQuery = "update " + mBookTable + " set " + mBookNameCol + " = '" + pBookName + "', " + mBookBalanceCol
+	public static void updateBook(int pBookId, String pBookName, int pBalance) {
+		String wQuery = "update " + mBookTable + " set " + mBookNameCol + " = '" + pBookName
+				+ "', " + mBookBalanceCol
 				+ " = " + pBalance;
 		wQuery += " where " + mBookIdCol + " = " + pBookId;
 		mDbAccess.executeUpdate(wQuery);
@@ -1971,14 +2098,16 @@ public class DbUtil {
 		int wSortKey = 1;
 		String wQuery;
 		for (Book wBook : pBookList) {
-			wQuery = "update " + mBookTable + " set " + mSortKeyCol + " = " + wSortKey++ + " where " + mBookIdCol
+			wQuery = "update " + mBookTable + " set " + mSortKeyCol + " = " + wSortKey++
+					+ " where " + mBookIdCol
 					+ " = " + wBook.getId();
 			mDbAccess.executeUpdate(wQuery);
 		}
 	}
 
 	public static void updateBalance(Book pBook) {
-		String wQuery = "update " + mBookTable + " set " + mBookBalanceCol + " = " + pBook.getBalance();
+		String wQuery = "update " + mBookTable + " set " + mBookBalanceCol + " = "
+				+ pBook.getBalance();
 		wQuery += " where " + mBookIdCol + " = " + pBook.getId();
 		mDbAccess.executeUpdate(wQuery);
 	}
@@ -1986,19 +2115,28 @@ public class DbUtil {
 	public static RecordTableItem[][] getSearchedRecordTableItemList(String pQueryString) {
 		RecordTableItem[][] result = new RecordTableItem[2][];
 		Date wDate = new Date();
-		String wQueryBase = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", " + mActTable + "."
-				+ mItemIdCol + ", " + mGroupIdCol + ", " + mActIncomeCol + ", " + mActExpenseCol + ", " + mActFreqCol
-				+ ", " + mNoteNameCol + " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable + " where "
-				+ mItemTable + "." + mItemIdCol + " = " + mActTable + "." + mItemIdCol + " and " + mItemTable + "."
-				+ mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "."
-				+ mDelFlgCol + " = b'0' " + " and " + mNoteNameCol + " like '%" + pQueryString + "%'";
+		String wQueryBase = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", "
+				+ mActTable + "."
+				+ mItemIdCol + ", " + mGroupIdCol + ", " + mActIncomeCol + ", " + mActExpenseCol
+				+ ", " + mActFreqCol
+				+ ", " + mNoteNameCol + " from " + mActTable + ", " + mItemTable + ", "
+				+ mCategoryTable + " where "
+				+ mItemTable + "." + mItemIdCol + " = " + mActTable + "." + mItemIdCol + " and "
+				+ mItemTable + "."
+				+ mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol + " and "
+				+ mActTable + "."
+				+ mDelFlgCol + " = b'0' " + " and " + mNoteNameCol + " like '%" + pQueryString
+				+ "%'";
 		String wQueryPeriodBefore = " and " + mActDtCol + " <= " + getDateStrings(wDate);
 		String wQueryPeriodAfter = " and " + mActDtCol + " > " + getDateStrings(wDate);
-		String wQueryOrder = " order by " + mActDtCol + ", " + mCategoryTable + "." + mCategoryRexpCol + ", "
+		String wQueryOrder = " order by " + mActDtCol + ", " + mCategoryTable + "."
+				+ mCategoryRexpCol + ", "
 				+ mCategoryTable + "." + mSortKeyCol + ", " + mItemTable + "." + mSortKeyCol;
 
-		result[0] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wQueryBase + wQueryPeriodBefore + wQueryOrder));
-		result[1] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wQueryBase + wQueryPeriodAfter + wQueryOrder));
+		result[0] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wQueryBase
+				+ wQueryPeriodBefore + wQueryOrder));
+		result[1] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wQueryBase
+				+ wQueryPeriodAfter + wQueryOrder));
 
 		return result;
 	}
@@ -2007,10 +2145,13 @@ public class DbUtil {
 		List<RecordTableItem> wList = new ArrayList<RecordTableItem>();
 		try {
 			while (pResultSet.next()) {
-			wList.add(new RecordTableItem(pResultSet.getInt(mActIdCol), pResultSet.getInt(mBookIdCol), pResultSet
-					.getDate(mActDtCol), pResultSet.getInt(mItemIdCol), pResultSet.getInt(mGroupIdCol), pResultSet
-					.getDouble(mActIncomeCol), pResultSet.getDouble(mActExpenseCol), 0, pResultSet.getInt(mActFreqCol),
-					pResultSet.getString(mNoteNameCol)));
+				wList.add(new RecordTableItem(pResultSet.getInt(mActIdCol), pResultSet
+						.getInt(mBookIdCol), pResultSet
+						.getDate(mActDtCol), pResultSet.getInt(mItemIdCol), pResultSet
+						.getInt(mGroupIdCol), pResultSet
+						.getInt(mActIncomeCol), pResultSet.getInt(mActExpenseCol), 0, pResultSet
+						.getInt(mActFreqCol),
+						pResultSet.getString(mNoteNameCol)));
 			}
 			pResultSet.close();
 		} catch (SQLException e) {
@@ -2021,17 +2162,22 @@ public class DbUtil {
 	}
 
 	// 立替残高（借入残高）
-	private static double getTempBalance(Date pEndDate) {
+	private static int getTempBalance(Date pEndDate) {
 
-		double wTempBalance = 0;
+		int wTempBalance = 0;
 		String wResultColName = "ResultCol";
 		String wEndDateString = getDateStrings(pEndDate);
 
-		String wQuery = "select sum(" + mActIncomeCol + " - " + mActExpenseCol + ") as " + wResultColName + " from "
-				+ mActTable + ", " + mItemTable + ", " + mCategoryTable + " where " + mActTable + "." + mItemIdCol
-				+ " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "." + mCategoryIdCol + " = "
-				+ mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "." + mDelFlgCol + " = b'0' and "
-				+ mActDtCol + " <= " + wEndDateString + " and " + mCategoryTable + "." + mCategoryTempFlgCol
+		String wQuery = "select sum(" + mActIncomeCol + " - " + mActExpenseCol + ") as "
+				+ wResultColName + " from "
+				+ mActTable + ", " + mItemTable + ", " + mCategoryTable + " where " + mActTable
+				+ "." + mItemIdCol
+				+ " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "."
+				+ mCategoryIdCol + " = "
+				+ mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "." + mDelFlgCol
+				+ " = b'0' and "
+				+ mActDtCol + " <= " + wEndDateString + " and " + mCategoryTable + "."
+				+ mCategoryTempFlgCol
 				+ " = b'1'";
 
 		// System.out.println(wQuery);
@@ -2039,7 +2185,7 @@ public class DbUtil {
 
 		try {
 			if (wResultSet.next()) {
-				wTempBalance = wResultSet.getDouble(wResultColName);
+				wTempBalance = wResultSet.getInt(wResultColName);
 			}
 			wResultSet.close();
 
@@ -2050,19 +2196,24 @@ public class DbUtil {
 		return wTempBalance;
 	}
 
-	private static double getTotalTempProfit(Date pStartDate, Date pEndDate) {
+	private static int getTotalTempProfit(Date pStartDate, Date pEndDate) {
 		// 立替収支
-		double wTotalTempProfit = 0;
+		int wTotalTempProfit = 0;
 
 		String wResultColName = "ResultCol";
 		String wStartDateString = getDateStrings(pStartDate);
 		String wEndDateString = getDateStrings(pEndDate);
 
-		String wQuery = "select sum(" + mActIncomeCol + " - " + mActExpenseCol + ") as " + wResultColName + " from "
-				+ mActTable + ", " + mItemTable + ", " + mCategoryTable + " where " + mActTable + "." + mItemIdCol
-				+ " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "." + mCategoryIdCol + " = "
-				+ mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "." + mDelFlgCol + " = b'0' and "
-				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and " + mCategoryTable
+		String wQuery = "select sum(" + mActIncomeCol + " - " + mActExpenseCol + ") as "
+				+ wResultColName + " from "
+				+ mActTable + ", " + mItemTable + ", " + mCategoryTable + " where " + mActTable
+				+ "." + mItemIdCol
+				+ " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "."
+				+ mCategoryIdCol + " = "
+				+ mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "." + mDelFlgCol
+				+ " = b'0' and "
+				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and "
+				+ mCategoryTable
 				+ "." + mCategoryTempFlgCol + " = b'1'";
 
 		// System.out.println(wQuery);
@@ -2070,7 +2221,7 @@ public class DbUtil {
 
 		try {
 			if (wResultSet.next()) {
-				wTotalTempProfit = wResultSet.getDouble(wResultColName);
+				wTotalTempProfit = wResultSet.getInt(wResultColName);
 			}
 			wResultSet.close();
 
@@ -2081,19 +2232,24 @@ public class DbUtil {
 		return wTotalTempProfit;
 	}
 
-	private static double getTotalSpecialProfit(Date pStartDate, Date pEndDate) {
+	private static int getTotalSpecialProfit(Date pStartDate, Date pEndDate) {
 		// 特別収支
-		double wSpecialProfit = 0;
+		int wSpecialProfit = 0;
 
 		String wResultColName = "ResultCol";
 		String wStartDateString = getDateStrings(pStartDate);
 		String wEndDateString = getDateStrings(pEndDate);
 
-		String wQuery = "select sum(" + mActIncomeCol + " - " + mActExpenseCol + ") as " + wResultColName + " from "
-				+ mActTable + ", " + mItemTable + ", " + mCategoryTable + " where " + mActTable + "." + mItemIdCol
-				+ " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "." + mCategoryIdCol + " = "
-				+ mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "." + mDelFlgCol + " = b'0' and "
-				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and " + mCategoryTable
+		String wQuery = "select sum(" + mActIncomeCol + " - " + mActExpenseCol + ") as "
+				+ wResultColName + " from "
+				+ mActTable + ", " + mItemTable + ", " + mCategoryTable + " where " + mActTable
+				+ "." + mItemIdCol
+				+ " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "."
+				+ mCategoryIdCol + " = "
+				+ mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "." + mDelFlgCol
+				+ " = b'0' and "
+				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and "
+				+ mCategoryTable
 				+ "." + mCategorySpecialFlgCol + " = b'1'";
 
 		// System.out.println(wQuery);
@@ -2101,7 +2257,7 @@ public class DbUtil {
 
 		try {
 			if (wResultSet.next()) {
-				wSpecialProfit = wResultSet.getDouble(wResultColName);
+				wSpecialProfit = wResultSet.getInt(wResultColName);
 			}
 			wResultSet.close();
 
@@ -2112,18 +2268,23 @@ public class DbUtil {
 		return wSpecialProfit;
 	}
 
-	private static double[] getAppearedIncomeExpense(Date pStartDate, Date pEndDate, int pBookId) {
+	private static int[] getAppearedIncomeExpense(Date pStartDate, Date pEndDate, int pBookId) {
 		// みかけ収入・支出（各Book）
-		double[] wAppearedIncomeExpense = new double[2];
+		int[] wAppearedIncomeExpense = new int[2];
 
 		String wStartDateString = getDateStrings(pStartDate);
 		String wEndDateString = getDateStrings(pEndDate);
 
-		String wQuery = "select sum(" + mActIncomeCol + ") as " + mActIncomeCol + ", sum(" + mActExpenseCol + ") as "
-				+ mActExpenseCol + " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable + " where "
-				+ mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol + " and " + mItemTable + "."
-				+ mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol + " and " + mActTable + "."
-				+ mDelFlgCol + " = b'0' and " + mActDtCol + " between " + wStartDateString + " and " + wEndDateString;
+		String wQuery = "select sum(" + mActIncomeCol + ") as " + mActIncomeCol + ", sum("
+				+ mActExpenseCol + ") as "
+				+ mActExpenseCol + " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable
+				+ " where "
+				+ mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol + " and "
+				+ mItemTable + "."
+				+ mCategoryIdCol + " = " + mCategoryTable + "." + mCategoryIdCol + " and "
+				+ mActTable + "."
+				+ mDelFlgCol + " = b'0' and " + mActDtCol + " between " + wStartDateString
+				+ " and " + wEndDateString;
 
 		if (pBookId == mAllBookId) {
 			// Moveを除く
@@ -2139,8 +2300,8 @@ public class DbUtil {
 
 		try {
 			if (wResultSet.next()) {
-				wAppearedIncomeExpense[0] = wResultSet.getDouble(mActIncomeCol);
-				wAppearedIncomeExpense[1] = wResultSet.getDouble(mActExpenseCol);
+				wAppearedIncomeExpense[0] = wResultSet.getInt(mActIncomeCol);
+				wAppearedIncomeExpense[1] = wResultSet.getInt(mActExpenseCol);
 				// System.out.println(wTempBalanceName + " = " +
 				// wTempBalance);
 			}
@@ -2153,16 +2314,18 @@ public class DbUtil {
 		return wAppearedIncomeExpense;
 	}
 
-	private static double getBalance(Date pEndDate, int pBookId, boolean pIncludeEndDate) {
+	private static int getBalance(Date pEndDate, int pBookId, boolean pIncludeEndDate) {
 
-		double wBalance = getInitialBalance(pBookId);
+		int wBalance = getInitialBalance(pBookId);
 
 		String wEnd = getDateStrings(pEndDate);
 		String wBookWhere = getBookWhere(pBookId);
 		String wResultCol = "Value";
 
-		String wQuery = "select SUM(" + mActIncomeCol + " - " + mActExpenseCol + ") as " + wResultCol + " from "
-				+ mActTable + " where " + mDelFlgCol + " = b'0' " + " and " + wBookWhere + " and " + mActDtCol;
+		String wQuery = "select SUM(" + mActIncomeCol + " - " + mActExpenseCol + ") as "
+				+ wResultCol + " from "
+				+ mActTable + " where " + mDelFlgCol + " = b'0' " + " and " + wBookWhere + " and "
+				+ mActDtCol;
 
 		if (pIncludeEndDate) {
 			wQuery += " <= " + wEnd;
@@ -2176,7 +2339,7 @@ public class DbUtil {
 
 		try {
 			wResultSet.next();
-			wBalance += wResultSet.getDouble(wResultCol);
+			wBalance += wResultSet.getInt(wResultCol);
 			wResultSet.close();
 
 		} catch (SQLException e) {
@@ -2186,19 +2349,21 @@ public class DbUtil {
 		return wBalance;
 	}
 
-	private static double getInitialBalance(int pBookId) {
-		double wBalance = 0;
+	private static int getInitialBalance(int pBookId) {
+		int wBalance = 0;
 		String wBookWhere = getBookWhere(pBookId);
 		String wResultCol = "VALUE";
 
 		String wQuery = "";
 
 		if (pBookId == mAllBookId) {
-			wQuery = "select SUM(" + mBookBalanceCol + ") as " + wResultCol + " from " + mBookTable + " where "
+			wQuery = "select SUM(" + mBookBalanceCol + ") as " + wResultCol + " from " + mBookTable
+					+ " where "
 					+ mDelFlgCol + " = b'0' and " + wBookWhere;
 
 		} else {
-			wQuery = "select " + mBookBalanceCol + " as " + wResultCol + " from " + mBookTable + " where " + wBookWhere;
+			wQuery = "select " + mBookBalanceCol + " as " + wResultCol + " from " + mBookTable
+					+ " where " + wBookWhere;
 		}
 
 		// System.out.println(wQuery);
@@ -2206,7 +2371,7 @@ public class DbUtil {
 
 		try {
 			wResultSet.next();
-			wBalance += wResultSet.getDouble(wResultCol);
+			wBalance += wResultSet.getInt(wResultCol);
 			wResultSet.close();
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
@@ -2229,7 +2394,8 @@ public class DbUtil {
 		int wRet = 0;
 		String wCol = "MaximumGroupId";
 
-		ResultSet wResultSet = mDbAccess.executeQuery("select max(" + mGroupIdCol + ") as " + wCol + " from "
+		ResultSet wResultSet = mDbAccess.executeQuery("select max(" + mGroupIdCol + ") as " + wCol
+				+ " from "
 				+ mActTable);
 
 		try {
@@ -2245,11 +2411,13 @@ public class DbUtil {
 	}
 
 	private static void updateNoteTable(int pItemId, String pNote) {
-		String wQuery = "delete from " + mNoteTable + " where " + mItemIdCol + " = " + pItemId + " and " + mNoteNameCol
+		String wQuery = "delete from " + mNoteTable + " where " + mItemIdCol + " = " + pItemId
+				+ " and " + mNoteNameCol
 				+ " = '" + pNote + "'";
 		mDbAccess.executeUpdate(wQuery);
 
-		wQuery = "insert into  " + mNoteTable + " (" + mNoteNameCol + "," + mItemIdCol + ") values('" + pNote + "',"
+		wQuery = "insert into  " + mNoteTable + " (" + mNoteNameCol + "," + mItemIdCol
+				+ ") values('" + pNote + "',"
 				+ pItemId + ")";
 		mDbAccess.executeUpdate(wQuery);
 	}
@@ -2266,7 +2434,8 @@ public class DbUtil {
 
 	private static boolean isSingleMoveRecordPair(int pGroupId) {
 		String wResultCol = "COUNT";
-		String wQuery = "select count(" + mActIdCol + ") as " + wResultCol + " from " + mActTable + " where "
+		String wQuery = "select count(" + mActIdCol + ") as " + wResultCol + " from " + mActTable
+				+ " where "
 				+ mGroupIdCol + " = " + pGroupId;
 		// System.out.println(wQuery);
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
@@ -2299,8 +2468,9 @@ public class DbUtil {
 			}
 			wStack.append(e.getStackTrace()[i] + "\n");
 		}
-		MessageDialog.openWarning(Display.getCurrent().getShells()[0], "SQL ResultSet Handling Error", e.toString()
-				+ "\n\n" + wStack);
+		MessageDialog.openWarning(Display.getCurrent().getShells()[0],
+				"SQL ResultSet Handling Error", e.toString()
+						+ "\n\n" + wStack);
 		// System.err.println("ResultSet Handling Error: " + e.toString());
 	}
 
@@ -2310,9 +2480,9 @@ public class DbUtil {
 		}
 		return pNote;
 	}
-	
-//	public static void main(String[] args) {
-//		for (RecordTableItem[] items : getSearchedRecordTableItemList("牛乳"))
-//			System.out.println(items.length);
-//	}
+
+	// public static void main(String[] args) {
+	// for (RecordTableItem[] items : getSearchedRecordTableItemList("牛乳"))
+	// System.out.println(items.length);
+	// }
 }

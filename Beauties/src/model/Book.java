@@ -1,7 +1,7 @@
 package model;
 
 public class Book {
-	private double mBalance = 0;
+	private int mBalance = 0;
 	private int mId;
 	private String mName;
 	
@@ -10,7 +10,7 @@ public class Book {
 		mName = pName;
 	}
 	
-	public void setBalance(double pBalance) {
+	public void setBalance(int pBalance) {
 		mBalance = pBalance;
 	}
 	
@@ -22,7 +22,7 @@ public class Book {
 		return mName;
 	}
 	
-	public double getBalance() {
+	public int getBalance() {
 		return mBalance;
 	}
 	
