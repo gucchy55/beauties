@@ -216,8 +216,8 @@ public class DbUtil {
 			wMoveFlgWhere = " and " + mItemTable + "." + mMoveFlgCol + " = b'0'";
 		}
 
-		long wBalance = getBalance(pStartDate, pBookId, false);
-		RecordTableItem wBalanceRecord = new RecordTableItem(pStartDate, wBalance);
+		int wBalance = getBalance(pStartDate, pBookId, false);
+		RecordTableItem wBalanceRecord = RecordTableItem.createBalanceRowItem(pStartDate, wBalance);
 		wRecordTableItemListUp.add(wBalanceRecord);
 
 		String wQuery = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", "
@@ -243,25 +243,20 @@ public class DbUtil {
 		try {
 			Date wDateNow = new Date();
 			while (wResultSet.next()) {
-
-				int wId = wResultSet.getInt(mActIdCol);
-				int wBookId = wResultSet.getInt(mBookIdCol);
-				Date wDate = wResultSet.getDate(mActDtCol);
-				int wItemId = wResultSet.getInt(mItemIdCol);
-				// String wItemName = wResultSet.getString(mItemTable + "." +
-				// mItemNameCol);
-				// int wCategoryId = wResultSet.getInt(mItemTable + "." +
-				// mCategoryIdCol);
-				int wGroupId = wResultSet.getInt(mGroupIdCol);
-				int wIncome = wResultSet.getInt(mActIncomeCol);
-				int wExpense = wResultSet.getInt(mActExpenseCol);
-				wBalance += wIncome - wExpense;
-				int wFrequency = wResultSet.getInt(mActFreqCol);
-				String wNote = wResultSet.getString(mNoteNameCol);
-				RecordTableItem wRecord = new RecordTableItem(wId, wBookId, wDate, wItemId,
-						wGroupId, wIncome,
-						wExpense, wBalance, wFrequency, wNote);
-				if (wDate.after(wDateNow)) {
+				wBalance += wResultSet.getInt(mActIncomeCol) - wResultSet.getInt(mActExpenseCol);
+				
+				RecordTableItem wRecord = new RecordTableItem.Builder(
+						wResultSet.getInt(mBookIdCol), wResultSet.getInt(mItemIdCol), wResultSet
+								.getDate(mActDtCol))
+						.actId(wResultSet.getInt(mActIdCol))
+						.balance(wBalance)
+						.expense(wResultSet.getInt(mActExpenseCol))
+						.frequency(wResultSet.getInt(mActFreqCol))
+						.groupId(wResultSet.getInt(mGroupIdCol))
+						.income(wResultSet.getInt(mActIncomeCol))
+						.note(wResultSet.getString(mNoteNameCol))
+						.build();
+				if (wResultSet.getDate(mActDtCol).after(wDateNow)) {
 					wRecordTableItemListBottom.add(wRecord);
 				} else {
 					wRecordTableItemListUp.add(wRecord);
@@ -307,7 +302,15 @@ public class DbUtil {
 	}
 
 	private static RecordTableItem getRecordByActId(int pId) {
-		RecordTableItem wRecordTableItem = new RecordTableItem();
+		int wId = SystemData.getUndefinedInt();
+		int wBookId = SystemData.getUndefinedInt();
+		Date wDate = new Date();
+		int wItemId = SystemData.getUndefinedInt();
+		int wGroupId = SystemData.getUndefinedInt();
+		int wIncome = SystemData.getUndefinedInt();
+		int wExpense = SystemData.getUndefinedInt();
+		int wFrequency = SystemData.getUndefinedInt();
+		String wNote = "";
 
 		String wQuery = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", "
 				+ mActTable + "."
@@ -322,30 +325,24 @@ public class DbUtil {
 		try {
 			wResultSet.next();
 
-			int wId = wResultSet.getInt(mActIdCol);
-			int wBookId = wResultSet.getInt(mBookIdCol);
-			Date wDate = wResultSet.getDate(mActDtCol);
-			int wItemId = wResultSet.getInt(mItemIdCol);
-			// String wItemName = wResultSet.getString(mItemTable + "." +
-			// mItemNameCol);
-			// int wCategoryId = wResultSet.getInt(mItemTable + "." +
-			// mCategoryIdCol);
-			int wGroupId = wResultSet.getInt(mGroupIdCol);
-			int wIncome = wResultSet.getInt(mActIncomeCol);
-			int wExpense = wResultSet.getInt(mActExpenseCol);
-			int wFrequency = wResultSet.getInt(mActFreqCol);
-			String wNote = wResultSet.getString(mNoteNameCol);
-			wRecordTableItem = new RecordTableItem(wId, wBookId, wDate, wItemId, wGroupId, wIncome,
-					wExpense, 0,
-					wFrequency, wNote);
+			wId = wResultSet.getInt(mActIdCol);
+			wBookId = wResultSet.getInt(mBookIdCol);
+			wDate = wResultSet.getDate(mActDtCol);
+			wItemId = wResultSet.getInt(mItemIdCol);
+			wGroupId = wResultSet.getInt(mGroupIdCol);
+			wIncome = wResultSet.getInt(mActIncomeCol);
+			wExpense = wResultSet.getInt(mActExpenseCol);
+			wFrequency = wResultSet.getInt(mActFreqCol);
+			wNote = wResultSet.getString(mNoteNameCol);
 			wResultSet.close();
 
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
 		}
 
-		return wRecordTableItem;
-
+		return new RecordTableItem.Builder(wBookId, wItemId, wDate)
+				.actId(wId).expense(wExpense).frequency(wFrequency)
+				.groupId(wGroupId).income(wIncome).note(wNote).build();
 	}
 
 	public static String[] getNotes(int pItemId) {
@@ -2145,13 +2142,16 @@ public class DbUtil {
 		List<RecordTableItem> wList = new ArrayList<RecordTableItem>();
 		try {
 			while (pResultSet.next()) {
-				wList.add(new RecordTableItem(pResultSet.getInt(mActIdCol), pResultSet
-						.getInt(mBookIdCol), pResultSet
-						.getDate(mActDtCol), pResultSet.getInt(mItemIdCol), pResultSet
-						.getInt(mGroupIdCol), pResultSet
-						.getInt(mActIncomeCol), pResultSet.getInt(mActExpenseCol), 0, pResultSet
-						.getInt(mActFreqCol),
-						pResultSet.getString(mNoteNameCol)));
+				wList.add(
+						new RecordTableItem.Builder(pResultSet.getInt(mBookIdCol),
+								pResultSet.getInt(mItemIdCol), pResultSet.getDate(mActDtCol))
+								.actId(pResultSet.getInt(mActIdCol))
+								.expense(pResultSet.getInt(mActExpenseCol))
+								.frequency(pResultSet.getInt(mActFreqCol))
+								.groupId(pResultSet.getInt(mGroupIdCol))
+								.income(pResultSet.getInt(mActIncomeCol))
+								.note(pResultSet.getString(mNoteNameCol))
+								.build());
 			}
 			pResultSet.close();
 		} catch (SQLException e) {
