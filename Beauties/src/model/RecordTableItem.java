@@ -1,5 +1,6 @@
 package model;
 
+import java.util.Calendar;
 import java.util.Date;
 
 import model.db.DbUtil;
@@ -17,6 +18,8 @@ public final class RecordTableItem {
 	private final int mBalance;
 	private final int mFrequency;
 	private final String mNote;
+	
+	private static Calendar mCalendar = Calendar.getInstance();
 
 	private static final String mBalanceItem = "繰越残高";
 
@@ -88,15 +91,15 @@ public final class RecordTableItem {
 		return mGroupId;
 	}
 
-	public double getIncome() {
+	public int getIncome() {
 		return mIncome;
 	}
 
-	public double getExpense() {
+	public int getExpense() {
 		return mExpense;
 	}
 
-	public double getBalance() {
+	public int getBalance() {
 		return mBalance;
 	}
 
@@ -132,6 +135,21 @@ public final class RecordTableItem {
 		if (isBalanceRow)
 			return "";
 		return DbUtil.getBookNameById(mBookId);
+	}
+	
+	public int getYear() {
+		mCalendar.setTime(this.mDate);
+		return mCalendar.get(Calendar.YEAR);
+	}
+	
+	public int getMonth() {
+		mCalendar.setTime(this.mDate);
+		return mCalendar.get(Calendar.MONTH);
+	}
+	
+	public Calendar getCal() {
+		mCalendar.setTime(this.mDate);
+		return mCalendar;
 	}
 	
 	public static class Builder {

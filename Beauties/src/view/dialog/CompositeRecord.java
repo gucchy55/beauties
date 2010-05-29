@@ -2,6 +2,7 @@ package view.dialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -42,7 +43,7 @@ class CompositeRecord extends Composite {
 	private int mItemId;
 
 	private RecordTableItem mRecordTableItem;
-	
+
 	private static final String mCategoryAllName = "（すべて）";
 	private static final int mCategoryAllId = -1;
 
@@ -71,9 +72,9 @@ class CompositeRecord extends Composite {
 
 	public CompositeRecord(Composite pParent, int pBookId) {
 		super(pParent, SWT.NONE);
-		
+
 		mBookId = pBookId;
-		
+
 		if (mBookId == SystemData.getAllBookInt()) {
 			mBookId = SystemData.getBookMap(false).keySet().iterator().next();
 		}
@@ -122,7 +123,7 @@ class CompositeRecord extends Composite {
 			mBookIdList.add(wBookId);
 			mBookCombo.add(mBookNameMap.get(wBookId));
 		}
-		
+
 		mBookCombo.setVisibleItemCount(mVisibleComboItemCount);
 
 		mBookCombo.select(mBookIdList.indexOf(mBookId));
@@ -141,6 +142,7 @@ class CompositeRecord extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
+
 			public void focusLost(FocusEvent event) {
 			}
 		});
@@ -193,6 +195,7 @@ class CompositeRecord extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
+
 			public void focusLost(FocusEvent event) {
 			}
 		});
@@ -208,6 +211,7 @@ class CompositeRecord extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
+
 			public void focusLost(FocusEvent event) {
 			}
 		});
@@ -223,6 +227,7 @@ class CompositeRecord extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NATIVE);
 			}
+
 			public void focusLost(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
@@ -237,7 +242,7 @@ class CompositeRecord extends Composite {
 		updateItemCombo();
 
 		updateNoteCombo();
-		
+
 		IControlContentAdapter wContentAdapter = new ComboContentAdapter();
 		IContentProposalProvider wContentProvider = new IContentProposalProvider() {
 			public IContentProposal[] getProposals(String contents, int position) {
@@ -323,7 +328,7 @@ class CompositeRecord extends Composite {
 			mCategoryIdList.add(wCategoryId);
 			mCategoryCombo.add(mCategoryNameMap.get(wCategoryId));
 		}
-		
+
 		mCategoryCombo.setVisibleItemCount(mVisibleComboItemCount);
 
 		mCategoryCombo.select(0);
@@ -404,37 +409,34 @@ class CompositeRecord extends Composite {
 			MessageDialog.openError(getShell(), "設定された項目がありません", "設定画面から関連付ける項目を設定してください");
 			return;
 		}
-		int wBookId = mBookIdList.get(mBookCombo.getSelectionIndex());
-		int wItemId = mItemIdList.get(mItemCombo.getSelectionIndex());
-		int wYear = mDateTime.getYear();
-		int wMonth = mDateTime.getMonth() + 1;
-		int wDay = mDateTime.getDay();
-		int wIncome = 0;
-		int wExpense = 0;
-		if (mIncome) {
-			wIncome = mValueSpinner.getSelection();
-		} else {
-			wExpense = mValueSpinner.getSelection();
-		}
-		String wNote = mNoteCombo.getText();
-		int wFrequency = mFrequencySpinner.getSelection();
-
-		if (mRecordTableItem == null) {
-			// New record
-			DbUtil.insertNewRecord(wBookId, wItemId, wYear, wMonth, wDay,
-					wIncome, wExpense, wFrequency, wNote);
-
-		} else {
-			// Update existing
-			DbUtil.updateRecord(mRecordTableItem.getId(), wBookId, wItemId,
-					wYear, wMonth, wDay, wIncome, wExpense, wFrequency, wNote);
-
-		}
-
+		if (mRecordTableItem == null)
+			DbUtil.insertNewRecord(createNewRecordTableItem());
+		else
+			DbUtil.updateRecord(mRecordTableItem, createNewRecordTableItem());
 	}
 
 	public int getValue() {
 		return mValueSpinner.getSelection();
+	}
+
+	private int getSelectedBookId() {
+		return mBookIdList.get(mBookCombo.getSelectionIndex());
+	}
+
+	private int getSelectedItemId() {
+		return mItemIdList.get(mItemCombo.getSelectionIndex());
+	}
+
+	private RecordTableItem createNewRecordTableItem() {
+		return new RecordTableItem.Builder(getSelectedBookId(), getSelectedItemId(),
+				new GregorianCalendar(mDateTime
+						.getYear(), mDateTime.getMonth(), mDateTime.getDay())
+						.getTime())
+				.frequency(mFrequencySpinner.getSelection())
+				.note(mNoteCombo.getText())
+				.income(mIncome ? mValueSpinner.getSelection() : 0)
+				.expense(mIncome ? 0 : mValueSpinner.getSelection())
+				.build();
 	}
 
 }

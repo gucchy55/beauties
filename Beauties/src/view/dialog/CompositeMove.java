@@ -2,11 +2,13 @@ package view.dialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import model.RecordTableItem;
+import model.RecordTableItemForMove;
 import model.SystemData;
 import model.db.DbUtil;
 
@@ -37,7 +39,7 @@ class CompositeMove extends Composite {
 
 	private RecordTableItem mIncomeRecord;
 	private RecordTableItem mExpenseRecord;
-	
+
 	// Map of ID & Name
 	private Map<Integer, String> mBookNameMap;
 
@@ -51,13 +53,13 @@ class CompositeMove extends Composite {
 	private Spinner mFrequencySpinner;
 	private Combo mNoteCombo;
 	private String[] mNoteItems;
-	
+
 	private static final int mNoteCandidateCount = 10;
 	private static final int mVisibleComboItemCount = 10;
 
 	public CompositeMove(Composite pParent, int pBookId) {
 		super(pParent, SWT.NONE);
-		
+
 		mBookId = pBookId;
 		if (mBookId == SystemData.getAllBookInt()) {
 			mBookId = SystemData.getBookMap(false).keySet().iterator().next();
@@ -101,6 +103,7 @@ class CompositeMove extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
+
 			public void focusLost(FocusEvent event) {
 			}
 		});
@@ -140,7 +143,7 @@ class CompositeMove extends Composite {
 				break;
 			}
 		}
-		
+
 		mBookFromCombo.setVisibleItemCount(mVisibleComboItemCount);
 		mBookToCombo.setVisibleItemCount(mVisibleComboItemCount);
 
@@ -162,6 +165,7 @@ class CompositeMove extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
+
 			public void focusLost(FocusEvent event) {
 
 			}
@@ -178,6 +182,7 @@ class CompositeMove extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
+
 			public void focusLost(FocusEvent event) {
 
 			}
@@ -194,6 +199,7 @@ class CompositeMove extends Composite {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NATIVE);
 			}
+
 			public void focusLost(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
 			}
@@ -203,7 +209,7 @@ class CompositeMove extends Composite {
 	private void initWidgets() {
 
 		updateNoteCombo();
-		
+
 		IControlContentAdapter wContentAdapter = new ComboContentAdapter();
 		IContentProposalProvider wContentProvider = new IContentProposalProvider() {
 			public IContentProposal[] getProposals(String contents, int position) {
@@ -246,32 +252,34 @@ class CompositeMove extends Composite {
 
 	public void insertRecord() {
 		// New/Update, Single/Multi records
-		// Common
-		int wBookFromId = mBookIdList.get(mBookFromCombo.getSelectionIndex());
-		int wBookToId = mBookIdList.get(mBookToCombo.getSelectionIndex());
-		int wYear = mDateTime.getYear();
-		int wMonth = mDateTime.getMonth() + 1;
-		int wDay = mDateTime.getDay();
-		int wValue = mValueSpinner.getSelection();
-		int wFrequency = mFrequencySpinner.getSelection();
-		String wNote = mNoteCombo.getText();
-
-		if (mIncomeRecord == null) {
-			// New record
-			DbUtil.insertNewMoveRecord(wBookFromId, wBookToId, wYear, wMonth,
-					wDay, wValue, wFrequency, wNote);
-
-		} else {
-			// Update existing
-			int wIncomeActId = mIncomeRecord.getId();
-			DbUtil.updateMoveRecord(wIncomeActId, wBookFromId, wBookToId,
-					wYear, wMonth, wDay, wValue, wFrequency, wNote);
-		}
-
+		if (mIncomeRecord == null)
+			DbUtil.insertNewMoveRecord(createNewMoveItem());
+		else
+			DbUtil.updateMoveRecord(
+					new RecordTableItemForMove(mExpenseRecord, mIncomeRecord), createNewMoveItem());
 	}
 
 	public boolean isValidInput() {
 		return (mValueSpinner.getSelection() > 0 && !mBookFromCombo
 				.getText().equals(mBookToCombo.getText()));
+	}
+
+	private int getSelectedFromBookId() {
+		return mBookIdList.get(mBookFromCombo.getSelectionIndex());
+	}
+
+	private int getSelectedToBookId() {
+		return mBookIdList.get(mBookToCombo.getSelectionIndex());
+	}
+
+	private RecordTableItemForMove createNewMoveItem() {
+		return new RecordTableItemForMove(getSelectedFromBookId(),
+				new RecordTableItem.Builder(getSelectedToBookId(), SystemData.getUndefinedInt(),
+						new GregorianCalendar(mDateTime.getYear(), mDateTime.getMonth(), mDateTime
+								.getDay()).getTime())
+						.income(mValueSpinner.getSelection())
+						.frequency(mFrequencySpinner.getSelection())
+						.note(mNoteCombo.getText())
+						.build());
 	}
 }

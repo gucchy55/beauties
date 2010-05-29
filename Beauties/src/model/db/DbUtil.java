@@ -7,13 +7,13 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.GregorianCalendar;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
 
+import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
@@ -22,6 +22,7 @@ import util.Util;
 import model.Book;
 import model.ConfigItem;
 import model.RecordTableItem;
+import model.RecordTableItemForMove;
 import model.SummaryTableItem;
 import model.SystemData;
 
@@ -244,7 +245,7 @@ public class DbUtil {
 			Date wDateNow = new Date();
 			while (wResultSet.next()) {
 				wBalance += wResultSet.getInt(mActIncomeCol) - wResultSet.getInt(mActExpenseCol);
-				
+
 				RecordTableItem wRecord = new RecordTableItem.Builder(
 						wResultSet.getInt(mBookIdCol), wResultSet.getInt(mItemIdCol), wResultSet
 								.getDate(mActDtCol))
@@ -538,37 +539,32 @@ public class DbUtil {
 
 	}
 
-	public static void insertNewRecord(int pBookId, int pItemId, int pYear, int pMonth, int pDay,
-			int pIncome,
-			int pExpense, int pFrequency, String pNote) {
-
-		pNote = getNoteStringWithEscape(pNote);
+	public static void insertNewRecord(RecordTableItem pRecord) {
+		String wNote = getNoteStringWithEscape(pRecord.getNote());
 
 		String wQueryBase1 = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol
 				+ "," + mActDtCol
 				+ "," + mActIncomeCol + "," + mActExpenseCol;
-		String wQueryBase2 = " values(" + pBookId + "," + pItemId + ",'" + pYear + "-" + pMonth
-				+ "-" + pDay + "',"
-				+ pIncome + "," + pExpense;
+		String wQueryBase2 = " values(" + pRecord.getBookId() + ","
+				+ pRecord.getItemId() + "," + getDateStrings(pRecord.getDate()) + ","
+				+ pRecord.getIncome() + "," + pRecord.getExpense();
 		String wQueryNote1 = "";
 		String wQueryNote2 = "";
 		String wQuery = "";
 
-		if (!"".equals(pNote)) {
+		if (!"".equals(wNote)) {
 			wQueryNote1 = "," + mNoteNameCol;
-			wQueryNote2 = ",'" + pNote + "'";
+			wQueryNote2 = ",'" + wNote + "'";
 		}
 
-		if (pFrequency == 0) {
+		if (pRecord.getFrequency() == 0) {
 			wQuery = wQueryBase1 + wQueryNote1 + ") " + wQueryBase2 + wQueryNote2 + ")";
 			// System.out.println(wQuery);
 			mDbAccess.executeUpdate(wQuery);
-
-		} else if (pFrequency > 0) {
+		} else if (pRecord.getFrequency() > 0) {
 			int wGroupId = getNewGroupId();
-			Calendar wCalBase = new GregorianCalendar(pYear, pMonth - 1, pDay);
-			for (int i = 0; i < pFrequency + 1; i++) {
-				Calendar wCal = (Calendar) wCalBase.clone();
+			for (int i = 0; i < pRecord.getFrequency() + 1; i++) {
+				Calendar wCal = pRecord.getCal();
 				wCal.add(Calendar.MONTH, +i);
 				String wDate = getDateStrings(wCal.getTime());
 
@@ -577,50 +573,43 @@ public class DbUtil {
 						+ "," + mActIncomeCol + "," + mActExpenseCol + "," + mGroupIdCol + ","
 						+ mActFreqCol;
 
-				wQueryBase2 = " values(" + pBookId + "," + pItemId + "," + wDate + "," + pIncome
-						+ "," + pExpense + ","
-						+ wGroupId + "," + (pFrequency - i);
+				wQueryBase2 = " values(" + pRecord.getBookId() + "," + pRecord.getItemId() + ","
+						+ wDate + "," + pRecord.getIncome()
+						+ "," + pRecord.getExpense() + ","
+						+ wGroupId + "," + (pRecord.getFrequency() - i);
 
 				wQuery = wQueryBase1 + wQueryNote1 + ") " + wQueryBase2 + wQueryNote2 + ")";
 				// System.out.println(wQuery);
 				mDbAccess.executeUpdate(wQuery);
-
 			}
-
 		}
 
 		// Noteが空でない場合はNoteTableに追加（同じ名前の既存レコードは削除）
-		if (!"".equals(pNote)) {
-			updateNoteTable(pItemId, pNote);
+		if (!"".equals(wNote)) {
+			updateNoteTable(pRecord.getItemId(), wNote);
 		}
 
 	}
 
-	public static void updateRecord(int pActId, int pBookId, int pItemId, int pYear, int pMonth,
-			int pDay, int pIncome,
-			int pExpense, int pFrequency, String pNote) {
+	public static void updateRecord(RecordTableItem pBeforeRecord, RecordTableItem pAfterRecord) {
+		Assert.isTrue(pAfterRecord.getId() == SystemData.getUndefinedInt());
 
-		pNote = getNoteStringWithEscape(pNote);
-
-		RecordTableItem wOldRecord = getRecordByActId(pActId);
-		int wOldGroupId = wOldRecord.getGroupId();
-		int wOldItemId = wOldRecord.getItemId();
-		int wOldBookId = wOldRecord.getBookId();
-
-		String wDate = "'" + pYear + "-" + pMonth + "-" + pDay + "'";
+		String wNote = getNoteStringWithEscape(pAfterRecord.getNote());
+		String wDate = getDateStrings(pAfterRecord.getDate());
 		int wGroupId = 0;
 
 		String wQuery = "";
 
 		// 　ともに繰り返し0ならUpdateのみ
-		if (pFrequency == 0 && wOldGroupId == 0) {
-			wQuery = "update " + mActTable + " set " + mBookIdCol + " = " + pBookId + ", "
-					+ mItemIdCol + " = "
-					+ pItemId + ", " + mActDtCol + " = " + wDate + ", " + mActIncomeCol + " = "
-					+ pIncome + ", "
-					+ mActExpenseCol + " = " + pExpense + ", " + mNoteNameCol + " = '" + pNote
-					+ "' ";
-			wQuery += " where " + mActIdCol + " = " + pActId;
+		if (pAfterRecord.getFrequency() == 0 && pBeforeRecord.getGroupId() == 0) {
+			wQuery = "update " + mActTable + " set "
+					+ mBookIdCol + " = " + pAfterRecord.getBookId() + ", "
+					+ mItemIdCol + " = " + pAfterRecord.getItemId() + ", "
+					+ mActDtCol + " = " + wDate + ", "
+					+ mActIncomeCol + " = " + pAfterRecord.getIncome() + ", "
+					+ mActExpenseCol + " = " + pAfterRecord.getExpense() + ", "
+					+ mNoteNameCol + " = '" + wNote + "' "
+					+ " where " + mActIdCol + " = " + pBeforeRecord.getId();
 			// System.out.println(wQuery);
 			mDbAccess.executeUpdate(wQuery);
 
@@ -628,24 +617,21 @@ public class DbUtil {
 			// どちらかが繰り返しありなら既存レコードを削除して新規追加
 
 			// 既存のレコードを削除
-			deleteRecord(wOldRecord);
-
-			// 元の日付を取得
-			Date wOldDate = wOldRecord.getDate();
-			Calendar wOldCal = new GregorianCalendar();
-			wOldCal.setTime(wOldDate);
+			deleteRecord(pBeforeRecord);
 
 			// 年月, BookId, ItemIdが変更された場合は新規のGroupIdを使用
-			if (pYear != wOldCal.get(Calendar.YEAR) || pMonth != wOldCal.get(Calendar.MONTH) + 1
-					|| pBookId != wOldBookId || pItemId != wOldItemId) {
+			if (pAfterRecord.getYear() != pBeforeRecord.getYear()
+					|| pAfterRecord.getMonth() != pBeforeRecord.getMonth()
+					|| pAfterRecord.getBookId() != pBeforeRecord.getBookId()
+					|| pAfterRecord.getItemId() != pBeforeRecord.getItemId())
 				wGroupId = getNewGroupId();
-			} else {
-				wGroupId = wOldGroupId;
-			}
+			else
+				wGroupId = pBeforeRecord.getGroupId();
 
 			// 新規のレコードを追加
-			Calendar wCalBase = new GregorianCalendar(pYear, pMonth - 1, pDay);
-			for (int i = 0; i < pFrequency + 1; i++) {
+			Calendar wCalBase = Calendar.getInstance();
+			wCalBase.setTime(pAfterRecord.getDate());
+			for (int i = 0; i < pAfterRecord.getFrequency() + 1; i++) {
 				Calendar wCal = (Calendar) wCalBase.clone();
 				wCal.add(Calendar.MONTH, +i);
 				wDate = getDateStrings(wCal.getTime());
@@ -656,16 +642,17 @@ public class DbUtil {
 						+ mGroupIdCol + ","
 						+ mActFreqCol;
 
-				String wQueryValues = " values(" + pBookId + "," + pItemId + "," + wDate + ","
-						+ pIncome + ","
-						+ pExpense + "," + wGroupId + "," + (pFrequency - i);
+				String wQueryValues = " values(" + pAfterRecord.getBookId() + ","
+						+ pAfterRecord.getItemId() + "," + wDate + ","
+						+ pAfterRecord.getIncome() + ","
+						+ pAfterRecord.getExpense() + "," + wGroupId + ","
+						+ (pAfterRecord.getFrequency() - i);
 
-				if (!"".equals(pNote)) {
-					wQuery = wQueryBase + "," + mNoteNameCol + ")" + wQueryValues + ",'" + pNote
+				if (!"".equals(wNote))
+					wQuery = wQueryBase + "," + mNoteNameCol + ")" + wQueryValues + ",'" + wNote
 							+ "')";
-				} else {
+				else
 					wQuery = wQueryBase + ") " + wQueryValues + ")";
-				}
 
 				// System.out.println(wQuery);
 
@@ -673,116 +660,103 @@ public class DbUtil {
 			}
 
 			// Noteが空でない場合はNoteTableに追加（同じ名前の既存レコードは削除）
-			if (!"".equals(pNote)) {
-				updateNoteTable(pItemId, pNote);
-			}
+			if (!"".equals(wNote))
+				updateNoteTable(pAfterRecord.getItemId(), wNote);
 		}
 	}
 
-	public static void insertNewMoveRecord(int pBookFromId, int pBookToId, int pYear, int pMonth,
-			int pDay, int pValue,
-			int pFrequency, String pNote) {
+	public static void insertNewMoveRecord(RecordTableItemForMove pMoveItem) {
 
-		pNote = getNoteStringWithEscape(pNote);
-
+		String wNote = getNoteStringWithEscape(pMoveItem.getNote());
 		int wGroupId = getNewGroupId();
 
 		String wQueryBase = "insert into  " + mActTable + " ( " + mBookIdCol + "," + mItemIdCol
-				+ "," + mActIncomeCol
-				+ "," + mActExpenseCol + "," + mGroupIdCol + "," + mActDtCol;
-		String wQueryFromValues = " values(" + pBookFromId + "," + getMoveExpenseItemId() + ",'0',"
-				+ pValue + ","
-				+ wGroupId;
-		String wQueryToValues = " values(" + pBookToId + "," + getMoveIncomeItemId() + "," + pValue
-				+ ",'0',"
-				+ wGroupId;
+				+ "," + mActIncomeCol + "," + mActExpenseCol + "," + mGroupIdCol + "," + mActDtCol;
+		String wQueryFromValues = " values(" + pMoveItem.getFromBookId() + ","
+				+ getMoveExpenseItemId() + ",'0'," + pMoveItem.getValue() + "," + wGroupId;
+		String wQueryToValues = " values(" + pMoveItem.getToBookId() + "," + getMoveIncomeItemId()
+				+ "," + pMoveItem.getValue() + ",'0'," + wGroupId;
 
 		String wQueryNote1 = "";
 		String wQueryNote2 = "";
 		String wQueryFrom = "";
 		String wQueryTo = "";
 
-		if (!"".equals(pNote)) {
+		if (!"".equals(wNote)) {
 			wQueryNote1 = "," + mNoteNameCol;
-			wQueryNote2 = ",'" + pNote + "'";
+			wQueryNote2 = ",'" + wNote + "'";
 		}
 
-		if (pFrequency == 0) {
-			String wDate = ",'" + pYear + "-" + pMonth + "-" + pDay + "'";
-			wQueryFrom = wQueryBase + wQueryNote1 + ") " + wQueryFromValues + wDate + wQueryNote2
-					+ ")";
+		if (pMoveItem.getFrequency() == 0) {
+			String wDate = getDateStrings(pMoveItem.getDate());
+			wQueryFrom = wQueryBase + wQueryNote1 + ") " + wQueryFromValues + ", " + wDate
+					+ wQueryNote2 + ")";
 			// System.out.println(wQueryFrom);
 			mDbAccess.executeUpdate(wQueryFrom);
-			wQueryTo = wQueryBase + wQueryNote1 + ") " + wQueryToValues + wDate + wQueryNote2 + ")";
+			wQueryTo = wQueryBase + wQueryNote1 + ") " + wQueryToValues + ", " + wDate
+					+ wQueryNote2 + ")";
 			// System.out.println(wQueryTo);
 			mDbAccess.executeUpdate(wQueryTo);
 		} else { // pFrequency > 0
 
-			Calendar wCalBase = new GregorianCalendar(pYear, pMonth - 1, pDay);
 			String wQueryFreq = "," + mActFreqCol;
-			for (int i = 0; i < pFrequency + 1; i++) {
-				Calendar wCal = (Calendar) wCalBase.clone();
+			for (int i = 0; i < pMoveItem.getFrequency() + 1; i++) {
+				Calendar wCal = pMoveItem.getCal();
 				wCal.add(Calendar.MONTH, +i);
 				String wDate = getDateStrings(wCal.getTime());
 
 				wQueryFrom = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryFromValues
-						+ wDate + wQueryNote2
-						+ "," + (pFrequency - i) + ")";
-				// System.out.println(wQueryFrom);
+						+ ", " + wDate + wQueryNote2
+						+ "," + (pMoveItem.getFrequency() - i) + ")";
+				System.out.println(wQueryFrom);
 				mDbAccess.executeUpdate(wQueryFrom);
-				wQueryTo = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryToValues + wDate
+				wQueryTo = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryToValues + ", "
+						+ wDate
 						+ wQueryNote2 + ","
-						+ (pFrequency - i) + ")";
-				// System.out.println(wQueryTo);
+						+ (pMoveItem.getFrequency() - i) + ")";
+				System.out.println(wQueryTo);
 				mDbAccess.executeUpdate(wQueryTo);
 			}
 
 		}
 
 		// Noteが空でない場合はNoteTableに追加（同じ名前の既存レコードは削除）
-		if (!"".equals(pNote)) {
-			updateNoteTable(getMoveIncomeItemId(), pNote);
+		if (!"".equals(wNote)) {
+			updateNoteTable(getMoveIncomeItemId(), wNote);
 		}
 	}
 
-	public static void updateMoveRecord(int pIncomeActId, int pBookFromId, int pBookToId,
-			int pYear, int pMonth,
-			int pDay, int pValue, int pFrequency, String pNote) {
+	public static void updateMoveRecord(RecordTableItemForMove pBeforeItem,
+			RecordTableItemForMove pAfterItem) {
 
-		pNote = getNoteStringWithEscape(pNote);
-
-		RecordTableItem wOldIncomeRecord = getRecordByActId(pIncomeActId);
-		RecordTableItem wOldExpenseRecord = getMovePairRecord(wOldIncomeRecord);
-		int wExpenseActId = wOldExpenseRecord.getId();
-
-		int wOldGroupId = wOldIncomeRecord.getGroupId();
-		int wOldFromBookId = wOldExpenseRecord.getBookId();
-		int wOldToBookId = wOldIncomeRecord.getBookId();
+		String wNote = getNoteStringWithEscape(pAfterItem.getNote());
 
 		String wDate;
 		String wQueryFrom;
 		String wQueryTo;
 
 		// ともに繰り返し0ならUpdateのみ
-		if (isSingleMoveRecordPair(wOldGroupId) && pFrequency == 0) {
-			wDate = "'" + pYear + "-" + pMonth + "-" + pDay + "'";
-			wQueryFrom = "update " + mActTable + " set " + mBookIdCol + " = " + pBookFromId + ", "
-					+ mItemIdCol + " = "
-					+ getMoveExpenseItemId() + ", " + mActDtCol + " = " + wDate + ", "
-					+ mActIncomeCol + " = "
-					+ "'0', " + mActExpenseCol + " = " + pValue + ", " + mNoteNameCol + " = '"
-					+ pNote + "' "
-					+ " where " + mActIdCol + " = " + wExpenseActId;
+		if (pBeforeItem.getFrequency() == 0 && pAfterItem.getFrequency() == 0) {
+			wDate = getDateStrings(pAfterItem.getDate());
+			wQueryFrom = "update " + mActTable + " set "
+					+ mBookIdCol + " = " + pAfterItem.getFromBookId() + ", "
+					+ mItemIdCol + " = " + getMoveExpenseItemId() + ", "
+					+ mActDtCol + " = " + wDate + ", "
+					+ mActIncomeCol + " = " + "'0', "
+					+ mActExpenseCol + " = " + pAfterItem.getValue() + ", "
+					+ mNoteNameCol + " = '" + wNote + "' "
+					+ " where " + mActIdCol + " = " + pBeforeItem.getFromActId();
 			// System.out.println(wQueryFrom);
 
 			mDbAccess.executeUpdate(wQueryFrom);
-			wQueryTo = "update " + mActTable + " set " + mBookIdCol + " = " + pBookToId + ", "
-					+ mItemIdCol + " = "
-					+ getMoveIncomeItemId() + ", " + mActDtCol + " = " + wDate + ", "
-					+ mActIncomeCol + " = " + +pValue
-					+ ", " + mActExpenseCol + " = " + "'0'" + ", " + mNoteNameCol + " = '" + pNote
-					+ "' " + " where "
-					+ mActIdCol + " = " + pIncomeActId;
+			wQueryTo = "update " + mActTable + " set "
+					+ mBookIdCol + " = " + pAfterItem.getToBookId() + ", "
+					+ mItemIdCol + " = " + getMoveIncomeItemId() + ", "
+					+ mActDtCol + " = " + wDate + ", "
+					+ mActIncomeCol + " = " + +pAfterItem.getValue() + ", "
+					+ mActExpenseCol + " = " + "'0'" + ", "
+					+ mNoteNameCol + " = '" + wNote + "' "
+					+ " where " + mActIdCol + " = " + pBeforeItem.getToActId();
 			// System.out.println(wQueryTo);
 			mDbAccess.executeUpdate(wQueryTo);
 
@@ -790,50 +764,47 @@ public class DbUtil {
 			// どちらかが繰り返しありなら既存レコードを削除して新規追加
 
 			// 既存のレコードを削除
-			deleteRecord(wOldIncomeRecord);
+			deleteRecord(pBeforeItem.getToRecord());
 
 			// 元の日付を取得
 			int wGroupId;
-			Date wOldDate = wOldIncomeRecord.getDate();
-			Calendar wOldCal = new GregorianCalendar();
-			wOldCal.setTime(wOldDate);
 
 			// 年月, BookIdが変更された場合は新規のGroupIdを使用
-			if (pYear != wOldCal.get(Calendar.YEAR) || pMonth != wOldCal.get(Calendar.MONTH) + 1
-					|| pBookFromId != wOldFromBookId || pBookToId != wOldToBookId) {
+			if (pAfterItem.getYear() != pBeforeItem.getYear()
+					|| pAfterItem.getMonth() != pBeforeItem.getMonth()
+					|| pAfterItem.getFromBookId() != pBeforeItem.getFromBookId()
+					|| pAfterItem.getToBookId() != pBeforeItem.getToBookId())
 				wGroupId = getNewGroupId();
-			} else {
-				wGroupId = wOldGroupId;
-			}
+			else
+				wGroupId = pBeforeItem.getGroupId();
 
 			// 新規のレコードを追加
-			Calendar wCalBase = new GregorianCalendar(pYear, pMonth - 1, pDay);
-			for (int i = 0; i < pFrequency + 1; i++) {
-				Calendar wCal = (Calendar) wCalBase.clone();
+			for (int i = 0; i < pAfterItem.getFrequency() + 1; i++) {
+				Calendar wCal = pAfterItem.getCal();
 				wCal.add(Calendar.MONTH, +i);
-				wDate = "'" + wCal.get(Calendar.YEAR) + "-" + (wCal.get(Calendar.MONDAY) + 1) + "-"
-						+ wCal.get(Calendar.DAY_OF_MONTH) + "'";
+				wDate = getDateStrings(wCal.getTime());
 
-				String wQueryBase = "insert into " + mActTable + " ( " + mBookIdCol + ","
-						+ mItemIdCol + ","
-						+ mActDtCol + "," + mActIncomeCol + "," + mActExpenseCol + ","
-						+ mGroupIdCol + ","
+				String wQueryBase = "insert into " + mActTable + " ( "
+						+ mBookIdCol + "," + mItemIdCol + "," + mActDtCol + ","
+						+ mActIncomeCol + "," + mActExpenseCol + "," + mGroupIdCol + ","
 						+ mActFreqCol;
 
-				String wQueryFromValue = " values(" + pBookFromId + "," + getMoveExpenseItemId()
-						+ "," + wDate + ","
-						+ "'0'" + "," + pValue + "," + wGroupId + "," + (pFrequency - i);
+				String wQueryFromValue = " values("
+						+ pAfterItem.getFromBookId() + "," + getMoveExpenseItemId() + ","
+						+ wDate + "," + "'0'" + "," + pAfterItem.getValue() + "," + wGroupId + ","
+						+ (pAfterItem.getFrequency() - i);
 
-				String wQueryToValue = " values(" + pBookToId + "," + getMoveIncomeItemId() + ","
-						+ wDate + ","
-						+ pValue + "," + "'0'" + "," + wGroupId + "," + (pFrequency - i);
+				String wQueryToValue = " values(" + pAfterItem.getToBookId() + ","
+						+ getMoveIncomeItemId() + "," + wDate + ","
+						+ pAfterItem.getValue() + "," + "'0'" + "," + wGroupId + ","
+						+ (pAfterItem.getFrequency() - i);
 
 				String wQueryNote1 = ")";
 				String wQueryNote2 = ")";
 
-				if (!"".equals(pNote)) {
+				if (!"".equals(wNote)) {
 					wQueryNote1 = "," + mNoteNameCol + ")";
-					wQueryNote2 = ",'" + pNote + "')";
+					wQueryNote2 = ",'" + wNote + "')";
 				}
 
 				wQueryFrom = wQueryBase + wQueryNote1 + wQueryFromValue + wQueryNote2;
@@ -846,8 +817,8 @@ public class DbUtil {
 			}
 
 			// Noteが空でない場合はNoteTableに追加（同じ名前の既存レコードは削除）
-			if (!"".equals(pNote)) {
-				updateNoteTable(getMoveIncomeItemId(), pNote);
+			if (!"".equals(wNote)) {
+				updateNoteTable(getMoveIncomeItemId(), wNote);
 			}
 		}
 	}
@@ -2432,31 +2403,31 @@ public class DbUtil {
 		return "'" + df.format(pDate) + "'";
 	}
 
-	private static boolean isSingleMoveRecordPair(int pGroupId) {
-		String wResultCol = "COUNT";
-		String wQuery = "select count(" + mActIdCol + ") as " + wResultCol + " from " + mActTable
-				+ " where "
-				+ mGroupIdCol + " = " + pGroupId;
-		// System.out.println(wQuery);
-		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
-
-		int wCount = 0;
-
-		try {
-			wResultSet.next();
-			wCount = wResultSet.getInt(wResultCol);
-			wResultSet.close();
-
-		} catch (SQLException e) {
-			resultSetHandlingError(e);
-		}
-
-		if (wCount == 2) {
-			return true;
-		} else {
-			return false;
-		}
-	}
+//	private static boolean isSingleMoveRecordPair(int pGroupId) {
+//		String wResultCol = "COUNT";
+//		String wQuery = "select count(" + mActIdCol + ") as " + wResultCol + " from " + mActTable
+//				+ " where "
+//				+ mGroupIdCol + " = " + pGroupId;
+//		// System.out.println(wQuery);
+//		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
+//
+//		int wCount = 0;
+//
+//		try {
+//			wResultSet.next();
+//			wCount = wResultSet.getInt(wResultCol);
+//			wResultSet.close();
+//
+//		} catch (SQLException e) {
+//			resultSetHandlingError(e);
+//		}
+//
+//		if (wCount == 2) {
+//			return true;
+//		} else {
+//			return false;
+//		}
+//	}
 
 	private static void resultSetHandlingError(SQLException e) {
 		e.printStackTrace();
