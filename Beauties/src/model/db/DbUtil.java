@@ -764,7 +764,7 @@ public class DbUtil {
 			// どちらかが繰り返しありなら既存レコードを削除して新規追加
 
 			// 既存のレコードを削除
-			deleteRecord(pBeforeItem.getToRecord());
+			deleteGroupRecord(pBeforeItem.getDate(), pBeforeItem.getGroupId());
 
 			// 元の日付を取得
 			int wGroupId;
@@ -826,20 +826,24 @@ public class DbUtil {
 	public static void deleteRecord(RecordTableItem pRecordTableItem) {
 		int wGroupId = pRecordTableItem.getGroupId();
 
-		String wQuery = "delete from " + mActTable + " where ";
-
 		if (wGroupId == 0) {
 			// 単一レコードの削除
-			wQuery += mActIdCol + " = " + pRecordTableItem.getId();
+			String wQuery = "delete from " + mActTable + " where " + mActIdCol + " = "
+					+ pRecordTableItem.getId();
 			// System.out.println(wQuery);
 			mDbAccess.executeUpdate(wQuery);
 		} else {
 			// 複数レコード（同一GroupId,対象日付以降）
-			String wDate = getDateStrings(pRecordTableItem.getDate());
-			wQuery += mGroupIdCol + " = " + wGroupId + " and " + mActDtCol + " >= " + wDate;
-			// System.out.println(wQuery);
-			mDbAccess.executeUpdate(wQuery);
+			deleteGroupRecord(pRecordTableItem.getDate(), wGroupId);
 		}
+	}
+
+	// 複数レコード（同一GroupId,対象日付以降）削除
+	private static void deleteGroupRecord(Date pDate, int pGroupId) {
+		String wQuery = "delete from " + mActTable + " where " + mGroupIdCol + " = " + pGroupId
+				+ " and " + mActDtCol + " >= " + getDateStrings(pDate);
+		// System.out.println(wQuery);
+		mDbAccess.executeUpdate(wQuery);
 	}
 
 	public static int getMoveIncomeItemId() {
@@ -2403,31 +2407,32 @@ public class DbUtil {
 		return "'" + df.format(pDate) + "'";
 	}
 
-//	private static boolean isSingleMoveRecordPair(int pGroupId) {
-//		String wResultCol = "COUNT";
-//		String wQuery = "select count(" + mActIdCol + ") as " + wResultCol + " from " + mActTable
-//				+ " where "
-//				+ mGroupIdCol + " = " + pGroupId;
-//		// System.out.println(wQuery);
-//		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
-//
-//		int wCount = 0;
-//
-//		try {
-//			wResultSet.next();
-//			wCount = wResultSet.getInt(wResultCol);
-//			wResultSet.close();
-//
-//		} catch (SQLException e) {
-//			resultSetHandlingError(e);
-//		}
-//
-//		if (wCount == 2) {
-//			return true;
-//		} else {
-//			return false;
-//		}
-//	}
+	// private static boolean isSingleMoveRecordPair(int pGroupId) {
+	// String wResultCol = "COUNT";
+	// String wQuery = "select count(" + mActIdCol + ") as " + wResultCol +
+	// " from " + mActTable
+	// + " where "
+	// + mGroupIdCol + " = " + pGroupId;
+	// // System.out.println(wQuery);
+	// ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
+	//
+	// int wCount = 0;
+	//
+	// try {
+	// wResultSet.next();
+	// wCount = wResultSet.getInt(wResultCol);
+	// wResultSet.close();
+	//
+	// } catch (SQLException e) {
+	// resultSetHandlingError(e);
+	// }
+	//
+	// if (wCount == 2) {
+	// return true;
+	// } else {
+	// return false;
+	// }
+	// }
 
 	private static void resultSetHandlingError(SQLException e) {
 		e.printStackTrace();

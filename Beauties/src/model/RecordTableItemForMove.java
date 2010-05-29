@@ -56,9 +56,6 @@ public class RecordTableItemForMove {
 	public int getToActId() {
 		return mToRecordTableItem.getId();
 	}
-	public RecordTableItem getToRecord() {
-		return mToRecordTableItem;
-	}
 	public int getGroupId() {
 		return mToRecordTableItem.getGroupId();
 	}
