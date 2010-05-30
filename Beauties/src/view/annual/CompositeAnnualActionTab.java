@@ -1,9 +1,8 @@
 package view.annual;
 
-import java.util.Date;
-
 import model.AnnualViewType; //import model.SystemData;
 import model.action.UpdateAnnual;
+import model.db.DbUtil;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -48,9 +47,10 @@ class CompositeAnnualActionTab extends Composite {
 				public void widgetSelected(SelectionEvent e) {
 					mCompositeAnnualMain.setAnnualPeriod(true);
 					mCompositeAnnualMain.setMonthCount(12);
-					Date[] wDatePeriod = Util.getFiscalPeriod();
-					mCompositeAnnualMain.setStartDate(wDatePeriod[0]);
-					mCompositeAnnualMain.setEndDate(wDatePeriod[1]);
+					mCompositeAnnualMain.setDateRange(Util.getFiscalPeriod(DbUtil.getCutOff()));
+//					DateRange wDateRange = Util.getFiscalPeriod(DbUtil.getCutOff());
+//					mCompositeAnnualMain.setStartDate(wDateRange.getStartDate());
+//					mCompositeAnnualMain.setEndDate(wDateRange.getEndDate());
 					new UpdateAnnual(mCompositeAnnualMain).run();
 				}
 			});

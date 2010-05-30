@@ -2,12 +2,14 @@ package view.entry;
 
 import java.util.Date;
 
+import model.DateRange;
 import model.RecordTableItem;
 import model.SystemData;
 import model.db.DbUtil;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -20,15 +22,10 @@ import view.util.MyGridLayout;
 public class CompositeEntry extends Composite {
 
 	private int mBookId;
-	private Date mStartDate = null;
-	private Date mEndDate = null;
+	private DateRange mDateRange = null;
 
 	private boolean isMonthPeriod = true;
 	private boolean isSearchResult = false;
-	private int mItemId;
-	private int mCategoryId;
-	private boolean mAllIncome = false;
-	private boolean mAllExpense = false;
 	
 	private CompositeBookTab mCompositeBookTab;
 	private CompositeRecordTable mCompositeRecordTable;
@@ -42,14 +39,10 @@ public class CompositeEntry extends Composite {
 	}
 
 	private void init() {
-		if (mStartDate == null) {
-			Date[] wDates = Util.getPeriod(new Date());
-			mStartDate = wDates[0];
-			mEndDate = wDates[1];
-		}
+		if (mDateRange == null)
+			mDateRange = Util.getMonthDateRange(new Date(), DbUtil.getCutOff());
 
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
-
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
 		mCompositeBookTab = new CompositeBookTab(this);
@@ -93,13 +86,9 @@ public class CompositeEntry extends Composite {
 	public boolean hasSelectedRecordTableItem() {
 		return mCompositeRecordTable.hasSelectedItem();
 	}
-
-	public void addFiltersToRecord() {
-		mCompositeRecordTable.addFilter();
-	}
-
-	public void removeFiltersFromRecord() {
-		mCompositeRecordTable.removeFilter();
+	
+	public void updateRecordFilter(ViewerFilter pFilter) {
+		mCompositeRecordTable.updateRecordFilter(pFilter);
 	}
 
 	public int getBookId() {
@@ -107,63 +96,31 @@ public class CompositeEntry extends Composite {
 	}
 
 	public Date getStartDate() {
-		return mStartDate;
+		return mDateRange.getStartDate();
 	}
 
 	public Date getEndDate() {
-		return mEndDate;
+		return mDateRange.getEndDate();
+	}
+	
+	public DateRange getDateRange() {
+		return mDateRange;
 	}
 
 	public boolean isMonthPeriod() {
 		return isMonthPeriod;
 	}
 
-	public int getItemId() {
-		return mItemId;
-	}
-
-	public int getCategoryId() {
-		return mCategoryId;
-	}
-
-	public boolean isAllIncome() {
-		return mAllIncome;
-	}
-
-	public boolean isAllExpense() {
-		return mAllExpense;
-	}
-
 	public void setBookId(int pBookId) {
 		mBookId = pBookId;
 	}
 
-	public void setStartDate(Date pStartDate) {
-		mStartDate = pStartDate;
-	}
-
-	public void setEndDate(Date pEndDate) {
-		mEndDate = pEndDate;
+	public void setDateRange(DateRange pDateRange) {
+		mDateRange = pDateRange;
 	}
 
 	public void setMonthPeriod(boolean pMonthPeriod) {
 		isMonthPeriod = pMonthPeriod;
-	}
-
-	public void setItemId(int pItemId) {
-		mItemId = pItemId;
-	}
-
-	public void setCategoryId(int pCategoryId) {
-		mCategoryId = pCategoryId;
-	}
-
-	public void setAllIncome(boolean pAllIncome) {
-		mAllIncome = pAllIncome;
-	}
-
-	public void setAllExpense(boolean pAllExpense) {
-		mAllExpense = pAllExpense;
 	}
 	
 	void setIsSearchResult(boolean pIsSearchResult) {

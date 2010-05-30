@@ -3,6 +3,7 @@ package view.annual;
 import java.util.Date;
 
 import model.AnnualViewType;
+import model.DateRange;
 import model.SystemData;
 
 import org.eclipse.swt.SWT;
@@ -16,8 +17,9 @@ import view.util.MyGridLayout;
 public class CompositeAnnualMain extends Composite {
 
 	private int mBookId = SystemData.getAllBookInt();
-	private Date mStartDate = null;
-	private Date mEndDate = null;
+//	private Date mStartDate = null;
+//	private Date mEndDate = null;
+	private DateRange mDateRange = null;
 	private boolean isAnnualPeriod = false;
 	private AnnualViewType mAnnualViewType = AnnualViewType.Category;
 	private int mMonthCount = 13;
@@ -62,11 +64,15 @@ public class CompositeAnnualMain extends Composite {
 	}
 
 	public Date getStartDate() {
-		return mStartDate;
+		return mDateRange.getStartDate();
 	}
 
 	public Date getEndDate() {
-		return mEndDate;
+		return mDateRange.getEndDate();
+	}
+	
+	public DateRange getDateRange() {
+		return mDateRange;
 	}
 
 	public boolean isAnnualPeriod() {
@@ -85,12 +91,16 @@ public class CompositeAnnualMain extends Composite {
 		this.mBookId = pBookId;
 	}
 
-	public void setStartDate(Date pStartDate) {
-		this.mStartDate = pStartDate;
-	}
-
-	public void setEndDate(Date pEndDate) {
-		this.mEndDate = pEndDate;
+//	public void setStartDate(Date pStartDate) {
+//		this.mStartDate = pStartDate;
+//	}
+//
+//	public void setEndDate(Date pEndDate) {
+//		this.mEndDate = pEndDate;
+//	}
+	
+	public void setDateRange(DateRange pDateRange) {
+		this.mDateRange = pDateRange;
 	}
 
 	public void setAnnualPeriod(boolean isAnnualPeriod) {

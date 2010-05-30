@@ -1,5 +1,6 @@
 package view.entry;
 
+import model.DateRange;
 import model.SummaryTableItem;
 import model.SystemData;
 import model.db.DbUtil;
@@ -62,7 +63,7 @@ class CompositeSummaryTable extends Composite {
 		wValueCol.setWidth(80);
 
 		SummaryTableItem[] wSummaryTableItems = DbUtil.getSummaryTableItems(mCompositeEntry.getBookId(),
-				mCompositeEntry.getStartDate(), mCompositeEntry.getEndDate());
+				new DateRange(mCompositeEntry.getStartDate(), mCompositeEntry.getEndDate()));
 
 		wTableViewer.setContentProvider(new SummaryTableContentProvider());
 		wTableViewer.setInput(wSummaryTableItems);
@@ -77,32 +78,33 @@ class CompositeSummaryTable extends Composite {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				SummaryTableItem wTableItem = (SummaryTableItem) sel.getFirstElement();
 				CompositeEntry wParent = (CompositeEntry) getParent();
-				if (wTableItem.isSpecial() && !wTableItem.isAppearedIncomeExpense()) {
-					// CategoryId, ItemIdを初期化
-					mCompositeEntry.setCategoryId(SystemData.getUndefinedInt());
-					mCompositeEntry.setItemId(SystemData.getUndefinedInt());
-					mCompositeEntry.setAllIncome(false);
-					mCompositeEntry.setAllExpense(false);
-				} else if (wTableItem.isAppearedIncomeExpense()) {
-					mCompositeEntry.setAllIncome(wTableItem.isIncome());
-					mCompositeEntry.setAllExpense(!wTableItem.isIncome());
-					mCompositeEntry.setCategoryId(SystemData.getUndefinedInt());
-					mCompositeEntry.setItemId(SystemData.getUndefinedInt());
-				} else if (wTableItem.getItemId() != SystemData.getUndefinedInt()) {
-					mCompositeEntry.setCategoryId(SystemData.getUndefinedInt());
-					mCompositeEntry.setItemId(wTableItem.getItemId());
-					mCompositeEntry.setAllIncome(false);
-					mCompositeEntry.setAllExpense(false);
-
-				} else if (wTableItem.getCategoryId() != SystemData.getUndefinedInt()) {
-					mCompositeEntry.setCategoryId(wTableItem.getCategoryId());
-					mCompositeEntry.setItemId(SystemData.getUndefinedInt());
-					mCompositeEntry.setAllIncome(false);
-					mCompositeEntry.setAllExpense(false);
-				}
-				wParent.removeFiltersFromRecord();
-				wParent.addFiltersToRecord();
+//				if (wTableItem.isSpecial() && !wTableItem.isAppearedIncomeExpense()) {
+//					// CategoryId, ItemIdを初期化
+//					mCompositeEntry.setCategoryId(SystemData.getUndefinedInt());
+//					mCompositeEntry.setItemId(SystemData.getUndefinedInt());
+//					mCompositeEntry.setAllIncome(false);
+//					mCompositeEntry.setAllExpense(false);
+//				} else if (wTableItem.isAppearedIncomeExpense()) {
+//					mCompositeEntry.setAllIncome(wTableItem.isIncome());
+//					mCompositeEntry.setAllExpense(!wTableItem.isIncome());
+//					mCompositeEntry.setCategoryId(SystemData.getUndefinedInt());
+//					mCompositeEntry.setItemId(SystemData.getUndefinedInt());
+//				} else if (wTableItem.getItemId() != SystemData.getUndefinedInt()) {
+//					mCompositeEntry.setCategoryId(SystemData.getUndefinedInt());
+//					mCompositeEntry.setItemId(wTableItem.getItemId());
+//					mCompositeEntry.setAllIncome(false);
+//					mCompositeEntry.setAllExpense(false);
+//
+//				} else if (wTableItem.getCategoryId() != SystemData.getUndefinedInt()) {
+//					mCompositeEntry.setCategoryId(wTableItem.getCategoryId());
+//					mCompositeEntry.setItemId(SystemData.getUndefinedInt());
+//					mCompositeEntry.setAllIncome(false);
+//					mCompositeEntry.setAllExpense(false);
+//				}
+//				wParent.removeFiltersFromRecord();
+//				wParent.addFiltersToRecord();
 				// wParent.setStripToTable();
+				wParent.updateRecordFilter(wTableItem.getRecordTableItemFilter());
 
 			}
 
@@ -133,11 +135,12 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		SummaryTableItem wItem = (SummaryTableItem) element;
 		switch (columnIndex) {
 		case 0:
-			if (wItem.getItemId() == SystemData.getUndefinedInt()) {
-				return wItem.getItemName();
-			} else {
-				return ("  " + wItem.getItemName());
-			}
+			return wItem.getName();
+//			if (wItem.getItemId() == SystemData.getUndefinedInt()) {
+//				return wItem.getItemName();
+//			} else {
+//				return ("  " + wItem.getItemName());
+//			}
 		case 1:
 			return SystemData.getFormatedFigures(wItem.getValue());
 		}
@@ -159,23 +162,25 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 
 	@Override
 	public Color getBackground(Object pElement, int pColumnIndex) {
-		SummaryTableItem wItem = (SummaryTableItem) pElement;
-		if (wItem.isAppearedSum()) {
-			// みかけ収支（赤）
-			return SystemData.getColorRed();
-		} else if (wItem.isAppearedIncomeExpense()) {
-			// みかけ収入、支出（緑）
-			return SystemData.getColorGreen();
-		} else if (wItem.isSpecial()) {
-			// 残高、営業収支等（青）
-			return SystemData.getColorBlue();
-		} else if (wItem.isCategory()) {
-			// カテゴリ（黄色）
-			return SystemData.getColorYellow();
-		} else {
-			// アイテム（グレー）
-			return SystemData.getColorGray();
-		}
+		return ((SummaryTableItem)pElement).getEntryColor();
+//		SummaryTableItem wItem = (SummaryTableItem) pElement;
+//		
+//		if (wItem.isAppearedSum()) {
+//			// みかけ収支（赤）
+//			return SystemData.getColorRed();
+//		} else if (wItem.isAppearedIncomeExpense()) {
+//			// みかけ収入、支出（緑）
+//			return SystemData.getColorGreen();
+//		} else if (wItem.isSpecial()) {
+//			// 残高、営業収支等（青）
+//			return SystemData.getColorBlue();
+//		} else if (wItem.isCategory()) {
+//			// カテゴリ（黄色）
+//			return SystemData.getColorYellow();
+//		} else {
+//			// アイテム（グレー）
+//			return SystemData.getColorGray();
+//		}
 	}
 
 	@Override

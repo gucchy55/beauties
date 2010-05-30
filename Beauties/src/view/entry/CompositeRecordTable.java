@@ -1,7 +1,6 @@
 package view.entry;
 
-import java.util.Date;
-
+import model.DateRange;
 import model.RecordTableItem;
 import model.SystemData;
 import model.db.DbUtil;
@@ -25,8 +24,9 @@ class CompositeRecordTable extends Composite {
 
 	private CompositeEntry mCompositeEntry;
 
-	private Date mStartDate;
-	private Date mEndDate;
+	// private Date mStartDate;
+	// private Date mEndDate;
+	private DateRange mDateRange;
 
 	private RecordTableItem[] mRecordItemsUp;
 	private RecordTableItem[] mRecordItemsBottom;
@@ -38,14 +38,14 @@ class CompositeRecordTable extends Composite {
 	public CompositeRecordTable(Composite pParent) {
 		super(pParent, SWT.NONE);
 		initParam((CompositeEntry) pParent);
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mStartDate, mEndDate, mCompositeEntry
-				.getBookId());
+		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange,
+				mCompositeEntry.getBookId());
 		mRecordItemsUp = wRecordTableItemAll[0];
 		mRecordItemsBottom = wRecordTableItemAll[1];
-		
+
 		initLayout();
 	}
-	
+
 	public CompositeRecordTable(Composite pParent, RecordTableItem[][] pRecordTableItems) {
 		super(pParent, SWT.NONE);
 		initParam((CompositeEntry) pParent);
@@ -53,20 +53,24 @@ class CompositeRecordTable extends Composite {
 		mRecordItemsBottom = pRecordTableItems[1];
 		initLayout();
 	}
-	
+
 	private void initParam(CompositeEntry pCompositeEntry) {
 		mCompositeEntry = (CompositeEntry) pCompositeEntry;
-		this.mStartDate = mCompositeEntry.getStartDate();
-		this.mEndDate = mCompositeEntry.getEndDate();
+		this.mDateRange = mCompositeEntry.getDateRange();
+		// this.mStartDate = mCompositeEntry.getStartDate();
+		// this.mEndDate = mCompositeEntry.getEndDate();
 	}
-	
+
 	private void initLayout() {
 		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+		this
+				.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+						.getMyGridData());
 
 		mSashForm = new SashForm(this, SWT.VERTICAL);
 		mSashForm.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		mSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+		mSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+				.getMyGridData());
 
 		mTableUp = new RecordTableViewer(mSashForm, mCompositeEntry);
 		mTableUp.setRecordTableItem(mRecordItemsUp);
@@ -75,13 +79,15 @@ class CompositeRecordTable extends Composite {
 
 		Composite wBottomComp = new Composite(mSashForm, SWT.NONE);
 		wBottomComp.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+				.getMyGridData());
 
 		mSashForm.setWeights(SystemData.getRecordTableWeights());
 
 		Label wLabel = new Label(wBottomComp, SWT.NONE);
 		wLabel.setText("当月の収支予定");
-		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER, true, false).getMyGridData());
+		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER, true, false)
+				.getMyGridData());
 
 		mTableBottom = new RecordTableViewer(wBottomComp, mCompositeEntry);
 
@@ -123,9 +129,11 @@ class CompositeRecordTable extends Composite {
 
 	RecordTableItem getSelectedRecordItem() {
 		if (!mTableUp.getSelection().isEmpty())
-			return (RecordTableItem) (((IStructuredSelection) mTableUp.getSelection()).getFirstElement());
+			return (RecordTableItem) (((IStructuredSelection) mTableUp.getSelection())
+					.getFirstElement());
 		else
-			return (RecordTableItem) (((IStructuredSelection) mTableBottom.getSelection()).getFirstElement());
+			return (RecordTableItem) (((IStructuredSelection) mTableBottom.getSelection())
+					.getFirstElement());
 	}
 
 	boolean hasSelectedItem() {
@@ -134,30 +142,28 @@ class CompositeRecordTable extends Composite {
 		return !getSelectedRecordItem().isBalanceRow();
 	}
 
-	public void addFilter() {
-		mTableUp.addFilter(new IdFilter(mCompositeEntry));
-		mTableBottom.addFilter(new IdFilter(mCompositeEntry));
+	public void updateRecordFilter(ViewerFilter pFilter) {
+		removeFilter();
+		if (pFilter != null) {
+			mTableUp.addFilter(pFilter);
+			mTableBottom.addFilter(pFilter);
+		}
 	}
 
 	public void removeFilter() {
-		for (ViewerFilter vf : mTableUp.getFilters())
-			mTableUp.removeFilter(vf);
-		for (ViewerFilter vf : mTableBottom.getFilters())
-			mTableBottom.removeFilter(vf);
+		if (mTableUp.getFilters().length > 0)
+			for (ViewerFilter vf : mTableUp.getFilters())
+				mTableUp.removeFilter(vf);
+		if (mTableBottom.getFilters().length > 0)
+			for (ViewerFilter vf : mTableBottom.getFilters())
+				mTableBottom.removeFilter(vf);
 	}
-	
+
 	void updateForSearch(RecordTableItem[][] pRecordTableItems) {
 		mRecordItemsUp = pRecordTableItems[0];
 		mRecordItemsBottom = pRecordTableItems[1];
 		mSashForm.dispose();
 		initLayout();
-//		mTableUp.getTable().getColumn(0).setWidth(70);
-//		mTableUp.getTable().getColumn(0).setResizable(true);
-//		mTableUp.getTable().getColumn(1).setWidth(80);
-//		mTableBottom.getTable().getColumn(0).setWidth(70);
-//		mTableBottom.getTable().getColumn(0).setResizable(true);
-//		mTableBottom.getTable().getColumn(1).setWidth(80);
-		
 		this.layout();
 	}
 }

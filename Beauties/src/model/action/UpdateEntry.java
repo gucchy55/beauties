@@ -1,6 +1,10 @@
 package model.action;
 
 import java.util.Date;
+
+import model.DateRange;
+import model.db.DbUtil;
+
 import org.eclipse.jface.action.Action;
 
 import util.Util;
@@ -12,9 +16,10 @@ public class UpdateEntry extends Action {
 
 	public UpdateEntry(CompositeEntry pCompositeEntry, Date pDate) {
 		mCompositeEntry = (CompositeEntry) pCompositeEntry;
-		Date[] wDates = Util.getPeriod(pDate);
-		mCompositeEntry.setStartDate(wDates[0]);
-		mCompositeEntry.setEndDate(wDates[1]);
+		DateRange wDateRange = Util.getMonthDateRange(pDate, DbUtil.getCutOff());
+		mCompositeEntry.setDateRange(wDateRange);
+//		mCompositeEntry.setStartDate(wDateRange.getStartDate());
+//		mCompositeEntry.setEndDate(wDateRange.getEndDate());
 	}
 
 	public UpdateEntry(CompositeEntry pCompositeEntry) {

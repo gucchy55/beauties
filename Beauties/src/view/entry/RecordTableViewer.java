@@ -20,7 +20,6 @@ import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
-import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -233,27 +232,27 @@ class TableLabelProvider implements ITableLabelProvider {
 
 }
 
-class IdFilter extends ViewerFilter {
-
-	private CompositeEntry mCompositeEntry;
-
-	public IdFilter(CompositeEntry pCompositeEntry) {
-		mCompositeEntry = pCompositeEntry;
-	}
-
-	public boolean select(Viewer pViewer, Object pParent, Object pElement) {
-		RecordTableItem wRecord = (RecordTableItem) pElement;
-		if (mCompositeEntry.getCategoryId() != SystemData.getUndefinedInt()) {
-			return (wRecord.getCategoryId() == mCompositeEntry.getCategoryId());
-		} else if (mCompositeEntry.getItemId() != SystemData.getUndefinedInt()) {
-			return (wRecord.getItemId() == mCompositeEntry.getItemId());
-		} else if (mCompositeEntry.isAllIncome()) {
-			return (wRecord.isIncome());
-		} else if (mCompositeEntry.isAllExpense()) {
-			return (wRecord.isExpense());
-		} else {
-			return true;
-		}
-	}
-
-}
+//class IdFilter extends ViewerFilter {
+//
+//	private CompositeEntry mCompositeEntry;
+//
+//	public IdFilter(CompositeEntry pCompositeEntry) {
+//		mCompositeEntry = pCompositeEntry;
+//	}
+//
+//	public boolean select(Viewer pViewer, Object pParent, Object pElement) {
+//		RecordTableItem wRecord = (RecordTableItem) pElement;
+//		if (mCompositeEntry.getCategoryId() != SystemData.getUndefinedInt()) {
+//			return (wRecord.getCategoryId() == mCompositeEntry.getCategoryId());
+//		} else if (mCompositeEntry.getItemId() != SystemData.getUndefinedInt()) {
+//			return (wRecord.getItemId() == mCompositeEntry.getItemId());
+//		} else if (mCompositeEntry.isAllIncome()) {
+//			return (wRecord.isIncome());
+//		} else if (mCompositeEntry.isAllExpense()) {
+//			return (wRecord.isExpense());
+//		} else {
+//			return true;
+//		}
+//	}
+//
+//}

@@ -8,6 +8,7 @@ import java.util.List;
 
 import model.AnnualHeaderItem;
 import model.AnnualViewType;
+import model.DateRange;
 import model.SummaryTableItem;
 import model.SystemData;
 import model.db.DbUtil;
@@ -69,30 +70,34 @@ class CompositeAnnualTable extends Composite {
 		wHeaderCol.setText("年月");
 		wHeaderCol.setWidth(mColumnWidth);
 
-		Date[][] wDatePeriods;
+//		Date[][] wDatePeriods;
+		List<DateRange> wDateRangeList;
 
-		if (mCompositeAnnualMain.getEndDate() == null) {
-			wDatePeriods = Util.getDatePairs(Util.getPeriod(new Date())[1], mCompositeAnnualMain.getMonthCount());
-			mCompositeAnnualMain.setStartDate(wDatePeriods[0][0]);
-			mCompositeAnnualMain.setEndDate(wDatePeriods[wDatePeriods.length - 1][1]);
+		if (mCompositeAnnualMain.getDateRange() == null) {
+			wDateRangeList = Util.getDatePairs(Util.getMonthDateRange(new Date(), DbUtil.getCutOff()).getEndDate(), mCompositeAnnualMain.getMonthCount(), DbUtil.getCutOff());
+			mCompositeAnnualMain.setDateRange(new DateRange(wDateRangeList.get(0).getStartDate(), wDateRangeList.get(wDateRangeList.size() - 1).getEndDate()));
+//			mCompositeAnnualMain.setStartDate(wDatePeriods[0][0]);
+//			mCompositeAnnualMain.setEndDate(wDatePeriods[wDatePeriods.length - 1][1]);
 
 		} else {
-			wDatePeriods = Util.getDatePairs(mCompositeAnnualMain.getStartDate(), mCompositeAnnualMain.getEndDate());
+			wDateRangeList = Util.getDatePairs(mCompositeAnnualMain.getDateRange(), DbUtil.getCutOff());
 		}
 
 		if (!mCompositeAnnualMain.isAnnualPeriod()) {
-			mCompositeAnnualMain.setMonthCount(wDatePeriods.length);
+			mCompositeAnnualMain.setMonthCount(wDateRangeList.size());
 		}
 
 		List<String> wRowHeaders = new ArrayList<String>();
 		DateFormat df = new SimpleDateFormat("yyyy年MM月");
 
-		for (int i = 0; i < wDatePeriods.length; i++) {
-			Date wEndDate = wDatePeriods[i][1];
-			wRowHeaders.add(df.format(wEndDate));
-		}
-
-		int wSummationIndex = Util.getSummationIndex(wDatePeriods);
+//		for (int i = 0; i < wDatePeriods.length; i++) {
+//			Date wEndDate = wDatePeriods[i][1];
+//			wRowHeaders.add(df.format(wEndDate));
+//		}
+		for (DateRange wDateRange : wDateRangeList)
+			wRowHeaders.add(df.format(wDateRange.getEndDate()));
+		
+		int wSummationIndex = Util.getSummationIndex(wDateRangeList, DbUtil.getCutOff());
 		if (wSummationIndex != SystemData.getUndefinedInt()) {
 			wRowHeaders.add(wSummationIndex, "合計");
 			wRowHeaders.add(wSummationIndex + 1, "平均");
@@ -116,18 +121,18 @@ class CompositeAnnualTable extends Composite {
 		// 格納する値の取得
 		mSummaryTableItems = new ArrayList<SummaryTableItem[]>();
 		if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Original) {
-			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsOriginal(wDatePeriods);
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsOriginal(wDateRangeList);
 		} else if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Category) {
 			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsCategory(mCompositeAnnualMain.getBookId(),
-					wDatePeriods);
+					wDateRangeList);
 		} else { // ITEM
-			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(mCompositeAnnualMain.getBookId(), wDatePeriods);
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(mCompositeAnnualMain.getBookId(), wDateRangeList);
 		}
 
 		// 列のヘッダの設定
 		mAnnualHeaderItems = new AnnualHeaderItem[mSummaryTableItems.get(0).length];
 		for (int i = 0; i < mSummaryTableItems.get(0).length; i++) {
-			mAnnualHeaderItems[i] = new AnnualHeaderItem(mSummaryTableItems.get(0)[i].getItemName());
+			mAnnualHeaderItems[i] = new AnnualHeaderItem(mSummaryTableItems.get(0)[i].getName());
 		}
 
 		// Win32だとなぜか先頭列が右寄せにならないので、空白列を挿入
@@ -281,11 +286,12 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		} else {
 			SummaryTableItem[] wItems = (SummaryTableItem[]) pElement;
 			SummaryTableItem wItem = wItems[pColumnIndex - 1];
-			if (wItem.isAppearedIncomeExpense() || wItem.isAppearedSum()) {
-				// 黄色
-				return SystemData.getColorYellow();
-			}
-			return null;
+//			if (wItem.isAppearedIncomeExpense() || wItem.isAppearedSum()) {
+//				// 黄色
+//				return SystemData.getColorYellow();
+//			}
+			return wItem.getEntryColor();
+//			return null;
 		}
 	}
 

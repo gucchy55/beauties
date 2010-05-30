@@ -4,8 +4,11 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Map;
 
+import model.DateRange;
 import model.action.OpenDialogAnnualPeriod;
 import model.action.UpdateAnnual;
+import model.db.DbUtil;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
@@ -36,11 +39,13 @@ class CompositeAnnualBookTab extends Composite {
 		mCompositeAnnualMain = (CompositeAnnualMain) pParent;
 
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
-		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, false).getMyGridData());
+		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, false)
+				.getMyGridData());
 
 		mPeriodComp = new Composite(this, SWT.NONE);
 		mPeriodComp.setLayout(new MyGridLayout(3, false).getMyGridLayout());
-		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true)
+				.getMyGridData();
 		wGridData.widthHint = mPeriodWidthHint;
 		mPeriodComp.setLayoutData(wGridData);
 
@@ -48,22 +53,30 @@ class CompositeAnnualBookTab extends Composite {
 		wPrevMonthButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				mCompositeAnnualMain.setStartDate(Util.getPeriod(Util.getAdjusentMonth(mCompositeAnnualMain
-						.getStartDate(), -mCompositeAnnualMain.getMonthCount()))[0]);
-				mCompositeAnnualMain.setEndDate(Util.getPeriod(Util.getAdjusentMonth(mCompositeAnnualMain.getEndDate(),
-						-mCompositeAnnualMain.getMonthCount()))[1]);
+				mCompositeAnnualMain.setDateRange(
+						new DateRange(
+								Util.getMonthDateRange(
+										Util.getAdjusentMonth(mCompositeAnnualMain.getStartDate(),
+												-mCompositeAnnualMain.getMonthCount()),
+										DbUtil.getCutOff()).getStartDate(),
+								Util.getMonthDateRange(
+										Util.getAdjusentMonth(mCompositeAnnualMain.getEndDate(),
+												-mCompositeAnnualMain.getMonthCount()),
+										DbUtil.getCutOff()).getEndDate()));
 				new UpdateAnnual(mCompositeAnnualMain).run();
 			}
 		});
 
-		GridData wGridDataArrow = new MyGridData(GridData.FILL, GridData.FILL, false, true).getMyGridData();
+		GridData wGridDataArrow = new MyGridData(GridData.FILL, GridData.FILL, false, true)
+				.getMyGridData();
 		wGridDataArrow.widthHint = mArrowWidthHint;
 		wPrevMonthButton.setLayoutData(wGridDataArrow);
 
 		Label wThisMonthLabel = new Label(mPeriodComp, SWT.CENTER);
 		if (mCompositeAnnualMain.isAnnualPeriod()) {
 			DateFormat df = new SimpleDateFormat("yyyy年");
-			wThisMonthLabel.setText(df.format(Util.getPeriod(mCompositeAnnualMain.getStartDate())[1]));
+			wThisMonthLabel.setText(df.format(Util.getMonthDateRange(
+					mCompositeAnnualMain.getStartDate(), DbUtil.getCutOff()).getEndDate()));
 		} else {
 			wThisMonthLabel.setText("期間指定");
 		}
@@ -74,17 +87,24 @@ class CompositeAnnualBookTab extends Composite {
 			}
 		});
 
-		GridData wGridDataLabel = new MyGridData(GridData.FILL, GridData.CENTER, true, true).getMyGridData();
+		GridData wGridDataLabel = new MyGridData(GridData.FILL, GridData.CENTER, true, true)
+				.getMyGridData();
 		wThisMonthLabel.setLayoutData(wGridDataLabel);
 
 		Button wNextMonthButton = new Button(mPeriodComp, SWT.ARROW | SWT.RIGHT);
 		wNextMonthButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				mCompositeAnnualMain.setStartDate(Util.getPeriod(Util.getAdjusentMonth(mCompositeAnnualMain
-						.getStartDate(), mCompositeAnnualMain.getMonthCount()))[0]);
-				mCompositeAnnualMain.setEndDate(Util.getPeriod(Util.getAdjusentMonth(mCompositeAnnualMain.getEndDate(),
-						mCompositeAnnualMain.getMonthCount()))[1]);
+				mCompositeAnnualMain.setDateRange(new DateRange(
+						Util.getMonthDateRange(
+								Util.getAdjusentMonth(mCompositeAnnualMain.getStartDate(),
+										mCompositeAnnualMain.getMonthCount()), DbUtil.getCutOff())
+								.getStartDate(),
+							Util.getMonthDateRange(
+									Util.getAdjusentMonth(mCompositeAnnualMain.getEndDate(),
+											mCompositeAnnualMain.getMonthCount()),
+									DbUtil.getCutOff())
+									.getEndDate()));
 				new UpdateAnnual(mCompositeAnnualMain).run();
 			}
 		});

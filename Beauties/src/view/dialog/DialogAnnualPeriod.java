@@ -6,6 +6,9 @@ import java.util.GregorianCalendar;
 
 //import model.SystemData;
 
+import model.DateRange;
+import model.db.DbUtil;
+
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -29,8 +32,9 @@ public class DialogAnnualPeriod extends Dialog {
 	private Combo mStartMonthCombo;
 	private Spinner mEndYearSpinner;
 	private Combo mEndMonthCombo;
-	private Date mStartDate;
-	private Date mEndDate;
+//	private Date mStartDate;
+//	private Date mEndDate;
+	private DateRange mDateRange;
 
 	private CompositeAnnualMain mCompositeAnnualMain;
 
@@ -63,7 +67,7 @@ public class DialogAnnualPeriod extends Dialog {
 		wLabel.setText("月 〜 ");
 
 		Calendar wCal = Calendar.getInstance();
-		wCal.setTime(Util.getPeriod(mCompositeAnnualMain.getStartDate())[1]);
+		wCal.setTime(Util.getMonthDateRange(mCompositeAnnualMain.getStartDate(), DbUtil.getCutOff()).getEndDate());
 		mStartYearSpinner.setSelection(wCal.get(Calendar.YEAR));
 		mStartMonthCombo.select(wCal.get(Calendar.MONTH));
 
@@ -106,9 +110,10 @@ public class DialogAnnualPeriod extends Dialog {
 					.getSelectionIndex(), 1).getTime();
 			Date wInputEndDate = new GregorianCalendar(mEndYearSpinner.getSelection(), mEndMonthCombo
 					.getSelectionIndex(), 1).getTime();
-			mStartDate = Util.getPeriod(wInputStartDate)[0];
-			mEndDate = Util.getPeriod(wInputEndDate)[1];
-			if (mStartDate.after(mEndDate)) {
+//			mStartDate = Util.getMonthDateRange(wInputStartDate, DbUtil.getCutOff()).getStartDate();
+//			mEndDate = Util.getMonthDateRange(wInputEndDate, DbUtil.getCutOff()).getEndDate();
+			mDateRange = new DateRange(Util.getMonthDateRange(wInputStartDate, DbUtil.getCutOff()).getStartDate(), Util.getMonthDateRange(wInputEndDate, DbUtil.getCutOff()).getEndDate());
+			if (mDateRange.getStartDate().after(mDateRange.getEndDate())) {
 				MessageDialog.openWarning(getShell(), "エラー", "不正な期間です");
 				setReturnCode(IDialogConstants.CANCEL_ID);
 				open();
@@ -122,11 +127,14 @@ public class DialogAnnualPeriod extends Dialog {
 		super.buttonPressed(wReturnCode);
 	}
 
-	public Date getStartDate() {
-		return mStartDate;
-	}
-
-	public Date getEndDate() {
-		return mEndDate;
+//	public Date getStartDate() {
+//		return mStartDate;
+//	}
+//
+//	public Date getEndDate() {
+//		return mEndDate;
+//	}
+	public DateRange getDateRange() {
+		return mDateRange;
 	}
 }

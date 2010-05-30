@@ -23,8 +23,9 @@ public class OpenDialogAnnualPeriod extends Action {
 		int wRet = wDialogAnnualPeriod.open();
 
 		if (wRet == IDialogConstants.OK_ID) { // Updated
-			mCompositeAnnualMain.setStartDate(wDialogAnnualPeriod.getStartDate());
-			mCompositeAnnualMain.setEndDate(wDialogAnnualPeriod.getEndDate());
+			mCompositeAnnualMain.setDateRange(wDialogAnnualPeriod.getDateRange());
+//			mCompositeAnnualMain.setStartDate(wDialogAnnualPeriod.getStartDate());
+//			mCompositeAnnualMain.setEndDate(wDialogAnnualPeriod.getEndDate());
 			mCompositeAnnualMain.setAnnualPeriod(false);
 			new UpdateAnnual(mCompositeAnnualMain).run();
 		}

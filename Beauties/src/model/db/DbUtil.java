@@ -7,7 +7,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,9 +20,12 @@ import util.Util;
 
 import model.Book;
 import model.ConfigItem;
+import model.DateRange;
+import model.IncomeExpense;
 import model.RecordTableItem;
 import model.RecordTableItemForMove;
 import model.SummaryTableItem;
+import model.SummaryTableItemFactory;
 import model.SystemData;
 
 public class DbUtil {
@@ -202,13 +204,12 @@ public class DbUtil {
 
 	}
 
-	public static RecordTableItem[][] getRecordTableItems(Date pStartDate, Date pEndDate,
-			int pBookId) {
+	public static RecordTableItem[][] getRecordTableItems(DateRange pDateRange, int pBookId) {
 		List<RecordTableItem> wRecordTableItemListUp = new ArrayList<RecordTableItem>();
 		List<RecordTableItem> wRecordTableItemListBottom = new ArrayList<RecordTableItem>();
 
-		String wStart = getDateStrings(pStartDate);
-		String wEnd = getDateStrings(pEndDate);
+		String wStart = getDateStrings(pDateRange.getStartDate());
+		String wEnd = getDateStrings(pDateRange.getEndDate());
 
 		String wBookWhere = getBookWhere(pBookId);
 
@@ -217,8 +218,8 @@ public class DbUtil {
 			wMoveFlgWhere = " and " + mItemTable + "." + mMoveFlgCol + " = b'0'";
 		}
 
-		int wBalance = getBalance(pStartDate, pBookId, false);
-		RecordTableItem wBalanceRecord = RecordTableItem.createBalanceRowItem(pStartDate, wBalance);
+		int wBalance = getBalance(pDateRange.getStartDate(), pBookId, false);
+		RecordTableItem wBalanceRecord = RecordTableItem.createBalanceRowItem(pDateRange.getStartDate(), wBalance);
 		wRecordTableItemListUp.add(wBalanceRecord);
 
 		String wQuery = "select " + mActIdCol + ", " + mBookIdCol + ", " + mActDtCol + ", "
@@ -896,103 +897,56 @@ public class DbUtil {
 		return pCategoryId == getMoveIncomeItemId() || pCategoryId == getMoveExpenseItemId();
 	}
 
-	public static SummaryTableItem[] getSummaryTableItems(int pBookId, Date pStartDate,
-			Date pEndDate) {
+	private static List<SummaryTableItem> getSummaryTableItemListOriginalForAllBooks(
+			DateRange pDateRange) {
 		List<SummaryTableItem> wSummaryTableItemList = new ArrayList<SummaryTableItem>();
 
-		String wStartDateString = getDateStrings(pStartDate);
-		String wEndDateString = getDateStrings(pEndDate);
-
-		ResultSet wResultSet;
-		String wQuery;
-
-		// for all books
-		int wTempBalance = 0;
-		int wAppearedBalance = 0;
-		int wActualBalance = 0;
-
-		int wTotalAppearedProfit = 0;
-		int wSpecialProfit = 0;
-		int wTempProfit = 0;
-		int wActualProfit = 0;
-		int wOperatingProfit = 0;
-
-		// for each book
-		int wBookAppearedProfit = 0;
-		int wBookAppearedIncome = 0;
-		int wBookAppearedExpense = 0;
-
 		// 立替残高（借入残高）
-		wTempBalance = getTempBalance(pEndDate);
+		int wTempBalance = getTempBalance(pDateRange.getEndDate());
 
-		// みかけ残高、実質残高
-		wAppearedBalance = getBalance(pEndDate, mAllBookId, true);
-		wActualBalance = wAppearedBalance - wTempBalance;
+		// みかけ残高
+		int wAppearedBalance = getBalance(pDateRange.getEndDate(), mAllBookId, true);
+		// wActualBalance = wAppearedBalance - wTempBalance;
 
 		// みかけ収支（Total）
-		int[] wTotalAppearedIncomeExpense = getAppearedIncomeExpense(pStartDate, pEndDate,
-				mAllBookId);
-		wTotalAppearedProfit = wTotalAppearedIncomeExpense[0] - wTotalAppearedIncomeExpense[1];
+		IncomeExpense wTotalAppearedIncomeExpense = getAppearedIncomeExpense(pDateRange, mAllBookId);
 
 		// 立替収支
-		wTempProfit = getTotalTempProfit(pStartDate, pEndDate);
+		int wTempProfit = getTotalTempProfit(pDateRange);
 
 		// 特別収支
-		wSpecialProfit = getTotalSpecialProfit(pStartDate, pEndDate);
+		int wSpecialProfit = getTotalSpecialProfit(pDateRange);
 
-		// 実質収支、営業収支
-		wActualProfit = wTotalAppearedProfit - wTempProfit;
-		wOperatingProfit = wActualProfit - wSpecialProfit;
+		wSummaryTableItemList.add(SummaryTableItemFactory.createOriginal("営業収支",
+				wTotalAppearedIncomeExpense.getProfit() - wTempProfit - wSpecialProfit));
+		wSummaryTableItemList.add(SummaryTableItemFactory.createOriginal("実質収支",
+				wTotalAppearedIncomeExpense.getProfit() - wTempProfit));
+		wSummaryTableItemList.add(SummaryTableItemFactory.createOriginal("実質残高",
+				wAppearedBalance - wTempBalance));
+		wSummaryTableItemList.add(SummaryTableItemFactory.createOriginal("借入残高", wTempBalance));
 
-		wSummaryTableItemList.add(new SummaryTableItem("営業収支", wOperatingProfit));
-		wSummaryTableItemList.add(new SummaryTableItem("実質収支", wActualProfit));
-		wSummaryTableItemList.add(new SummaryTableItem("実質残高", wActualBalance));
-		wSummaryTableItemList.add(new SummaryTableItem("借入残高", wTempBalance));
+		return wSummaryTableItemList;
+	}
 
-		// みかけ収支（各Book）
-		if (pBookId == mAllBookId) {
-			wBookAppearedIncome = wTotalAppearedIncomeExpense[0];
-			wBookAppearedExpense = wTotalAppearedIncomeExpense[1];
-		} else {
-			int[] wBookAppearedIncomeExpense = getAppearedIncomeExpense(pStartDate, pEndDate,
-					pBookId);
-			wBookAppearedIncome = wBookAppearedIncomeExpense[0];
-			wBookAppearedExpense = wBookAppearedIncomeExpense[1];
-		}
+	private static Map<Integer, List<SummaryTableItem>> getSummaryTableItemsOfCategory(int pBookId,
+			DateRange pDateRange, Map<Integer, List<SummaryTableItem>> pSummaryTableMap,
+			boolean pIncome) {
 
-		wBookAppearedProfit = wBookAppearedIncome - wBookAppearedExpense;
+		final String wTargetColumn = pIncome ? mActIncomeCol : mActExpenseCol;
 
-		SummaryTableItem wAppearedProfitItem = new SummaryTableItem("みかけ収支", wBookAppearedProfit);
-		wAppearedProfitItem.setAppearedSum(true);
-		wSummaryTableItemList.add(wAppearedProfitItem);
-
-		SummaryTableItem wAppearedIncomeItem = new SummaryTableItem("みかけ収入", wBookAppearedIncome);
-		wAppearedIncomeItem.setAppearedIncomeExpense(true);
-		wAppearedIncomeItem.setIncome(true);
-		wSummaryTableItemList.add(wAppearedIncomeItem);
-
-		SummaryTableItem wAppearedExpenseItem = new SummaryTableItem("みかけ支出", wBookAppearedExpense);
-		wAppearedExpenseItem.setAppearedIncomeExpense(true);
-		wAppearedExpenseItem.setIncome(false);
-
-		// カテゴリ集計
-		// CategoryId-SummaryTableItemList
-		Map<Integer, List<SummaryTableItem>> wSummaryTableMap = new LinkedHashMap<Integer, List<SummaryTableItem>>();
-
-		wQuery = "select " + mCategoryTable + "." + mCategoryIdCol + ", " + mCategoryTable + "."
-				+ mCategoryNameCol
-				+ ", sum(" + mActIncomeCol + ") as " + mActIncomeCol + ", sum(" + mActExpenseCol
-				+ ") as "
-				+ mActExpenseCol + " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable
+		String wQuery = "select " + mCategoryTable + "." + mCategoryIdCol + ", "
+				+ mCategoryTable + "." + mCategoryNameCol + ", "
+				+ " sum(" + wTargetColumn + ") as " + wTargetColumn
+				+ " from " + mActTable + ", " + mItemTable + ", " + mCategoryTable
 				+ " where "
-				+ mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol + " and "
-				+ mCategoryTable + "."
-				+ mCategoryIdCol + " = " + mItemTable + "." + mCategoryIdCol + " and " + mActDtCol
-				+ " between "
-				+ wStartDateString + " and " + wEndDateString + " and " + mActTable + "."
-				+ mDelFlgCol + " = b'0'"
-				+ " and (" + mActTable + "." + mActIncomeCol + " + " + mActTable + "."
-				+ mActExpenseCol + ") > 0";
+				+ mActTable + "." + mItemIdCol + " = " + mItemTable + "." + mItemIdCol
+				+ " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "."
+				+ mCategoryIdCol
+				+ " and " + mActDtCol + " between " + getDateStrings(pDateRange.getStartDate())
+				+ " and "
+				+ getDateStrings(pDateRange.getEndDate())
+				+ " and " + mActTable + "." + mDelFlgCol + " = b'0'"
+				+ " and " + wTargetColumn + " > 0";
 		if (pBookId != mAllBookId) {
 			wQuery += " and " + mActTable + "." + mBookIdCol + " = " + pBookId;
 		}
@@ -1001,29 +955,19 @@ public class DbUtil {
 				+ mCategoryRexpCol + ", " + mCategoryTable + "." + mSortKeyCol;
 		// System.out.println(wQuery);
 
-		wResultSet = mDbAccess.executeQuery(wQuery);
+		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
 		try {
 			while (wResultSet.next()) {
 				int wCategoryId = wResultSet.getInt(mCategoryTable + "." + mCategoryIdCol);
-				if (pBookId == mAllBookId && (DbUtil.isMoveCategory(wCategoryId))) {
-
-				} else {
-					String wCategoryName = wResultSet.getString(mCategoryTable + "."
+				if (pBookId == mAllBookId && (DbUtil.isMoveCategory(wCategoryId)))
+					continue;
+				String wCategoryName = wResultSet.getString(mCategoryTable + "."
 							+ mCategoryNameCol);
-					int wIncome = wResultSet.getInt(mActIncomeCol);
-					int wExpense = wResultSet.getInt(mActExpenseCol);
-					// System.out.println(wCategoryName + ", " + wIncome + ", "
-					// + wExpense);
-					List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
-					if (wIncome > 0) {
-						wList.add(new SummaryTableItem(wCategoryId, wCategoryName, wIncome, true));
-					} else {
-						wList
-								.add(new SummaryTableItem(wCategoryId, wCategoryName, wExpense,
-										false));
-					}
-					wSummaryTableMap.put(wCategoryId, wList);
-				}
+				int wValue = wResultSet.getInt(wTargetColumn);
+				List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
+				wList.add(SummaryTableItemFactory.createCategory(wCategoryName, wValue,
+								wCategoryId));
+				pSummaryTableMap.put(wCategoryId, wList);
 			}
 			wResultSet.close();
 
@@ -1031,22 +975,29 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		// Item集計
-		wQuery = "select " + mCategoryTable + "." + mCategoryIdCol + ", " + mActTable + "."
+		return pSummaryTableMap;
+	}
+
+	private static Map<Integer, List<SummaryTableItem>> getSummaryTableItemsOfNormalItem(
+			int pBookId,
+			DateRange pDateRange, Map<Integer, List<SummaryTableItem>> pSummaryTableMap,
+			boolean pIncome) {
+
+		String wTargetColumn = pIncome ? mActIncomeCol : mActExpenseCol;
+
+		String wQuery = "select " + mCategoryTable + "." + mCategoryIdCol + ", " + mActTable + "."
 				+ mItemIdCol + ", "
-				+ mItemTable + "." + mItemNameCol + ", sum(" + mActIncomeCol + ") as "
-				+ mActIncomeCol + ", sum("
-				+ mActExpenseCol + ") as " + mActExpenseCol + " from " + mActTable + ", "
+				+ mItemTable + "." + mItemNameCol + ", sum(" + wTargetColumn + ") as "
+				+ wTargetColumn + " from " + mActTable + ", "
 				+ mItemTable + ", "
 				+ mCategoryTable + " where " + mActTable + "." + mItemIdCol + " = " + mItemTable
 				+ "." + mItemIdCol
 				+ " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable + "."
 				+ mCategoryIdCol + " and "
-				+ mActDtCol + " between " + wStartDateString + " and " + wEndDateString + " and "
+				+ mActDtCol + " between " + getDateStrings(pDateRange.getStartDate()) + " and "
+				+ getDateStrings(pDateRange.getEndDate()) + " and "
 				+ mActTable + "."
-				+ mDelFlgCol + " = b'0'" + " and (" + mActTable + "." + mActIncomeCol + " + "
-				+ mActTable + "."
-				+ mActExpenseCol + ") > 0";
+				+ mDelFlgCol + " = b'0'" + " and " + mActTable + "." + wTargetColumn + " > 0";
 		if (pBookId != mAllBookId) {
 			wQuery += " and " + mActTable + "." + mBookIdCol + " = " + pBookId;
 		}
@@ -1055,29 +1006,20 @@ public class DbUtil {
 				+ ", " + mCategoryTable + "." + mSortKeyCol + ", " + mItemTable + "." + mSortKeyCol;
 
 		// System.out.println(wQuery);
-		wResultSet = mDbAccess.executeQuery(wQuery);
+		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
 
 		try {
 			while (wResultSet.next()) {
 				int wCategoryId = wResultSet.getInt(mCategoryTable + "." + mCategoryIdCol);
-				if (pBookId == mAllBookId && (isMoveCategory(wCategoryId))) {
 
-				} else {
-					List<SummaryTableItem> wList = wSummaryTableMap.get(wCategoryId);
-					int wItemId = wResultSet.getInt(mActTable + "." + mItemIdCol);
-					String wItemName = wResultSet.getString(mItemTable + "." + mItemNameCol);
-					int wIncome = wResultSet.getInt(mActIncomeCol);
-					int wExpense = wResultSet.getInt(mActExpenseCol);
-					// System.out.println(wItemName + ", " + wIncome + ", "
-					// + wExpense);
-					if (wIncome > 0) {
-						wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wIncome,
-								true));
-					} else {
-						wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId, wExpense,
-								false));
-					}
-				}
+				if (pBookId == mAllBookId && (isMoveCategory(wCategoryId)))
+					continue;
+
+				List<SummaryTableItem> wList = pSummaryTableMap.get(wCategoryId);
+				int wItemId = wResultSet.getInt(mActTable + "." + mItemIdCol);
+				String wItemName = wResultSet.getString(mItemTable + "." + mItemNameCol);
+				int wValue = wResultSet.getInt(wTargetColumn);
+				wList.add(SummaryTableItemFactory.createItem(wItemName, wValue, wItemId));
 			}
 			wResultSet.close();
 
@@ -1085,43 +1027,76 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		// リストへ全結果を挿入
-		Iterator<Integer> wIt = wSummaryTableMap.keySet().iterator();
-		boolean wExpenseRow = false;
+		return pSummaryTableMap;
+	}
 
-		while (wIt.hasNext()) {
-			Integer wKey = wIt.next();
-			if (!wExpenseRow && !wSummaryTableMap.get(wKey).get(0).isIncome()) {
-				wExpenseRow = true;
-				wSummaryTableItemList.add(wAppearedExpenseItem);
-			}
-			wSummaryTableItemList.addAll(wSummaryTableMap.get(wKey));
-		}
-		if (!wExpenseRow) {
-			wSummaryTableItemList.add(wAppearedExpenseItem);
-		}
+	public static SummaryTableItem[] getSummaryTableItems(int pBookId, DateRange pDateRange) {
 
-		// for (SummaryTableItem wItem : wSummaryTableItemList) {
-		// System.out.println(wItem.getItemName() + ", " + wItem.getValue()
-		// + ", " + wItem.isIncome());
-		// }
+		// 全帳簿共通の項目（特殊収支）
+		List<SummaryTableItem> wSummaryTableItemList = getSummaryTableItemListOriginalForAllBooks(pDateRange);
+
+		// みかけ収支（各Book）
+		IncomeExpense wBookAppearedIncomeExpense = getAppearedIncomeExpense(pDateRange, pBookId);
+
+		wSummaryTableItemList.add(SummaryTableItemFactory.createAppearedProfit(
+				"みかけ収支", wBookAppearedIncomeExpense.getProfit()));
+
+		wSummaryTableItemList.add(SummaryTableItemFactory.createAppearedIncome(
+				"みかけ収入", wBookAppearedIncomeExpense.getIncome()));
+
+		// リストへは追加（収入項目の後ろ）
+		SummaryTableItem wAppearedExpenseItem = SummaryTableItemFactory.createAppearedExpense(
+				"みかけ支出", wBookAppearedIncomeExpense.getExpense());
+
+		// CategoryId-SummaryTableItemList
+		Map<Integer, List<SummaryTableItem>> wSummaryTableMap = new LinkedHashMap<Integer, List<SummaryTableItem>>();
+
+		// Income-Category
+		wSummaryTableMap = getSummaryTableItemsOfCategory(pBookId, pDateRange, wSummaryTableMap,
+				true);
+
+		// Income-Item
+		wSummaryTableMap = getSummaryTableItemsOfNormalItem(pBookId, pDateRange, wSummaryTableMap,
+				true);
+
+		// リストへIncome全結果を挿入
+		for (Map.Entry<Integer, List<SummaryTableItem>> entry : wSummaryTableMap.entrySet())
+			wSummaryTableItemList.addAll(entry.getValue());
+		wSummaryTableMap.clear();
+
+		// みかけ支出を追加
+		wSummaryTableItemList.add(wAppearedExpenseItem);
+
+		// Expense-Category
+		wSummaryTableMap = getSummaryTableItemsOfCategory(pBookId, pDateRange, wSummaryTableMap,
+				false);
+
+		// Expense-Item
+		wSummaryTableMap = getSummaryTableItemsOfNormalItem(pBookId, pDateRange, wSummaryTableMap,
+				false);
+
+		// リストへIncome全結果を挿入
+		for (Map.Entry<Integer, List<SummaryTableItem>> entry : wSummaryTableMap.entrySet())
+			wSummaryTableItemList.addAll(entry.getValue());
 
 		return (SummaryTableItem[]) wSummaryTableItemList.toArray(new SummaryTableItem[0]);
 	}
 
 	// Categoryのみの年度集計を一括取得
 	public static List<SummaryTableItem[]> getAnnualSummaryTableItemsCategory(int pBookId,
-			Date[][] pDatePeriods) {
+			List<DateRange> pDateRangeList) {
 
-		String wTotalStartDateString = getDateStrings(pDatePeriods[0][0]);
-		String wTotalEndDateString = getDateStrings(pDatePeriods[pDatePeriods.length - 1][1]);
+		String wTotalStartDateString = getDateStrings(pDateRangeList.get(0).getStartDate());
+		String wTotalEndDateString = getDateStrings(pDateRangeList.get(pDateRangeList.size() - 1)
+				.getEndDate());
 
 		// 合計行が必要なら追加
-		int wSummationIndex = Util.getSummationIndex(pDatePeriods);
-		Date[][] wDatePeriods = Util.getDatePeriodsWithSummaion(pDatePeriods);
+		int wSummationIndex = Util.getSummationIndex(pDateRangeList, getCutOff());
+		pDateRangeList = Util.getDatePeriodsWithSummaion(pDateRangeList, getCutOff());
 		// Summation + Average
-		int wDatePeriodCount = pDatePeriods.length + 2
-				* (wDatePeriods.length - pDatePeriods.length);
+		int wDatePeriodCount = pDateRangeList.size();
+		if (wSummationIndex != SystemData.getUndefinedInt())
+			wDatePeriodCount++;
 
 		// 結果を挿入するリスト
 		// List<List<SummaryTableItem>> wSummaryTableItemList = new
@@ -1150,10 +1125,10 @@ public class DbUtil {
 				+ mCategoryTable + "." + mCategoryIdCol + ", " + mCategoryTable + "."
 				+ mCategoryNameCol;
 
-		for (int i = 0; i < wDatePeriods.length; i++) {
-			Date[] wDates = wDatePeriods[i];
-			String wStartDateString = getDateStrings(wDates[0]);
-			String wEndDateString = getDateStrings(wDates[1]);
+		for (int i = 0; i < pDateRangeList.size(); i++) {
+			DateRange wDateRange = pDateRangeList.get(i);
+			String wStartDateString = getDateStrings(wDateRange.getStartDate());
+			String wEndDateString = getDateStrings(wDateRange.getEndDate());
 			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
 					+ " and "
 					+ wEndDateString + " then " + mActIncomeCol + " end),0) '" + mActIncomeCol
@@ -1200,19 +1175,24 @@ public class DbUtil {
 				if (wCategoryId == 0) {
 					List<SummaryTableItem> wListIncome = new ArrayList<SummaryTableItem>();
 					List<SummaryTableItem> wListExpense = new ArrayList<SummaryTableItem>();
-					for (int i = 0; i < wDatePeriods.length; i++) {
+					for (int i = 0; i < pDateRangeList.size(); i++) {
 						int wIncome = wResultSet.getInt(mActIncomeCol + wPeriodName + i);
 						int wExpense = wResultSet.getInt(mActExpenseCol + wPeriodName + i);
 
-						wList.add(new SummaryTableItem("総収支", wIncome - wExpense, true));
-						wListIncome.add(new SummaryTableItem("総収入", wIncome, true));
-						wListExpense.add(new SummaryTableItem("総支出", wExpense, true));
+						wList.add(SummaryTableItemFactory.createAppearedProfit("総収支", wIncome
+								- wExpense));
+						wListIncome.add(SummaryTableItemFactory
+								.createAppearedIncome("総収入", wIncome));
+						wListExpense.add(SummaryTableItemFactory.createAppearedExpense("総支出",
+								wExpense));
 
 						if (i == wSummationIndex) {
-							wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i,
-										true));
-							wListIncome.add(new SummaryTableItem("総収入", wIncome / i, true));
-							wListExpense.add(new SummaryTableItem("総支出", wExpense / i, true));
+							wList.add(SummaryTableItemFactory.createAppearedProfit("総収支",
+									(wIncome - wExpense) / i));
+							wListIncome.add(SummaryTableItemFactory.createAppearedIncome("総収入",
+									wIncome / i));
+							wListExpense.add(SummaryTableItemFactory.createAppearedExpense("総支出",
+									wExpense / i));
 						}
 					}
 
@@ -1224,23 +1204,23 @@ public class DbUtil {
 
 				} else {
 
-					for (int i = 0; i < wDatePeriods.length; i++) {
+					for (int i = 0; i < pDateRangeList.size(); i++) {
 						int wIncome = wResultSet.getInt(mActIncomeCol + wPeriodName + i);
 						int wExpense = wResultSet.getInt(mActExpenseCol + wPeriodName + i);
 
 						if (wRexpDiv == mIncomeRexp) {
-							wList.add(new SummaryTableItem(wCategoryId, wCategoryName, wIncome,
-										true));
+							wList.add(SummaryTableItemFactory.createCategory(wCategoryName,
+									wIncome, wCategoryId));
 							if (i == wSummationIndex) {
-								wList.add(new SummaryTableItem(wCategoryId, wCategoryName,
-											wIncome / i, true));
+								wList.add(SummaryTableItemFactory.createCategory(wCategoryName,
+											wIncome / i, wCategoryId));
 							}
 						} else {
-							wList.add(new SummaryTableItem(wCategoryId, wCategoryName,
-										wExpense, false));
+							wList.add(SummaryTableItemFactory.createCategory(wCategoryName,
+										wExpense, wCategoryId));
 							if (i == wSummationIndex) {
-								wList.add(new SummaryTableItem(wCategoryId, wCategoryName,
-											wExpense / i, false));
+								wList.add(SummaryTableItemFactory.createCategory(wCategoryName,
+											wExpense / i, wCategoryId));
 							}
 						}
 					}
@@ -1279,17 +1259,19 @@ public class DbUtil {
 
 	// Itemのみの年度集計を一括取得
 	public static List<SummaryTableItem[]> getAnnualSummaryTableItems(int pBookId,
-			Date[][] pDatePeriods) {
+			List<DateRange> pDateRangeList) {
 
-		String wTotalStartDateString = getDateStrings(pDatePeriods[0][0]);
-		String wTotalEndDateString = getDateStrings(pDatePeriods[pDatePeriods.length - 1][1]);
+		String wTotalStartDateString = getDateStrings(pDateRangeList.get(0).getStartDate());
+		String wTotalEndDateString = getDateStrings(pDateRangeList.get(pDateRangeList.size() - 1)
+				.getEndDate());
 
 		// 合計行が必要なら追加
-		int wSummationIndex = Util.getSummationIndex(pDatePeriods);
-		Date[][] wDatePeriods = Util.getDatePeriodsWithSummaion(pDatePeriods);
+		int wSummationIndex = Util.getSummationIndex(pDateRangeList, getCutOff());
+		pDateRangeList = Util.getDatePeriodsWithSummaion(pDateRangeList, getCutOff());
 		// Summation + Average
-		int wDatePeriodCount = pDatePeriods.length + 2
-				* (wDatePeriods.length - pDatePeriods.length);
+		int wDatePeriodCount = pDateRangeList.size();
+		if (wSummationIndex != SystemData.getUndefinedInt())
+			wDatePeriodCount++;
 
 		// 結果を挿入するリスト
 		// List<List<SummaryTableItem>> wSummaryTableItemList = new
@@ -1319,10 +1301,10 @@ public class DbUtil {
 				+ ", " + mItemTable
 				+ "." + mItemIdCol + ", " + mItemTable + "." + mItemNameCol;
 
-		for (int i = 0; i < wDatePeriods.length; i++) {
-			Date[] wDates = wDatePeriods[i];
-			String wStartDateString = getDateStrings(wDates[0]);
-			String wEndDateString = getDateStrings(wDates[1]);
+		for (int i = 0; i < pDateRangeList.size(); i++) {
+			DateRange wDateRange = pDateRangeList.get(i);
+			String wStartDateString = getDateStrings(wDateRange.getStartDate());
+			String wEndDateString = getDateStrings(wDateRange.getEndDate());
 			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
 					+ " and "
 					+ wEndDateString + " then " + mActIncomeCol + " end),0) '" + mActIncomeCol
@@ -1355,7 +1337,6 @@ public class DbUtil {
 		wResultSet = mDbAccess.executeQuery(wQuery);
 		try {
 			while (wResultSet.next()) {
-				int wCategoryId = wResultSet.getInt(mCategoryTable + "." + mCategoryIdCol);
 				int wItemId = wResultSet.getInt(mItemTable + "." + mItemIdCol);
 				int wRexpDiv = wResultSet.getInt(mCategoryTable + "." + mCategoryRexpCol);
 				int wCategorySortKey = wResultSet.getInt(mCategoryTable + "." + mSortKeyCol);
@@ -1368,19 +1349,24 @@ public class DbUtil {
 				if (wItemId == 0) {
 					List<SummaryTableItem> wListIncome = new ArrayList<SummaryTableItem>();
 					List<SummaryTableItem> wListExpense = new ArrayList<SummaryTableItem>();
-					for (int i = 0; i < wDatePeriods.length; i++) {
+					for (int i = 0; i < pDateRangeList.size(); i++) {
 						int wIncome = wResultSet.getInt(mActIncomeCol + wPeriodName + i);
 						int wExpense = wResultSet.getInt(mActExpenseCol + wPeriodName + i);
 
-						wList.add(new SummaryTableItem("総収支", wIncome - wExpense, true));
-						wListIncome.add(new SummaryTableItem("総収入", wIncome, true));
-						wListExpense.add(new SummaryTableItem("総支出", wExpense, true));
+						wList.add(SummaryTableItemFactory.createAppearedProfit("総収支", wIncome
+								- wExpense));
+						wListIncome.add(SummaryTableItemFactory
+								.createAppearedIncome("総収入", wIncome));
+						wListExpense.add(SummaryTableItemFactory.createAppearedExpense("総支出",
+								wExpense));
 
 						if (i == wSummationIndex) {
-							wList.add(new SummaryTableItem("総収支", (wIncome - wExpense) / i,
-										true));
-							wListIncome.add(new SummaryTableItem("総収入", wIncome / i, true));
-							wListExpense.add(new SummaryTableItem("総支出", wExpense / i, true));
+							wList.add(SummaryTableItemFactory.createAppearedProfit("総収支",
+									(wIncome - wExpense) / i));
+							wListIncome.add(SummaryTableItemFactory.createAppearedIncome("総収入",
+									wIncome / i));
+							wListExpense.add(SummaryTableItemFactory.createAppearedExpense("総支出",
+									wExpense / i));
 						}
 					}
 
@@ -1392,25 +1378,22 @@ public class DbUtil {
 
 				} else {
 
-					for (int i = 0; i < wDatePeriods.length; i++) {
+					for (int i = 0; i < pDateRangeList.size(); i++) {
 						int wIncome = wResultSet.getInt(mActIncomeCol + wPeriodName + i);
 						int wExpense = wResultSet.getInt(mActExpenseCol + wPeriodName + i);
 
 						if (wRexpDiv == mIncomeRexp) {
-							wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId,
-										wIncome, true));
+							wList.add(SummaryTableItemFactory.createItem(wItemName, wIncome,
+									wItemId));
 							if (i == wSummationIndex) {
-								wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId,
-											wIncome / i, true));
+								wList.add(SummaryTableItemFactory.createItem(wItemName,
+										wIncome / i, wItemId));
 							}
 						} else {
-							wList.add(new SummaryTableItem(wItemId, wItemName, wCategoryId,
-										wExpense, false));
+							wList.add(SummaryTableItemFactory.createItem(wItemName, wExpense,
+									wItemId));
 							if (i == wSummationIndex) {
-								wList
-											.add(new SummaryTableItem(wItemId, wItemName,
-													wCategoryId, wExpense / i,
-													false));
+								wList.add(SummaryTableItemFactory.createItem(wItemName, wExpense / i, wItemId));
 							}
 						}
 					}
@@ -1455,16 +1438,17 @@ public class DbUtil {
 	}
 
 	// 特殊収支系の年度集計取得
-	public static List<SummaryTableItem[]> getAnnualSummaryTableItemsOriginal(Date[][] pDatePeriods) {
+	public static List<SummaryTableItem[]> getAnnualSummaryTableItemsOriginal(List<DateRange> pDateRangeList) {
 
-		String wTotalStartDateString = getDateStrings(pDatePeriods[0][0]);
+		String wTotalStartDateString = getDateStrings(pDateRangeList.get(0).getStartDate());
 
 		// 合計行が必要なら追加
-		int wSummationIndex = Util.getSummationIndex(pDatePeriods);
-		Date[][] wDatePeriods = Util.getDatePeriodsWithSummaion(pDatePeriods);
+		int wSummationIndex = Util.getSummationIndex(pDateRangeList, getCutOff());
+		pDateRangeList = Util.getDatePeriodsWithSummaion(pDateRangeList, getCutOff());
 		// Summation + Average
-		int wDatePeriodCount = pDatePeriods.length + 2
-				* (wDatePeriods.length - pDatePeriods.length);
+		int wDatePeriodCount = pDateRangeList.size();
+		if (wSummationIndex != SystemData.getUndefinedInt())
+			wDatePeriodCount++;
 
 		// 結果を挿入するリスト
 		List<List<SummaryTableItem>> wSummaryTableItemList = new ArrayList<List<SummaryTableItem>>(
@@ -1500,10 +1484,10 @@ public class DbUtil {
 				+ mCategoryTable + "." + mCategoryTempFlgCol + " = b'1' ) then " + mActIncomeCol
 				+ " - "
 				+ mActExpenseCol + " end),0) " + wTempBalanceName;
-		for (int i = 0; i < wDatePeriods.length; i++) {
-			Date[] wDates = wDatePeriods[i];
-			String wStartDateString = getDateStrings(wDates[0]);
-			String wEndDateString = getDateStrings(wDates[1]);
+		for (int i = 0; i < pDateRangeList.size(); i++) {
+			DateRange wDateRange = pDateRangeList.get(i);
+			String wStartDateString = getDateStrings(wDateRange.getStartDate());
+			String wEndDateString = getDateStrings(wDateRange.getEndDate());
 			wQuery += ", COALESCE(sum(case when " + mActDtCol + " between " + wStartDateString
 					+ " and "
 					+ wEndDateString + " then " + mActIncomeCol + " end),0) " + wAppearedIncomeName
@@ -1552,7 +1536,7 @@ public class DbUtil {
 				wActualBalance += wAppearedBalance - wTempBalance;
 				boolean isSummationInput = false;
 
-				for (int i = 0; i < wDatePeriods.length; i++) {
+				for (int i = 0; i < pDateRangeList.size(); i++) {
 					int wAppearedIncome = wResultSet.getInt(wAppearedIncomeName + i);
 					int wAppearedExpense = wResultSet.getInt(wAppearedExpenseName + i);
 					int wSpecialIncome = wResultSet.getInt(wSpecialIncomeName + i);
@@ -1573,140 +1557,140 @@ public class DbUtil {
 
 					if (i == wSummationIndex) {
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("繰越残高", SystemData.getUndefinedInt()));
+								SummaryTableItemFactory.createOriginal("繰越残高", SystemData.getUndefinedInt()));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("繰越残高", SystemData.getUndefinedInt()));
+								SummaryTableItemFactory.createOriginal("繰越残高", SystemData.getUndefinedInt()));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("みかけ収支", wAppearedProfit));
+								SummaryTableItemFactory.createOriginal("みかけ収支", wAppearedProfit));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("みかけ収支", wAppearedProfit / i));
+								SummaryTableItemFactory.createOriginal("みかけ収支", wAppearedProfit / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業収支", wOperationProfit));
+								SummaryTableItemFactory.createOriginal("営業収支", wOperationProfit));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("営業収支", wOperationProfit / i));
+								SummaryTableItemFactory.createOriginal("営業収支", wOperationProfit / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("実質収支", wActualProfit));
+								SummaryTableItemFactory.createOriginal("実質収支", wActualProfit));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("実質収支", wActualProfit / i));
+								SummaryTableItemFactory.createOriginal("実質収支", wActualProfit / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("実質残高", SystemData.getUndefinedInt()));
+								SummaryTableItemFactory.createOriginal("実質残高", SystemData.getUndefinedInt()));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("実質残高", SystemData.getUndefinedInt()));
+								SummaryTableItemFactory.createOriginal("実質残高", SystemData.getUndefinedInt()));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("みかけ残高", SystemData.getUndefinedInt()));
+								SummaryTableItemFactory.createOriginal("みかけ残高", SystemData.getUndefinedInt()));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("みかけ残高", SystemData.getUndefinedInt()));
+								SummaryTableItemFactory.createOriginal("みかけ残高", SystemData.getUndefinedInt()));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("立替累計", SystemData.getUndefinedInt()));
+								SummaryTableItemFactory.createOriginal("立替累計", SystemData.getUndefinedInt()));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("立替累計", SystemData.getUndefinedInt()));
+								SummaryTableItemFactory.createOriginal("立替累計", SystemData.getUndefinedInt()));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業収入",
+								SummaryTableItemFactory.createOriginal("営業収入",
 										(wAppearedIncome - wSpecialIncome - wTempIncome)));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("営業収入",
+								SummaryTableItemFactory.createOriginal("営業収入",
 										(wAppearedIncome - wSpecialIncome - wTempIncome) / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業支出",
+								SummaryTableItemFactory.createOriginal("営業支出",
 										(wAppearedExpense - wSpecialExpense - wTempExpense)));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("営業支出",
+								SummaryTableItemFactory.createOriginal("営業支出",
 										(wAppearedExpense - wSpecialExpense - wTempExpense) / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("実質収入", wAppearedIncome - wTempIncome));
+								SummaryTableItemFactory.createOriginal("実質収入", wAppearedIncome - wTempIncome));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("実質収入", (wAppearedIncome - wTempIncome) / i));
+								SummaryTableItemFactory.createOriginal("実質収入", (wAppearedIncome - wTempIncome) / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("実質支出", wAppearedExpense - wTempExpense));
+								SummaryTableItemFactory.createOriginal("実質支出", wAppearedExpense - wTempExpense));
 						wSummaryTableItemList.get(wListIndex + 1)
 								.add(
-										new SummaryTableItem("実質支出",
+										SummaryTableItemFactory.createOriginal("実質支出",
 												(wAppearedExpense - wTempExpense) / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("みかけ収入", wAppearedIncome));
+								SummaryTableItemFactory.createOriginal("みかけ収入", wAppearedIncome));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("みかけ収入", wAppearedIncome / i));
+								SummaryTableItemFactory.createOriginal("みかけ収入", wAppearedIncome / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("みかけ支出", wAppearedExpense));
+								SummaryTableItemFactory.createOriginal("みかけ支出", wAppearedExpense));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("みかけ支出", wAppearedExpense / i));
+								SummaryTableItemFactory.createOriginal("みかけ支出", wAppearedExpense / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("特別収入", wSpecialIncome));
+								SummaryTableItemFactory.createOriginal("特別収入", wSpecialIncome));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("特別収入", wSpecialIncome / i));
+								SummaryTableItemFactory.createOriginal("特別収入", wSpecialIncome / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("特別支出", wSpecialExpense));
+								SummaryTableItemFactory.createOriginal("特別支出", wSpecialExpense));
 						wSummaryTableItemList.get(wListIndex + 1)
-								.add(new SummaryTableItem("特別支出", wSpecialExpense / i));
+								.add(SummaryTableItemFactory.createOriginal("特別支出", wSpecialExpense / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("立替収入", wTempIncome));
+								SummaryTableItemFactory.createOriginal("立替収入", wTempIncome));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("立替収入", wTempIncome / i));
+								SummaryTableItemFactory.createOriginal("立替収入", wTempIncome / i));
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("立替支出", wTempExpense));
+								SummaryTableItemFactory.createOriginal("立替支出", wTempExpense));
 						wSummaryTableItemList.get(wListIndex + 1).add(
-								new SummaryTableItem("立替支出", wTempExpense / i));
+								SummaryTableItemFactory.createOriginal("立替支出", wTempExpense / i));
 
 						isSummationInput = true;
 
 					} else { // SummationIndex以外
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("繰越残高", wAppearedBalance));
+								SummaryTableItemFactory.createOriginal("繰越残高", wAppearedBalance));
 
 						wAppearedBalance += wAppearedProfit;
 						wActualBalance += wActualProfit;
 						wTempBalance += wTempProfit;
 
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("みかけ収支", wAppearedProfit));
+								SummaryTableItemFactory.createOriginal("みかけ収支", wAppearedProfit));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業収支", wOperationProfit));
+								SummaryTableItemFactory.createOriginal("営業収支", wOperationProfit));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("実質収支", wActualProfit));
+								SummaryTableItemFactory.createOriginal("実質収支", wActualProfit));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("実質残高", wActualBalance));
+								SummaryTableItemFactory.createOriginal("実質残高", wActualBalance));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("みかけ残高", wAppearedBalance));
+								SummaryTableItemFactory.createOriginal("みかけ残高", wAppearedBalance));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("立替累計", wTempBalance));
+								SummaryTableItemFactory.createOriginal("立替累計", wTempBalance));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業収入", wAppearedIncome - wSpecialIncome
+								SummaryTableItemFactory.createOriginal("営業収入", wAppearedIncome - wSpecialIncome
 										- wTempIncome));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("営業支出", wAppearedExpense - wSpecialExpense
+								SummaryTableItemFactory.createOriginal("営業支出", wAppearedExpense - wSpecialExpense
 										- wTempExpense));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("実質収入", wAppearedIncome - wTempIncome));
+								SummaryTableItemFactory.createOriginal("実質収入", wAppearedIncome - wTempIncome));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("実質支出", wAppearedExpense - wTempExpense));
+								SummaryTableItemFactory.createOriginal("実質支出", wAppearedExpense - wTempExpense));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("みかけ収入", wAppearedIncome));
+								SummaryTableItemFactory.createOriginal("みかけ収入", wAppearedIncome));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("みかけ支出", wAppearedExpense));
+								SummaryTableItemFactory.createOriginal("みかけ支出", wAppearedExpense));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("特別収入", wSpecialIncome));
+								SummaryTableItemFactory.createOriginal("特別収入", wSpecialIncome));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("特別支出", wSpecialExpense));
+								SummaryTableItemFactory.createOriginal("特別支出", wSpecialExpense));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("立替収入", wTempIncome));
+								SummaryTableItemFactory.createOriginal("立替収入", wTempIncome));
 						wSummaryTableItemList.get(wListIndex).add(
-								new SummaryTableItem("立替支出", wTempExpense));
+								SummaryTableItemFactory.createOriginal("立替支出", wTempExpense));
 
 					}
 				}
@@ -2171,13 +2155,13 @@ public class DbUtil {
 		return wTempBalance;
 	}
 
-	private static int getTotalTempProfit(Date pStartDate, Date pEndDate) {
+	private static int getTotalTempProfit(DateRange pDateRange) {
 		// 立替収支
 		int wTotalTempProfit = 0;
 
 		String wResultColName = "ResultCol";
-		String wStartDateString = getDateStrings(pStartDate);
-		String wEndDateString = getDateStrings(pEndDate);
+		String wStartDateString = getDateStrings(pDateRange.getStartDate());
+		String wEndDateString = getDateStrings(pDateRange.getEndDate());
 
 		String wQuery = "select sum(" + mActIncomeCol + " - " + mActExpenseCol + ") as "
 				+ wResultColName + " from "
@@ -2207,13 +2191,13 @@ public class DbUtil {
 		return wTotalTempProfit;
 	}
 
-	private static int getTotalSpecialProfit(Date pStartDate, Date pEndDate) {
+	private static int getTotalSpecialProfit(DateRange pDateRange) {
 		// 特別収支
 		int wSpecialProfit = 0;
 
 		String wResultColName = "ResultCol";
-		String wStartDateString = getDateStrings(pStartDate);
-		String wEndDateString = getDateStrings(pEndDate);
+		String wStartDateString = getDateStrings(pDateRange.getStartDate());
+		String wEndDateString = getDateStrings(pDateRange.getEndDate());
 
 		String wQuery = "select sum(" + mActIncomeCol + " - " + mActExpenseCol + ") as "
 				+ wResultColName + " from "
@@ -2243,12 +2227,12 @@ public class DbUtil {
 		return wSpecialProfit;
 	}
 
-	private static int[] getAppearedIncomeExpense(Date pStartDate, Date pEndDate, int pBookId) {
+	private static IncomeExpense getAppearedIncomeExpense(DateRange pDateRange, int pBookId) {
 		// みかけ収入・支出（各Book）
-		int[] wAppearedIncomeExpense = new int[2];
-
-		String wStartDateString = getDateStrings(pStartDate);
-		String wEndDateString = getDateStrings(pEndDate);
+		int wIncome = 0;
+		int wExpense = 0;
+		String wStartDateString = getDateStrings(pDateRange.getStartDate());
+		String wEndDateString = getDateStrings(pDateRange.getEndDate());
 
 		String wQuery = "select sum(" + mActIncomeCol + ") as " + mActIncomeCol + ", sum("
 				+ mActExpenseCol + ") as "
@@ -2275,8 +2259,8 @@ public class DbUtil {
 
 		try {
 			if (wResultSet.next()) {
-				wAppearedIncomeExpense[0] = wResultSet.getInt(mActIncomeCol);
-				wAppearedIncomeExpense[1] = wResultSet.getInt(mActExpenseCol);
+				wIncome = wResultSet.getInt(mActIncomeCol);
+				wExpense = wResultSet.getInt(mActExpenseCol);
 				// System.out.println(wTempBalanceName + " = " +
 				// wTempBalance);
 			}
@@ -2286,7 +2270,7 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		return wAppearedIncomeExpense;
+		return new IncomeExpense(wIncome, wExpense);
 	}
 
 	private static int getBalance(Date pEndDate, int pBookId, boolean pIncludeEndDate) {

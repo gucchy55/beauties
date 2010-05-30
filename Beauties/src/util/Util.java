@@ -9,6 +9,7 @@ import java.util.Locale;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 
+import model.DateRange;
 import model.SystemData;
 import model.db.DbUtil;
 
@@ -25,13 +26,15 @@ public class Util {
 		return wCal.getTime();
 	}
 
-	 public static Date getAdjusentDay(Date pDate, int i) {
-	 Calendar wCal = Calendar.getInstance();
-	 wCal.setTime(pDate);
-			
-	 wCal.add(Calendar.DAY_OF_MONTH, i);
-	 return wCal.getTime();
-	 }
+	public static Date getAdjusentDay(Date pDate, int i) {
+		Calendar wCal = Calendar.getInstance();
+		wCal.setTime(pDate);
+		wCal = new GregorianCalendar(wCal.get(Calendar.YEAR), wCal.get(Calendar.MONTH), wCal
+				.get(Calendar.DAY_OF_MONTH));
+
+		wCal.add(Calendar.DAY_OF_MONTH, i);
+		return wCal.getTime();
+	}
 
 	public static String getDayOfTheWeekShort(Date pDate) {
 		Calendar wCal = Calendar.getInstance();
@@ -39,27 +42,30 @@ public class Util {
 		return wCal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
 	}
 
-	public static Date[] getPeriod(Date pDate) {
-		Date[] wDates = new Date[2];
-		Calendar wStartCal;
-		Calendar wEndCal;
+	public static DateRange getMonthDateRange(Date pDate, int pCutOff) {
+		// Date[] wDates = new Date[2];
+		Calendar wStartCal = Calendar.getInstance();
+		Calendar wEndCal = Calendar.getInstance();
 
-		int wCutOff = DbUtil.getCutOff();
-		Calendar wInputCal = Calendar.getInstance();
-		wInputCal.setTime(pDate);
-		wStartCal = (Calendar) wInputCal.clone();
-		wEndCal = (Calendar) wInputCal.clone();
+		// int pCutOff;
+		// Calendar wInputCal = Calendar.getInstance();
+		// wInputCal.setTime(pDate);
+		// wStartCal = (Calendar) wInputCal.clone();
+		// wEndCal = (Calendar) wInputCal.clone();
 
-		if (wInputCal.get(Calendar.DAY_OF_MONTH) <= wCutOff) {
+		wStartCal.setTime(pDate);
+		wEndCal.setTime(pDate);
+
+		if (wStartCal.get(Calendar.DAY_OF_MONTH) <= pCutOff) {
 			wStartCal.add(Calendar.MONTH, -1);
 		} else {
 			wEndCal.add(Calendar.MONTH, +1);
 		}
 
 		int wStartDay = Math.min(wStartCal.getActualMaximum(Calendar.DATE),
-				wCutOff);
+				pCutOff);
 		int wEndDay = Math
-				.min(wEndCal.getActualMaximum(Calendar.DATE), wCutOff);
+				.min(wEndCal.getActualMaximum(Calendar.DATE), pCutOff);
 
 		wStartCal = new GregorianCalendar(wStartCal.get(Calendar.YEAR),
 				wStartCal.get(Calendar.MONTH), wStartDay);
@@ -68,57 +74,61 @@ public class Util {
 		wEndCal = new GregorianCalendar(wEndCal.get(Calendar.YEAR), wEndCal
 				.get(Calendar.MONTH), wEndDay);
 
-		wDates[0] = wStartCal.getTime();
-		wDates[1] = wEndCal.getTime();
+		return new DateRange(wStartCal.getTime(), wEndCal.getTime());
 
-		return wDates;
+		// wDates[0] = wStartCal.getTime();
+		// wDates[1] = wEndCal.getTime();
+		//
+		// return wDates;
 
 	}
 
-	public static Date[][] getDatePairs(Date pStartDate, Date pEndDate) {
-		List<Date[]> wDateList = new ArrayList<Date[]>();
+	public static List<DateRange> getDatePairs(DateRange pDateRange, int pCutOff) {
+		List<DateRange> wDateRangeList = new ArrayList<DateRange>();
 		for (int i = 0;; i++) {
-			Date[] wDates = getPeriod(getAdjusentMonth(pStartDate, i));
-			if (wDates[1].after(pEndDate)) {
+			DateRange wDateRange = getMonthDateRange(
+					getAdjusentMonth(pDateRange.getStartDate(), i), pCutOff);
+			if (wDateRange.getEndDate().after(pDateRange.getEndDate()))
 				break;
-			} else {
-				wDateList.add(wDates);
-			}
+			else
+				wDateRangeList.add(wDateRange);
 		}
 
-		return (Date[][]) wDateList.toArray(new Date[0][]);
+		return wDateRangeList;
+		// return (Date[][]) wDateList.toArray(new Date[0][]);
 	}
 
 	// 過去pMonths分を返す
-	public static Date[][] getDatePairs(Date pDate, int pMonths) {
-		List<Date[]> wDateList = new ArrayList<Date[]>();
+	public static List<DateRange> getDatePairs(Date pDate, int pMonths, int pCutOff) {
+		List<DateRange> wDateRangeList = new ArrayList<DateRange>();
 		for (int i = 0; i < pMonths; i++) {
-			Date[] wDates = getPeriod(getAdjusentMonth(pDate, -(pMonths - i - 1)));
-			wDateList.add(wDates);
+			DateRange wDateRange = getMonthDateRange(getAdjusentMonth(pDate, -(pMonths - i - 1)),
+					pCutOff);
+			wDateRangeList.add(wDateRange);
 		}
 
-		return (Date[][]) wDateList.toArray(new Date[0][]);
+		return wDateRangeList;
+		// return (Date[][]) wDateList.toArray(new Date[0][]);
 	}
-	
+
 	// 年始を返す
-	public static Date[] getFiscalPeriod() {
+	public static DateRange getFiscalPeriod(int pCutOff) {
 		int wFiscalMonth = DbUtil.getFisCalMonth();
 		Calendar wCalNow = Calendar.getInstance();
 		Calendar wFirstDate = new GregorianCalendar(wCalNow.get(Calendar.YEAR), wFiscalMonth - 1, 1);
-		
-		while (wFirstDate.after(wCalNow)) {
+
+		while (wFirstDate.after(wCalNow))
 			wFirstDate.add(Calendar.YEAR, -1);
-		}
-		Date[] wFirstPeriod = getPeriod(wFirstDate.getTime());
-		wFirstDate.setTime(wFirstPeriod[0]);
-		
-		Date wEndDate = getAdjusentMonth(wFirstPeriod[1], 11);
-		wEndDate = getPeriod(wEndDate)[1];
-		
-		return new Date[]{wFirstDate.getTime(), wEndDate};
-		
+
+		DateRange wFirstDateRange = getMonthDateRange(wFirstDate.getTime(), pCutOff);
+		wFirstDate.setTime(wFirstDateRange.getStartDate());
+
+		Date wEndDate = getAdjusentMonth(wFirstDateRange.getEndDate(), 11);
+		wEndDate = getMonthDateRange(wEndDate, pCutOff).getEndDate();
+
+		return new DateRange(wFirstDate.getTime(), wEndDate);
 	}
-	
+
 	public static IContentProposal[] createProposals(final String pContent,
 			final int pPosition, String[] pCandidates, int pMaxCount) {
 
@@ -126,85 +136,76 @@ public class Util {
 			return new IContentProposal[] {};
 		}
 
-
 		List<IContentProposal> wProposalList = new ArrayList<IContentProposal>();
 		for (int i = 0; i < pCandidates.length; i++) {
 			if (pCandidates[i].length() > pPosition) {
 				final String wCandidate = pCandidates[i];
-				if (wCandidate.startsWith(pContent)) {
-					wProposalList.add(new IContentProposal() {
-						
-						@Override
-						public String getLabel() {
-							return wCandidate;
-						}
-						
-						@Override
-						public String getDescription() {
-							return null;
-						}
-						
-						@Override
-						public int getCursorPosition() {
-							return wCandidate.length();
-						}
-						
-						@Override
-						public String getContent() {
-							return wCandidate.substring(pPosition);
-						}
-					});
-					if (wProposalList.size() > pMaxCount) {
-						break;
+				if (!wCandidate.startsWith(pContent))
+					continue;
+				wProposalList.add(new IContentProposal() {
+
+					@Override
+					public String getLabel() {
+						return wCandidate;
 					}
-				}
+
+					@Override
+					public String getDescription() {
+						return null;
+					}
+
+					@Override
+					public int getCursorPosition() {
+						return wCandidate.length();
+					}
+
+					@Override
+					public String getContent() {
+						return wCandidate.substring(pPosition);
+					}
+				});
+				if (wProposalList.size() > pMaxCount)
+					break;
 			}
 		}
 
-		return (IContentProposal[])wProposalList.toArray(new IContentProposal[0]);
+		return (IContentProposal[]) wProposalList.toArray(new IContentProposal[0]);
 	}
-	
-	public static int getSummationIndex(Date[][] pDatePeriods) {
-		Date wStartDateNow = Util.getPeriod(new Date())[0];
-		
-		if (pDatePeriods.length < 2) {
-			return SystemData.getUndefinedInt();
-		} else if (wStartDateNow.before(pDatePeriods[1][0])) {
-			return SystemData.getUndefinedInt();
-		}
-		if (wStartDateNow.after(pDatePeriods[pDatePeriods.length - 1][0])) {
-			return pDatePeriods.length;
-		}
 
-		
-		for (int i=0; i < pDatePeriods.length; i++) {
-			Date wStartDate = pDatePeriods[i][0];
-			if (wStartDate.compareTo(wStartDateNow) == 0) {
-				if (i < 2) {
-					return SystemData.getUndefinedInt();
-				} else {
-					return i;
-				}
-			}
+	public static int getSummationIndex(List<DateRange> pDateRangeList, int pCutOff) {
+		Date wStartDateNow = Util.getMonthDateRange(new Date(), pCutOff).getStartDate();
+
+		if (pDateRangeList.size() < 2 || wStartDateNow.before(pDateRangeList.get(1).getStartDate()))
+			return SystemData.getUndefinedInt();
+
+		if (wStartDateNow.after(pDateRangeList.get(pDateRangeList.size() - 1).getStartDate()))
+			return pDateRangeList.size();
+
+		for (int i = 0; i < pDateRangeList.size(); i++) {
+			Date wStartDate = pDateRangeList.get(i).getStartDate();
+			if (!wStartDate.equals(wStartDateNow))
+				continue;
+
+			if (i < 2)
+				return SystemData.getUndefinedInt();
+
+			return i;
+
 		}
 		return SystemData.getUndefinedInt();
 	}
-	
-	public static Date[][] getDatePeriodsWithSummaion(Date[][] pDatePeriods) {
-		
-		int wSummationIndex = getSummationIndex(pDatePeriods);
 
-		if (wSummationIndex != SystemData.getUndefinedInt()) {
-			List<Date[]> wDatePeriodList = new ArrayList<Date[]>(pDatePeriods.length + 1);
-			for (Date[] wDatePeriod : pDatePeriods) {
-				wDatePeriodList.add(wDatePeriod);
-			}
-			Date[] wSummationPeriod = { pDatePeriods[0][0], pDatePeriods[wSummationIndex - 1][1] };
-			wDatePeriodList.add(wSummationIndex, wSummationPeriod);
-			return (Date[][])wDatePeriodList.toArray(new Date[0][]);
-		} else {
-			return pDatePeriods;
-		}
-		
+	public static List<DateRange> getDatePeriodsWithSummaion(List<DateRange> pDateRangeList,
+			int pCutOff) {
+
+		int wSummationIndex = getSummationIndex(pDateRangeList, pCutOff);
+
+		if (wSummationIndex == SystemData.getUndefinedInt())
+			return pDateRangeList;
+
+		DateRange wWholeRange = new DateRange(pDateRangeList.get(0).getStartDate(), pDateRangeList
+				.get(pDateRangeList.size() - 1).getEndDate());
+		pDateRangeList.add(wSummationIndex, wWholeRange);
+		return pDateRangeList;
 	}
 }
