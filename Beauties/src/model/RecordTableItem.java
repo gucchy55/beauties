@@ -45,10 +45,10 @@ public final class RecordTableItem {
 		this.mDate = pDate;
 		this.mItemId = SystemData.getUndefinedInt();
 		this.mGroupId = SystemData.getUndefinedInt();
-		this.mIncome = SystemData.getUndefinedInt();
-		this.mExpense = SystemData.getUndefinedInt();
+		this.mIncome = 0;
+		this.mExpense = 0;
 		this.mBalance = pBalance;
-		this.mFrequency = SystemData.getUndefinedInt();
+		this.mFrequency = 0;
 		this.mNote = "";
 		this.isBalanceRow = true;
 	}

@@ -182,7 +182,6 @@ class TableLabelProvider implements ITableLabelProvider {
 		switch (columnIndex) {
 		case 0:
 			return wRecord.getBookName();
-
 		case 1:
 			if (this.showYear)
 				return mDateFormatLong.format(wRecord.getDate());
@@ -191,28 +190,15 @@ class TableLabelProvider implements ITableLabelProvider {
 		case 2:
 			return wRecord.getItemName();
 		case 3:
-			if (wRecord.isBalanceRow() || wRecord.getIncome() == 0) {
-				return "";
-			} else {
-				return SystemData.getFormatedFigures(wRecord.getIncome());
-			}
+			return getNumerical(wRecord.getIncome());
 		case 4:
-			if (wRecord.isBalanceRow() || wRecord.getExpense() == 0) {
-				return "";
-			} else {
-				return SystemData.getFormatedFigures(wRecord.getExpense());
-			}
+			return getNumerical(wRecord.getExpense());
 		case 5:
 			return SystemData.getFormatedFigures(wRecord.getBalance());
 		case 6:
-			if (wRecord.getFrequency() == 0 || wRecord.isBalanceRow()) {
-				return "";
-			} else {
-				return Integer.toString(wRecord.getFrequency());
-			}
+			return getNumerical(wRecord.getFrequency());
 		case 7:
 			return wRecord.getNote();
-
 		}
 		return null;
 	}
@@ -228,6 +214,12 @@ class TableLabelProvider implements ITableLabelProvider {
 	}
 
 	public void removeListener(ILabelProviderListener listener) {
+	}
+	
+	private String getNumerical(int pValue) {
+		if (pValue == 0)
+			return "";
+		return SystemData.getFormatedFigures(pValue);
 	}
 
 }

@@ -9,7 +9,6 @@ import model.db.DbUtil;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
-import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.swt.SWT;
@@ -86,10 +85,10 @@ class PreferencePageItem extends PreferencePage {
 		wModifyButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
-				if (!wConfigItem.isSpecial()) {
-					if (new DialogNewItem(getShell(), wConfigItem).open() == 0) {
-						updateTree();
-					}
+				if (wConfigItem.isSpecial())
+					return;
+				if (new DialogNewItem(getShell(), wConfigItem).open() == 0) {
+					updateTree();
 				}
 			}
 		});
@@ -99,12 +98,12 @@ class PreferencePageItem extends PreferencePage {
 		wDeleteButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
-				if (!wConfigItem.isSpecial()) {
-					if (MessageDialog.openConfirm(getShell(), "削除", wConfigItem.getName()
+				if (wConfigItem.isSpecial())
+					return;
+				if (MessageDialog.openConfirm(getShell(), "削除", wConfigItem.getName()
 							+ " - 本当に削除しますか？")) {
-						DbUtil.deleteCategoryItem(wConfigItem);
-						updateTree();
-					}
+					DbUtil.deleteCategoryItem(wConfigItem);
+					updateTree();
 				}
 			}
 		});
@@ -116,7 +115,7 @@ class PreferencePageItem extends PreferencePage {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				wSelectedItem.moveUp();
 				mTreeOrderChanged = true;
-				updateTreeOrder();
+				mTreeViewerConfigItem.refresh();
 			}
 		});
 
@@ -127,7 +126,7 @@ class PreferencePageItem extends PreferencePage {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				wSelectedItem.moveDown();
 				mTreeOrderChanged = true;
-				updateTreeOrder();
+				mTreeViewerConfigItem.refresh();
 			}
 		});
 
@@ -234,27 +233,28 @@ class PreferencePageItem extends PreferencePage {
 		});
 	}
 
-	private void updateTreeOrder() {
-		mTreeViewerConfigItem.getTree().setRedraw(false);
-
-		try {
-			Object[] elements = mTreeViewerConfigItem.getExpandedElements();
-			ISelection selection = mTreeViewerConfigItem.getSelection();
-
-			mTreeViewerConfigItem.getTree().dispose();
-			mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite, mRootConfigItem);
-			mTreeComposite.layout();
-
-			addSelectionListenerToTree();
-
-			mTreeViewerConfigItem.setExpandedElements(elements);
-			mTreeViewerConfigItem.setSelection(selection);
-
-		} finally {
-			mTreeViewerConfigItem.getTree().setRedraw(true);
-		}
-
-	}
+	// private void updateTreeOrder() {
+	// mTreeViewerConfigItem.getTree().setRedraw(false);
+	//
+	// try {
+	// Object[] elements = mTreeViewerConfigItem.getExpandedElements();
+	// ISelection selection = mTreeViewerConfigItem.getSelection();
+	//
+	// mTreeViewerConfigItem.getTree().dispose();
+	// mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite,
+	// mRootConfigItem);
+	// mTreeComposite.layout();
+	//
+	// addSelectionListenerToTree();
+	//
+	// mTreeViewerConfigItem.setExpandedElements(elements);
+	// mTreeViewerConfigItem.setSelection(selection);
+	//
+	// } finally {
+	// mTreeViewerConfigItem.getTree().setRedraw(true);
+	// }
+	//
+	// }
 
 	private void updateTree() {
 		mRootConfigItem = DbUtil.getRootConfigItem();

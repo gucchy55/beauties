@@ -205,13 +205,4 @@ public class UtilTest extends TestCase {
 		DateRange wResult = Util.getFiscalDateRange(wCal, wCutOff, wFiscalMonth);
 		assertTrue(wExpectedStart.equals(wResult.getStartDate()) && wExpectedEnd.equals(wResult.getEndDate()));
 	}
-
-	public void testGetSummationIndex() {
-		fail("Not yet implemented");
-	}
-
-	public void testGetDatePeriodsWithSummaion() {
-		fail("Not yet implemented");
-	}
-
 }
