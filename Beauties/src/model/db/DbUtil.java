@@ -978,6 +978,14 @@ public class DbUtil {
 		return pSummaryTableMap;
 	}
 
+	/**
+	 * 
+	 * @param pBookId
+	 * @param pDateRange
+	 * @param pSummaryTableMap
+	 * @param pIncome
+	 * @return
+	 */
 	private static Map<Integer, List<SummaryTableItem>> getSummaryTableItemsOfNormalItem(
 			int pBookId,
 			DateRange pDateRange, Map<Integer, List<SummaryTableItem>> pSummaryTableMap,

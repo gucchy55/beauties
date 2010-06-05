@@ -47,7 +47,7 @@ class CompositeAnnualActionTab extends Composite {
 				public void widgetSelected(SelectionEvent e) {
 					mCompositeAnnualMain.setAnnualPeriod(true);
 					mCompositeAnnualMain.setMonthCount(12);
-					mCompositeAnnualMain.setDateRange(Util.getFiscalPeriod(DbUtil.getCutOff()));
+					mCompositeAnnualMain.setDateRange(Util.getFiscalDateRange(DbUtil.getCutOff(), DbUtil.getFisCalMonth()));
 //					DateRange wDateRange = Util.getFiscalPeriod(DbUtil.getCutOff());
 //					mCompositeAnnualMain.setStartDate(wDateRange.getStartDate());
 //					mCompositeAnnualMain.setEndDate(wDateRange.getEndDate());

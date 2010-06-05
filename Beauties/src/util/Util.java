@@ -11,7 +11,6 @@ import org.eclipse.jface.fieldassist.IContentProposal;
 
 import model.DateRange;
 import model.SystemData;
-import model.db.DbUtil;
 
 public class Util {
 
@@ -43,15 +42,8 @@ public class Util {
 	}
 
 	public static DateRange getMonthDateRange(Date pDate, int pCutOff) {
-		// Date[] wDates = new Date[2];
 		Calendar wStartCal = Calendar.getInstance();
 		Calendar wEndCal = Calendar.getInstance();
-
-		// int pCutOff;
-		// Calendar wInputCal = Calendar.getInstance();
-		// wInputCal.setTime(pDate);
-		// wStartCal = (Calendar) wInputCal.clone();
-		// wEndCal = (Calendar) wInputCal.clone();
 
 		wStartCal.setTime(pDate);
 		wEndCal.setTime(pDate);
@@ -75,31 +67,24 @@ public class Util {
 				.get(Calendar.MONTH), wEndDay);
 
 		return new DateRange(wStartCal.getTime(), wEndCal.getTime());
-
-		// wDates[0] = wStartCal.getTime();
-		// wDates[1] = wEndCal.getTime();
-		//
-		// return wDates;
-
 	}
 
-	public static List<DateRange> getDatePairs(DateRange pDateRange, int pCutOff) {
+	public static List<DateRange> getMonthDateRangeListFromLongRange(DateRange pDateRange,
+			int pCutOff) {
 		List<DateRange> wDateRangeList = new ArrayList<DateRange>();
 		for (int i = 0;; i++) {
 			DateRange wDateRange = getMonthDateRange(
 					getAdjusentMonth(pDateRange.getStartDate(), i), pCutOff);
 			if (wDateRange.getEndDate().after(pDateRange.getEndDate()))
 				break;
-			else
-				wDateRangeList.add(wDateRange);
+			wDateRangeList.add(wDateRange);
 		}
 
 		return wDateRangeList;
-		// return (Date[][]) wDateList.toArray(new Date[0][]);
 	}
 
 	// 過去pMonths分を返す
-	public static List<DateRange> getDatePairs(Date pDate, int pMonths, int pCutOff) {
+	public static List<DateRange> getDateRangeListByMonthCnt(Date pDate, int pMonths, int pCutOff) {
 		List<DateRange> wDateRangeList = new ArrayList<DateRange>();
 		for (int i = 0; i < pMonths; i++) {
 			DateRange wDateRange = getMonthDateRange(getAdjusentMonth(pDate, -(pMonths - i - 1)),
@@ -111,13 +96,14 @@ public class Util {
 		// return (Date[][]) wDateList.toArray(new Date[0][]);
 	}
 
-	// 年始を返す
-	public static DateRange getFiscalPeriod(int pCutOff) {
-		int wFiscalMonth = DbUtil.getFisCalMonth();
-		Calendar wCalNow = Calendar.getInstance();
-		Calendar wFirstDate = new GregorianCalendar(wCalNow.get(Calendar.YEAR), wFiscalMonth - 1, 1);
+	public static DateRange getFiscalDateRange(int pCutOff, int pFiscalMonth) {
+		return getFiscalDateRange(Calendar.getInstance(), pCutOff, pFiscalMonth);
+	}
 
-		while (wFirstDate.after(wCalNow))
+	static DateRange getFiscalDateRange(Calendar pCal, int pCutOff, int pFiscalMonth) {
+		Calendar wFirstDate = new GregorianCalendar(pCal.get(Calendar.YEAR), pFiscalMonth - 1, 1);
+
+		while (wFirstDate.after(pCal))
 			wFirstDate.add(Calendar.YEAR, -1);
 
 		DateRange wFirstDateRange = getMonthDateRange(wFirstDate.getTime(), pCutOff);
@@ -138,35 +124,35 @@ public class Util {
 
 		List<IContentProposal> wProposalList = new ArrayList<IContentProposal>();
 		for (int i = 0; i < pCandidates.length; i++) {
-			if (pCandidates[i].length() > pPosition) {
-				final String wCandidate = pCandidates[i];
-				if (!wCandidate.startsWith(pContent))
-					continue;
-				wProposalList.add(new IContentProposal() {
+			if (pCandidates[i].length() <= pPosition || !pCandidates[i].startsWith(pContent))
+				continue;
+			final String wCandidate = pCandidates[i];
+			// if (!wCandidate.startsWith(pContent))
+			// continue;
+			wProposalList.add(new IContentProposal() {
 
-					@Override
-					public String getLabel() {
-						return wCandidate;
-					}
+				@Override
+				public String getLabel() {
+					return wCandidate;
+				}
 
-					@Override
-					public String getDescription() {
-						return null;
-					}
+				@Override
+				public String getDescription() {
+					return null;
+				}
 
-					@Override
-					public int getCursorPosition() {
-						return wCandidate.length();
-					}
+				@Override
+				public int getCursorPosition() {
+					return wCandidate.length();
+				}
 
-					@Override
-					public String getContent() {
-						return wCandidate.substring(pPosition);
-					}
-				});
-				if (wProposalList.size() > pMaxCount)
-					break;
-			}
+				@Override
+				public String getContent() {
+					return wCandidate.substring(pPosition);
+				}
+			});
+			if (wProposalList.size() > pMaxCount)
+				break;
 		}
 
 		return (IContentProposal[]) wProposalList.toArray(new IContentProposal[0]);

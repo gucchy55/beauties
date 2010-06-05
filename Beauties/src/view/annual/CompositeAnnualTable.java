@@ -74,13 +74,13 @@ class CompositeAnnualTable extends Composite {
 		List<DateRange> wDateRangeList;
 
 		if (mCompositeAnnualMain.getDateRange() == null) {
-			wDateRangeList = Util.getDatePairs(Util.getMonthDateRange(new Date(), DbUtil.getCutOff()).getEndDate(), mCompositeAnnualMain.getMonthCount(), DbUtil.getCutOff());
+			wDateRangeList = Util.getDateRangeListByMonthCnt(Util.getMonthDateRange(new Date(), DbUtil.getCutOff()).getEndDate(), mCompositeAnnualMain.getMonthCount(), DbUtil.getCutOff());
 			mCompositeAnnualMain.setDateRange(new DateRange(wDateRangeList.get(0).getStartDate(), wDateRangeList.get(wDateRangeList.size() - 1).getEndDate()));
 //			mCompositeAnnualMain.setStartDate(wDatePeriods[0][0]);
 //			mCompositeAnnualMain.setEndDate(wDatePeriods[wDatePeriods.length - 1][1]);
 
 		} else {
-			wDateRangeList = Util.getDatePairs(mCompositeAnnualMain.getDateRange(), DbUtil.getCutOff());
+			wDateRangeList = Util.getMonthDateRangeListFromLongRange(mCompositeAnnualMain.getDateRange(), DbUtil.getCutOff());
 		}
 
 		if (!mCompositeAnnualMain.isAnnualPeriod()) {
