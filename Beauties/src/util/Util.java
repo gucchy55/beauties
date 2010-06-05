@@ -9,8 +9,9 @@ import java.util.Locale;
 
 import org.eclipse.jface.fieldassist.IContentProposal;
 
-import model.DateRange;
-import model.SystemData;
+import beauties.model.DateRange;
+import beauties.model.SystemData;
+
 
 public class Util {
 
