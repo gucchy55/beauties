@@ -30,6 +30,7 @@ import org.eclipse.swt.widgets.TableItem;
 
 import beauties.annual.model.AnnualHeaderItem;
 import beauties.annual.model.AnnualViewType;
+import beauties.model.AnnualDateRange;
 import beauties.model.DateRange;
 import beauties.model.SystemData;
 import beauties.model.db.DbUtil;
@@ -98,10 +99,11 @@ class CompositeAnnualTable extends Composite {
 		for (DateRange wDateRange : wDateRangeList)
 			wRowHeaders.add(df.format(wDateRange.getEndDate()));
 		
-		int wSummationIndex = Util.getSummationIndex(wDateRangeList, DbUtil.getCutOff());
-		if (wSummationIndex != SystemData.getUndefinedInt()) {
-			wRowHeaders.add(wSummationIndex, "合計");
-			wRowHeaders.add(wSummationIndex + 1, "平均");
+		AnnualDateRange wAnnualDateRange = new AnnualDateRange(wDateRangeList);
+//		int wSummationIndex = Util.getSummationIndex(wDateRangeList, DbUtil.getCutOff());
+		if (wAnnualDateRange.hasSumIndex()) {
+			wRowHeaders.add(wAnnualDateRange.getSumIndex(), "合計");
+			wRowHeaders.add(wAnnualDateRange.getAveIndex(), "平均");
 		}
 
 		wRowHeader.setContentProvider(new HeaderTableContentProvider());
@@ -122,12 +124,12 @@ class CompositeAnnualTable extends Composite {
 		// 格納する値の取得
 		mSummaryTableItems = new ArrayList<SummaryTableItem[]>();
 		if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Original) {
-			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsOriginal(wDateRangeList);
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsOriginal(wAnnualDateRange);
 		} else if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Category) {
 			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsCategory(mCompositeAnnualMain.getBookId(),
-					wDateRangeList);
+					wAnnualDateRange);
 		} else { // ITEM
-			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(mCompositeAnnualMain.getBookId(), wDateRangeList);
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(mCompositeAnnualMain.getBookId(), wAnnualDateRange);
 		}
 
 		// 列のヘッダの設定

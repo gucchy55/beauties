@@ -8,11 +8,6 @@ import java.util.List;
 import java.util.Map;
 
 
-import org.eclipse.jface.fieldassist.ComboContentAdapter;
-import org.eclipse.jface.fieldassist.ContentProposalAdapter;
-import org.eclipse.jface.fieldassist.IContentProposal;
-import org.eclipse.jface.fieldassist.IContentProposalProvider;
-import org.eclipse.jface.fieldassist.IControlContentAdapter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
@@ -29,7 +24,6 @@ import beauties.model.db.DbUtil;
 import beauties.record.model.RecordTableItem;
 import beauties.record.model.RecordTableItemForMove;
 
-import util.Util;
 import util.view.MyGridData;
 import util.view.MyGridLayout;
 
@@ -55,7 +49,7 @@ class CompositeMove extends Composite {
 	private Combo mNoteCombo;
 	private String[] mNoteItems;
 
-	private static final int mNoteCandidateCount = 10;
+//	private static final int mNoteCandidateCount = 10;
 	private static final int mVisibleComboItemCount = 10;
 
 	public CompositeMove(Composite pParent, int pBookId) {
@@ -211,15 +205,15 @@ class CompositeMove extends Composite {
 
 		updateNoteCombo();
 
-		IControlContentAdapter wContentAdapter = new ComboContentAdapter();
-		IContentProposalProvider wContentProvider = new IContentProposalProvider() {
-			public IContentProposal[] getProposals(String contents, int position) {
-				return Util.createProposals(contents, position, mNoteCombo
-						.getItems(), mNoteCandidateCount);
-			}
-		};
-		new ContentProposalAdapter(mNoteCombo, wContentAdapter, wContentProvider, null,
-				null);
+//		IControlContentAdapter wContentAdapter = new ComboContentAdapter();
+//		IContentProposalProvider wContentProvider = new IContentProposalProvider() {
+//			public IContentProposal[] getProposals(String contents, int position) {
+//				return Util.createProposals(contents, position, mNoteCombo
+//						.getItems(), mNoteCandidateCount);
+//			}
+//		};
+//		new ContentProposalAdapter(mNoteCombo, wContentAdapter, wContentProvider, null,
+//				null);
 	}
 
 	private void setWidgets() {

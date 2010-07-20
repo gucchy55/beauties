@@ -7,10 +7,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import org.eclipse.jface.fieldassist.IContentProposal;
-
 import beauties.model.DateRange;
-import beauties.model.SystemData;
 
 
 public class Util {
@@ -94,7 +91,6 @@ public class Util {
 		}
 
 		return wDateRangeList;
-		// return (Date[][]) wDateList.toArray(new Date[0][]);
 	}
 
 	public static DateRange getFiscalDateRange(int pCutOff, int pFiscalMonth) {
@@ -116,83 +112,46 @@ public class Util {
 		return new DateRange(wFirstDate.getTime(), wEndDate);
 	}
 
-	public static IContentProposal[] createProposals(final String pContent,
-			final int pPosition, String[] pCandidates, int pMaxCount) {
-
-		if (pContent.length() == 0 || pPosition < pContent.length()) {
-			return new IContentProposal[] {};
-		}
-
-		List<IContentProposal> wProposalList = new ArrayList<IContentProposal>();
-		for (int i = 0; i < pCandidates.length; i++) {
-			if (pCandidates[i].length() <= pPosition || !pCandidates[i].startsWith(pContent))
-				continue;
-			final String wCandidate = pCandidates[i];
-			// if (!wCandidate.startsWith(pContent))
-			// continue;
-			wProposalList.add(new IContentProposal() {
-
-				@Override
-				public String getLabel() {
-					return wCandidate;
-				}
-
-				@Override
-				public String getDescription() {
-					return null;
-				}
-
-				@Override
-				public int getCursorPosition() {
-					return wCandidate.length();
-				}
-
-				@Override
-				public String getContent() {
-					return wCandidate.substring(pPosition);
-				}
-			});
-			if (wProposalList.size() > pMaxCount)
-				break;
-		}
-
-		return (IContentProposal[]) wProposalList.toArray(new IContentProposal[0]);
-	}
-
-	public static int getSummationIndex(List<DateRange> pDateRangeList, int pCutOff) {
-		Date wStartDateNow = Util.getMonthDateRange(new Date(), pCutOff).getStartDate();
-
-		if (pDateRangeList.size() < 2 || wStartDateNow.before(pDateRangeList.get(1).getStartDate()))
-			return SystemData.getUndefinedInt();
-
-		if (wStartDateNow.after(pDateRangeList.get(pDateRangeList.size() - 1).getStartDate()))
-			return pDateRangeList.size();
-
-		for (int i = 0; i < pDateRangeList.size(); i++) {
-			Date wStartDate = pDateRangeList.get(i).getStartDate();
-			if (!wStartDate.equals(wStartDateNow))
-				continue;
-
-			if (i < 2)
-				return SystemData.getUndefinedInt();
-
-			return i;
-
-		}
-		return SystemData.getUndefinedInt();
-	}
-
-	public static List<DateRange> getDatePeriodsWithSummaion(List<DateRange> pDateRangeList,
-			int pCutOff) {
-
-		int wSummationIndex = getSummationIndex(pDateRangeList, pCutOff);
-
-		if (wSummationIndex == SystemData.getUndefinedInt())
-			return pDateRangeList;
-
-		DateRange wWholeRange = new DateRange(pDateRangeList.get(0).getStartDate(), pDateRangeList
-				.get(pDateRangeList.size() - 1).getEndDate());
-		pDateRangeList.add(wSummationIndex, wWholeRange);
-		return pDateRangeList;
-	}
+//	public static IContentProposal[] createProposals(final String pContent,
+//			final int pPosition, String[] pCandidates, int pMaxCount) {
+//
+//		if (pContent.length() == 0 || pPosition < pContent.length()) {
+//			return new IContentProposal[] {};
+//		}
+//
+//		List<IContentProposal> wProposalList = new ArrayList<IContentProposal>();
+//		for (int i = 0; i < pCandidates.length; i++) {
+//			if (pCandidates[i].length() <= pPosition || !pCandidates[i].startsWith(pContent))
+//				continue;
+//			final String wCandidate = pCandidates[i];
+//			// if (!wCandidate.startsWith(pContent))
+//			// continue;
+//			wProposalList.add(new IContentProposal() {
+//
+//				@Override
+//				public String getLabel() {
+//					return wCandidate;
+//				}
+//
+//				@Override
+//				public String getDescription() {
+//					return null;
+//				}
+//
+//				@Override
+//				public int getCursorPosition() {
+//					return wCandidate.length();
+//				}
+//
+//				@Override
+//				public String getContent() {
+//					return wCandidate.substring(pPosition);
+//				}
+//			});
+//			if (wProposalList.size() > pMaxCount)
+//				break;
+//		}
+//
+//		return (IContentProposal[]) wProposalList.toArray(new IContentProposal[0]);
+//	}
 }
