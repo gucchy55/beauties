@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
@@ -55,7 +54,8 @@ class CompositeAnnualTable extends Composite {
 		super(pParent, SWT.NONE);
 		mCompositeAnnualMain = (CompositeAnnualMain) pParent;
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
-		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true)
+				.getMyGridData();
 		this.setLayoutData(wGridData);
 
 		// 年月列テーブル
@@ -64,7 +64,8 @@ class CompositeAnnualTable extends Composite {
 		mRowHeaderTable.setLinesVisible(DbUtil.showGridLine());
 		mRowHeaderTable.setHeaderVisible(true);
 
-		MyGridData wRowHeaderGridData = new MyGridData(GridData.BEGINNING, GridData.BEGINNING, false, true);
+		MyGridData wRowHeaderGridData = new MyGridData(GridData.BEGINNING, GridData.BEGINNING,
+				false, true);
 		wRowHeaderGridData.getMyGridData().widthHint = 60;
 		mRowHeaderTable.setLayoutData(wRowHeaderGridData.getMyGridData());
 
@@ -72,17 +73,22 @@ class CompositeAnnualTable extends Composite {
 		wHeaderCol.setText("年月");
 		wHeaderCol.setWidth(mColumnWidth);
 
-//		Date[][] wDatePeriods;
+		// Date[][] wDatePeriods;
 		List<DateRange> wDateRangeList;
 
 		if (mCompositeAnnualMain.getDateRange() == null) {
-			wDateRangeList = Util.getDateRangeListByMonthCnt(Util.getMonthDateRange(new Date(), DbUtil.getCutOff()).getEndDate(), mCompositeAnnualMain.getMonthCount(), DbUtil.getCutOff());
-			mCompositeAnnualMain.setDateRange(new DateRange(wDateRangeList.get(0).getStartDate(), wDateRangeList.get(wDateRangeList.size() - 1).getEndDate()));
-//			mCompositeAnnualMain.setStartDate(wDatePeriods[0][0]);
-//			mCompositeAnnualMain.setEndDate(wDatePeriods[wDatePeriods.length - 1][1]);
+			wDateRangeList = Util.getDateRangeListByMonthCnt(Util.getMonthDateRange(new Date(),
+					DbUtil.getCutOff()).getEndDate(), mCompositeAnnualMain.getMonthCount(), DbUtil
+					.getCutOff());
+			mCompositeAnnualMain.setDateRange(new DateRange(wDateRangeList.get(0).getStartDate(),
+					wDateRangeList.get(wDateRangeList.size() - 1).getEndDate()));
+			// mCompositeAnnualMain.setStartDate(wDatePeriods[0][0]);
+			// mCompositeAnnualMain.setEndDate(wDatePeriods[wDatePeriods.length
+			// - 1][1]);
 
 		} else {
-			wDateRangeList = Util.getMonthDateRangeListFromLongRange(mCompositeAnnualMain.getDateRange(), DbUtil.getCutOff());
+			wDateRangeList = Util.getMonthDateRangeListFromLongRange(mCompositeAnnualMain
+					.getDateRange(), DbUtil.getCutOff());
 		}
 
 		if (!mCompositeAnnualMain.isAnnualPeriod()) {
@@ -92,15 +98,16 @@ class CompositeAnnualTable extends Composite {
 		List<String> wRowHeaders = new ArrayList<String>();
 		DateFormat df = new SimpleDateFormat("yyyy年MM月");
 
-//		for (int i = 0; i < wDatePeriods.length; i++) {
-//			Date wEndDate = wDatePeriods[i][1];
-//			wRowHeaders.add(df.format(wEndDate));
-//		}
+		// for (int i = 0; i < wDatePeriods.length; i++) {
+		// Date wEndDate = wDatePeriods[i][1];
+		// wRowHeaders.add(df.format(wEndDate));
+		// }
 		for (DateRange wDateRange : wDateRangeList)
 			wRowHeaders.add(df.format(wDateRange.getEndDate()));
-		
+
 		AnnualDateRange wAnnualDateRange = new AnnualDateRange(wDateRangeList);
-//		int wSummationIndex = Util.getSummationIndex(wDateRangeList, DbUtil.getCutOff());
+		// int wSummationIndex = Util.getSummationIndex(wDateRangeList,
+		// DbUtil.getCutOff());
 		if (wAnnualDateRange.hasSumIndex()) {
 			wRowHeaders.add(wAnnualDateRange.getSumIndex(), "合計");
 			wRowHeaders.add(wAnnualDateRange.getAveIndex(), "平均");
@@ -111,10 +118,12 @@ class CompositeAnnualTable extends Composite {
 		wRowHeader.setLabelProvider(new HeaderTableLabelProvider());
 
 		// メインテーブル
-		TableViewer wMainTableViewer = new TableViewer(this, SWT.MULTI | SWT.FULL_SELECTION | SWT.BORDER);
+		TableViewer wMainTableViewer = new TableViewer(this, SWT.MULTI | SWT.FULL_SELECTION
+				| SWT.BORDER);
 		mMainTable = wMainTableViewer.getTable();
 
-		mMainTable.setLayoutData(new MyGridData(GridData.BEGINNING, GridData.BEGINNING, true, true).getMyGridData());
+		mMainTable.setLayoutData(new MyGridData(GridData.BEGINNING, GridData.BEGINNING, true, true)
+				.getMyGridData());
 
 		// 線を表示する
 		mMainTable.setLinesVisible(DbUtil.showGridLine());
@@ -126,10 +135,11 @@ class CompositeAnnualTable extends Composite {
 		if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Original) {
 			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsOriginal(wAnnualDateRange);
 		} else if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Category) {
-			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsCategory(mCompositeAnnualMain.getBookId(),
-					wAnnualDateRange);
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(
+					mCompositeAnnualMain.getBookId(), wAnnualDateRange, false);
 		} else { // ITEM
-			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(mCompositeAnnualMain.getBookId(), wAnnualDateRange);
+			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(
+					mCompositeAnnualMain.getBookId(), wAnnualDateRange, true);
 		}
 
 		// 列のヘッダの設定
@@ -150,7 +160,8 @@ class CompositeAnnualTable extends Composite {
 		}
 
 		wMainTableViewer.setContentProvider(new SummaryTableContentProvider());
-		wMainTableViewer.setInput((SummaryTableItem[][]) mSummaryTableItems.toArray(new SummaryTableItem[0][]));
+		wMainTableViewer.setInput((SummaryTableItem[][]) mSummaryTableItems
+				.toArray(new SummaryTableItem[0][]));
 
 		wMainTableViewer.setLabelProvider(new SummaryTableLabelProvider());
 
@@ -167,7 +178,7 @@ class CompositeAnnualTable extends Composite {
 		});
 
 	}
-	
+
 	protected void copySelectedTextToClipboard() {
 		TableItem[] wSelectedRowItems = mRowHeaderTable.getSelection();
 		TableItem[] wSelectedAnnualItems = mMainTable.getSelection();
@@ -175,19 +186,20 @@ class CompositeAnnualTable extends Composite {
 			return;
 		Clipboard wClipboard = new Clipboard(getDisplay());
 		StringBuffer sb = new StringBuffer();
-		for (int i=0; i < wSelectedRowItems.length; i++) {
+		for (int i = 0; i < wSelectedRowItems.length; i++) {
 			if (i > 0) {
 				sb.append("\n");
 			}
 			sb.append(wSelectedRowItems[i].getText());
-			for (int j=1;;j++) {
-				if ("".equals(wSelectedAnnualItems[i].getText(j))) 
+			for (int j = 1;; j++) {
+				if ("".equals(wSelectedAnnualItems[i].getText(j)))
 					break;
 				sb.append("\t" + wSelectedAnnualItems[i].getText(j));
 			}
 		}
-		wClipboard.setContents(new String[] {sb.toString()}, new Transfer[]{TextTransfer.getInstance()});
-		
+		wClipboard.setContents(new String[] { sb.toString() }, new Transfer[] { TextTransfer
+				.getInstance() });
+
 	}
 }
 
@@ -289,12 +301,12 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		} else {
 			SummaryTableItem[] wItems = (SummaryTableItem[]) pElement;
 			SummaryTableItem wItem = wItems[pColumnIndex - 1];
-//			if (wItem.isAppearedIncomeExpense() || wItem.isAppearedSum()) {
-//				// 黄色
-//				return SystemData.getColorYellow();
-//			}
+			// if (wItem.isAppearedIncomeExpense() || wItem.isAppearedSum()) {
+			// // 黄色
+			// return SystemData.getColorYellow();
+			// }
 			return wItem.getEntryColor();
-//			return null;
+			// return null;
 		}
 	}
 
