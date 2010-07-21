@@ -28,6 +28,7 @@ import beauties.record.OpenDialogModifyMove;
 import beauties.record.OpenDialogModifyRecord;
 import beauties.record.OpenDialogNewMove;
 import beauties.record.OpenDialogNewRecord;
+import beauties.record.RecordController;
 import beauties.record.model.RecordTableItem;
 
 import util.Util;
@@ -35,12 +36,13 @@ import util.view.MyGridData;
 
 class RecordTableViewer extends TableViewer {
 
-	private CompositeEntry mCompositeEntry;
+	private RecordController mCtl;
+	private RecordTableItem[] mRecordTableItems;
 
-	public RecordTableViewer(Composite pComp, CompositeEntry pCompositeEntry) {
+	public RecordTableViewer(Composite pComp, RecordController pCtl) {
 		super(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
 
-		mCompositeEntry = pCompositeEntry;
+		mCtl = pCtl;
 
 		// テーブルの作成
 		Table wTable = this.getTable();
@@ -53,12 +55,12 @@ class RecordTableViewer extends TableViewer {
 		// 列のヘッダの設定
 		TableColumn wActIdCol = new TableColumn(wTable, SWT.LEFT);
 		wActIdCol.setText("帳簿");
-		wActIdCol.setWidth(mCompositeEntry.showBookColumn() ? 60 : 0);
-		wActIdCol.setResizable(mCompositeEntry.showBookColumn());
+		wActIdCol.setWidth(mCtl.showBookColumn() ? 60 : 0);
+		wActIdCol.setResizable(mCtl.showBookColumn());
 
 		TableColumn wDateCol = new TableColumn(wTable, SWT.CENTER);
 		wDateCol.setText("日付");
-		wDateCol.setWidth(mCompositeEntry.showYear() ? 80 : 62);
+		wDateCol.setWidth(mCtl.showYear() ? 80 : 62);
 
 		TableColumn wItemNameCol = new TableColumn(wTable, SWT.LEFT);
 		wItemNameCol.setText("項目");
@@ -89,9 +91,10 @@ class RecordTableViewer extends TableViewer {
 
 		final Table wTable = this.getTable();
 		this.setContentProvider(new TableContentProvider());
-		this.setInput(pRecordTableItems);
+		mRecordTableItems = pRecordTableItems;
+		this.setInput(mRecordTableItems);
 
-		this.setLabelProvider(new TableLabelProvider(mCompositeEntry.showYear()));
+		this.setLabelProvider(new TableLabelProvider(mCtl.showYear()));
 
 		this.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
@@ -100,9 +103,9 @@ class RecordTableViewer extends TableViewer {
 				if (wRecord.isBalanceRow())
 					return;
 				if (wRecord.isMoveItem()) {
-					new OpenDialogModifyMove(mCompositeEntry).run();
+					new OpenDialogModifyMove(mCtl).run();
 				} else {
-					new OpenDialogModifyRecord(mCompositeEntry).run();
+					new OpenDialogModifyRecord(mCtl).run();
 				}
 			}
 		});
@@ -111,31 +114,31 @@ class RecordTableViewer extends TableViewer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (!mCompositeEntry.hasSelectedRecordTableItem())
+				if (!mCtl.hasSelectedRecordTableItem())
 					return;
 
 				// Enterキーが押されたら変更ダイアログ
 				if (e.character == SWT.CR) {
-					if (mCompositeEntry.getSelectedRecordItem().isMoveItem())
-						new OpenDialogModifyMove(mCompositeEntry).run();
+					if (mCtl.getSelectedRecordItem().isMoveItem())
+						new OpenDialogModifyMove(mCtl).run();
 					else
-						new OpenDialogModifyRecord(mCompositeEntry).run();
+						new OpenDialogModifyRecord(mCtl).run();
 				}
 
 				// DELキーが押されたら削除（確認ダイアログ）
 				if (e.character == SWT.DEL)
-					new DeleteRecord(mCompositeEntry).run();
+					new DeleteRecord(mCtl).run();
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.stateMask == SWT.CTRL) {
 					if (e.keyCode == 'i')
-						new OpenDialogNewRecord(mCompositeEntry).run();
+						new OpenDialogNewRecord(mCtl).run();
 					if (e.keyCode == 'm')
-						new OpenDialogNewMove(mCompositeEntry).run();
+						new OpenDialogNewMove(mCtl).run();
 					if (e.keyCode == 'f')
-						mCompositeEntry.openSearchDialog();
+						mCtl.openSearchDialog();
 				}
 			}
 
@@ -143,13 +146,22 @@ class RecordTableViewer extends TableViewer {
 	}
 
 	boolean hasSelectedItem() {
-		if (this.getTable().getItemCount() == 0 || this.getSelection().isEmpty())
-			return false;
-		return true;
+		return this.getTable().getItemCount() != 0 && !this.getSelection().isEmpty();
 	}
 	
 	void setForSearchResults() {
 		
+	}
+	
+	void updateTableItem(RecordTableItem[] pRecordTableItems) {
+//		this.remove(mRecordTableItems);
+//		this.setContentProvider(new TableContentProvider());
+		mRecordTableItems = pRecordTableItems;
+		this.setContentProvider(new TableContentProvider());
+		this.setInput(mRecordTableItems);
+		this.setLabelProvider(new TableLabelProvider(mCtl.showYear()));
+		this.setInput(mRecordTableItems);
+		this.refresh();
 	}
 }
 

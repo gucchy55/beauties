@@ -14,19 +14,20 @@ import beauties.record.OpenDialogModifyMove;
 import beauties.record.OpenDialogModifyRecord;
 import beauties.record.OpenDialogNewMove;
 import beauties.record.OpenDialogNewRecord;
+import beauties.record.RecordController;
 
 import util.view.MyGridData;
 import util.view.MyRowLayout;
 
 class CompositeActionTab extends Composite {
 
-	private CompositeEntry mCompositeEntry;
 	private Button mSearchButton;
+	private RecordController mCtl;
 
-	public CompositeActionTab(Composite pParent) {
+	public CompositeActionTab(Composite pParent, RecordController pCtl) {
 		super(pParent, SWT.NONE);
-		mCompositeEntry = (CompositeEntry) pParent;
-
+		mCtl = pCtl;
+		
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData());
 		
@@ -36,10 +37,10 @@ class CompositeActionTab extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				Button wButton = (Button)e.getSource();
 				if(wButton.getSelection()) 
-					wButton.setSelection(mCompositeEntry.openSearchDialog());
+					wButton.setSelection(mCtl.openSearchDialog());
 				else {
-					mCompositeEntry.setIsSearchResult(false);
-					mCompositeEntry.updateView();
+					mCtl.setSearchResult(false);
+					mCtl.updateTable();
 				}
 			}
 		});
@@ -49,7 +50,7 @@ class CompositeActionTab extends Composite {
 		wMoveButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				new OpenDialogNewMove(mCompositeEntry).run();
+				new OpenDialogNewMove(mCtl).run();
 			}
 		});
 
@@ -58,7 +59,7 @@ class CompositeActionTab extends Composite {
 		wAddButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				new OpenDialogNewRecord(mCompositeEntry).run();
+				new OpenDialogNewRecord(mCtl).run();
 			}
 		});
 
@@ -67,12 +68,12 @@ class CompositeActionTab extends Composite {
 		wModifyButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if (!mCompositeEntry.hasSelectedRecordTableItem())
+				if (!mCtl.hasSelectedRecordTableItem())
 					return;
-				if (DbUtil.isMoveRecord(mCompositeEntry.getSelectedRecordItem().getId())) {
-					new OpenDialogModifyMove(mCompositeEntry).run();
+				if (DbUtil.isMoveRecord(mCtl.getSelectedRecordItem().getId())) {
+					new OpenDialogModifyMove(mCtl).run();
 				} else {
-					new OpenDialogModifyRecord(mCompositeEntry).run();
+					new OpenDialogModifyRecord(mCtl).run();
 				}
 			}
 		});
@@ -82,9 +83,9 @@ class CompositeActionTab extends Composite {
 		wDeleteButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
-				if ((!mCompositeEntry.hasSelectedRecordTableItem()))
+				if ((!mCtl.hasSelectedRecordTableItem()))
 					return;
-				new DeleteRecord(mCompositeEntry).run();
+				new DeleteRecord(mCtl).run();
 			}
 		});
 	}

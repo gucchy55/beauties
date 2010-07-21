@@ -696,11 +696,11 @@ public class DbUtil {
 
 				wQueryFrom = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryFromValues + ", "
 						+ wDate + wQueryNote2 + "," + (pMoveItem.getFrequency() - i) + ")";
-				System.out.println(wQueryFrom);
+//				System.out.println(wQueryFrom);
 				mDbAccess.executeUpdate(wQueryFrom);
 				wQueryTo = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryToValues + ", "
 						+ wDate + wQueryNote2 + "," + (pMoveItem.getFrequency() - i) + ")";
-				System.out.println(wQueryTo);
+//				System.out.println(wQueryTo);
 				mDbAccess.executeUpdate(wQueryTo);
 			}
 
@@ -2043,33 +2043,6 @@ public class DbUtil {
 		return "'" + df.format(pDate) + "'";
 	}
 
-	// private static boolean isSingleMoveRecordPair(int pGroupId) {
-	// String wResultCol = "COUNT";
-	// String wQuery = "select count(" + mActIdCol + ") as " + wResultCol +
-	// " from " + mActTable
-	// + " where "
-	// + mGroupIdCol + " = " + pGroupId;
-	// // System.out.println(wQuery);
-	// ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
-	//
-	// int wCount = 0;
-	//
-	// try {
-	// wResultSet.next();
-	// wCount = wResultSet.getInt(wResultCol);
-	// wResultSet.close();
-	//
-	// } catch (SQLException e) {
-	// resultSetHandlingError(e);
-	// }
-	//
-	// if (wCount == 2) {
-	// return true;
-	// } else {
-	// return false;
-	// }
-	// }
-
 	private static void resultSetHandlingError(SQLException e) {
 		e.printStackTrace();
 		StringBuffer wStack = new StringBuffer();
@@ -2091,9 +2064,4 @@ public class DbUtil {
 		}
 		return pNote;
 	}
-
-	// public static void main(String[] args) {
-	// for (RecordTableItem[] items : getSearchedRecordTableItemList("牛乳"))
-	// System.out.println(items.length);
-	// }
 }

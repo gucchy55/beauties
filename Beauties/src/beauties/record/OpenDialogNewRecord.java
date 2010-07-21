@@ -4,26 +4,26 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 
-import beauties.record.view.CompositeEntry;
 import beauties.record.view.dialog.DialogNewRecord;
 
 
 public class OpenDialogNewRecord extends Action {
 
-	private CompositeEntry mCompositeEntry;
+	private RecordController mCtl;
 
-	public OpenDialogNewRecord(CompositeEntry pCompositeEntry) {
+	public OpenDialogNewRecord(RecordController pCtl) {
 		super.setText("追加");
-		mCompositeEntry = pCompositeEntry;
+		mCtl = pCtl;
 	}
 
 	@Override
 	public void run() {
-		mCompositeEntry.getShell().setImeInputMode(SWT.NONE);
-		DialogNewRecord wDialogNewRecord = new DialogNewRecord(mCompositeEntry.getShell(), mCompositeEntry.getBookId());
+		mCtl.getShell().setImeInputMode(SWT.NONE);
+		DialogNewRecord wDialogNewRecord = new DialogNewRecord(mCtl.getShell(), mCtl.getBookId());
 		int wRet = wDialogNewRecord.open();
 		if (wRet == IDialogConstants.OK_ID) { // Updated
-			new UpdateEntry(mCompositeEntry).run();
+			mCtl.updateTable();
+//			new UpdateEntry(mCompositeEntry).run();
 		}
 	}
 }

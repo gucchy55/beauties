@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import beauties.record.view.CompositeEntry;
+import beauties.model.DateRange;
 
 
 public class DialogPeriod extends Dialog {
@@ -25,11 +25,11 @@ public class DialogPeriod extends Dialog {
 	private Date mStartDate;
 	private Date mEndDate;
 
-	private CompositeEntry mCompositeEntry;
+	private DateRange mDateRange;
 	
-	public DialogPeriod(Shell parentShell, CompositeEntry pCompositeEntry) {
+	public DialogPeriod(Shell parentShell, DateRange pDateRange) {
 		super(parentShell);
-		mCompositeEntry = pCompositeEntry;
+		mDateRange = pDateRange;
 	}
 
 	@Override
@@ -42,7 +42,7 @@ public class DialogPeriod extends Dialog {
 
 		mDateTimeFrom = new DateTime(wComp, SWT.DATE | SWT.BORDER);
 		Calendar wCal = Calendar.getInstance();
-		wCal.setTime(mCompositeEntry.getStartDate());
+		wCal.setTime(mDateRange.getStartDate());
 		mDateTimeFrom.setDate(wCal.get(Calendar.YEAR),
 				wCal.get(Calendar.MONTH), wCal.get(Calendar.DAY_OF_MONTH));
 
@@ -50,7 +50,7 @@ public class DialogPeriod extends Dialog {
 		wLabel2.setText(" ~ ");
 
 		mDateTimeTo = new DateTime(wComp, SWT.DATE | SWT.BORDER);
-		wCal.setTime(mCompositeEntry.getEndDate());
+		wCal.setTime(mDateRange.getEndDate());
 		mDateTimeTo.setDate(wCal.get(Calendar.YEAR), wCal.get(Calendar.MONTH),
 				wCal.get(Calendar.DAY_OF_MONTH));
 

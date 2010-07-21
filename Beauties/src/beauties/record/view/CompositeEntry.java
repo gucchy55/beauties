@@ -1,32 +1,20 @@
 package beauties.record.view;
 
-import java.util.Date;
-
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-
-import beauties.model.DateRange;
-import beauties.model.SystemData;
-import beauties.model.db.DbUtil;
+import beauties.record.RecordController;
 import beauties.record.model.RecordTableItem;
 
-import util.Util;
 import util.view.MyGridData;
 import util.view.MyGridLayout;
 
 public class CompositeEntry extends Composite {
 
-	private int mBookId;
-	private DateRange mDateRange = null;
-
-	private boolean isMonthPeriod = true;
-	private boolean isSearchResult = false;
+	private RecordController mCtl;
 	
 	private CompositeBookTab mCompositeBookTab;
 	private CompositeRecordTable mCompositeRecordTable;
@@ -35,48 +23,41 @@ public class CompositeEntry extends Composite {
 
 	public CompositeEntry(Composite pParent) {
 		super(pParent, SWT.NONE);
-		mBookId = SystemData.getBookMap(false).keySet().iterator().next();
+		mCtl = new RecordController(this);
 		init();
 	}
 
 	private void init() {
-		if (mDateRange == null)
-			mDateRange = Util.getMonthDateRange(new Date(), DbUtil.getCutOff());
-
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		mCompositeBookTab = new CompositeBookTab(this);
-		mCompositeActionTab = new CompositeActionTab(this);
-		mCompositeRecordTable = new CompositeRecordTable(this);
-		mCompositeSummaryTable = new CompositeSummaryTable(this);
+		mCompositeBookTab = new CompositeBookTab(this, mCtl);
+		mCompositeActionTab = new CompositeActionTab(this, mCtl);
+		mCompositeRecordTable = new CompositeRecordTable(this, mCtl);
+		mCompositeSummaryTable = new CompositeSummaryTable(this, mCtl);
 	}
 
 	public void updateView() {
-		for (Control wCtrl : this.getChildren()) {
-			wCtrl.dispose();
-		}
-
-		this.init();
-
-		this.layout();
-
+		mCompositeRecordTable.updateTable();
+		mCompositeSummaryTable.updateTable();
+		mCompositeRecordTable.setFocus();
 	}
 	
-	void updateForSearch(RecordTableItem[][] pRecordTableItems) {
+	void updateForSearch() {
 		mCompositeActionTab.updateForSearch();
-		mCompositeRecordTable.updateForSearch(pRecordTableItems);
+		mCompositeRecordTable.updateForSearch();
 	}
 
-	boolean openSearchDialog() {
+	public boolean openSearchDialog() {
 		this.getShell().setImeInputMode(SWT.NATIVE);
 		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
 		if (wInputDialog.open() != Dialog.OK) 
 			return false;
 		mCompositeBookTab.setVisible(false);
 		mCompositeSummaryTable.setVisible(false);
-		this.isSearchResult = true;
-		this.updateForSearch(DbUtil.getSearchedRecordTableItemList(wInputDialog.getValue()));
+		mCtl.setSearchResult(true);
+		mCtl.updateForSearch(wInputDialog.getValue());
+		this.updateForSearch();
 		return true;
 	}
 	
@@ -90,53 +71,5 @@ public class CompositeEntry extends Composite {
 	
 	public void updateRecordFilter(ViewerFilter pFilter) {
 		mCompositeRecordTable.updateRecordFilter(pFilter);
-	}
-
-	public int getBookId() {
-		return mBookId;
-	}
-
-	public Date getStartDate() {
-		return mDateRange.getStartDate();
-	}
-
-	public Date getEndDate() {
-		return mDateRange.getEndDate();
-	}
-	
-	public DateRange getDateRange() {
-		return mDateRange;
-	}
-
-	public boolean isMonthPeriod() {
-		return isMonthPeriod;
-	}
-
-	public void setBookId(int pBookId) {
-		mBookId = pBookId;
-	}
-
-	public void setDateRange(DateRange pDateRange) {
-		mDateRange = pDateRange;
-	}
-
-	public void setMonthPeriod(boolean pMonthPeriod) {
-		isMonthPeriod = pMonthPeriod;
-	}
-	
-	void setIsSearchResult(boolean pIsSearchResult) {
-		this.isSearchResult = pIsSearchResult;
-	}
-	
-	boolean isSearchResult() {
-		return this.isSearchResult;
-	}
-	
-	boolean showBookColumn() {
-		return this.getBookId() == SystemData.getAllBookInt() || this.isSearchResult;
-	}
-	
-	boolean showYear() {
-		return !this.isMonthPeriod || this.isSearchResult;
 	}
 }

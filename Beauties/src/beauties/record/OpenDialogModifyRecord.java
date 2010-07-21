@@ -4,28 +4,28 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 
-import beauties.record.view.CompositeEntry;
 import beauties.record.view.dialog.DialogModifyRecord;
 
 
 public class OpenDialogModifyRecord extends Action {
 
-	private CompositeEntry mCompositeEntry;
+	private RecordController mCtl;
 
-	public OpenDialogModifyRecord(CompositeEntry pCompositeEntry) {
-		mCompositeEntry = pCompositeEntry;
+	public OpenDialogModifyRecord(RecordController pCtl) {
+		mCtl = pCtl;
 	}
 
 	@Override
 	public void run() {
-		if (!mCompositeEntry.hasSelectedRecordTableItem())
+		if (!mCtl.hasSelectedRecordTableItem())
 			return;
-		mCompositeEntry.getShell().setImeInputMode(SWT.NONE);
-		DialogModifyRecord wDialogModifyRecord = new DialogModifyRecord(mCompositeEntry.getShell(), mCompositeEntry.getSelectedRecordItem());
+		mCtl.getShell().setImeInputMode(SWT.NONE);
+		DialogModifyRecord wDialogModifyRecord = new DialogModifyRecord(mCtl.getShell(), mCtl.getSelectedRecordItem());
 		int wRet = wDialogModifyRecord.open();
 
 		if (wRet == IDialogConstants.OK_ID) {
-			new UpdateEntry(mCompositeEntry).run();
+			mCtl.updateTable();
+//			new UpdateEntry(mCtl).run();
 		}
 	}
 }

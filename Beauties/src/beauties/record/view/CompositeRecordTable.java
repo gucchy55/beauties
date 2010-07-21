@@ -13,9 +13,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import beauties.model.DateRange;
 import beauties.model.SystemData;
-import beauties.model.db.DbUtil;
+import beauties.record.RecordController;
 import beauties.record.model.RecordTableItem;
 
 import util.view.MyGridData;
@@ -23,43 +22,33 @@ import util.view.MyGridLayout;
 
 class CompositeRecordTable extends Composite {
 
-	private CompositeEntry mCompositeEntry;
-
-	// private Date mStartDate;
-	// private Date mEndDate;
-	private DateRange mDateRange;
-
 	private RecordTableItem[] mRecordItemsUp;
 	private RecordTableItem[] mRecordItemsBottom;
+	
+	private RecordController mCtl;
 
 	private RecordTableViewer mTableUp;
 	private RecordTableViewer mTableBottom;
 	private SashForm mSashForm;
 
-	public CompositeRecordTable(Composite pParent) {
+	public CompositeRecordTable(Composite pParent, RecordController pCtl) {
 		super(pParent, SWT.NONE);
-		initParam((CompositeEntry) pParent);
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange,
-				mCompositeEntry.getBookId());
-		mRecordItemsUp = wRecordTableItemAll[0];
-		mRecordItemsBottom = wRecordTableItemAll[1];
-
+		mCtl = pCtl;
+		updateItems();
 		initLayout();
 	}
-
-	public CompositeRecordTable(Composite pParent, RecordTableItem[][] pRecordTableItems) {
-		super(pParent, SWT.NONE);
-		initParam((CompositeEntry) pParent);
-		mRecordItemsUp = pRecordTableItems[0];
-		mRecordItemsBottom = pRecordTableItems[1];
-		initLayout();
+	
+	public void updateTable() {
+		updateItems();
+		mTableUp.updateTableItem(mRecordItemsUp);
+		mTableBottom.updateTableItem(mRecordItemsBottom);
 	}
-
-	private void initParam(CompositeEntry pCompositeEntry) {
-		mCompositeEntry = (CompositeEntry) pCompositeEntry;
-		this.mDateRange = mCompositeEntry.getDateRange();
-		// this.mStartDate = mCompositeEntry.getStartDate();
-		// this.mEndDate = mCompositeEntry.getEndDate();
+	
+	private void updateItems() {
+		mRecordItemsUp = mCtl.getRecordItemsUp();
+		
+		mRecordItemsBottom = mCtl.getRecordItemsBottom();
+		
 	}
 
 	private void initLayout() {
@@ -73,7 +62,7 @@ class CompositeRecordTable extends Composite {
 		mSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
 				.getMyGridData());
 
-		mTableUp = new RecordTableViewer(mSashForm, mCompositeEntry);
+		mTableUp = new RecordTableViewer(mSashForm, mCtl);
 		mTableUp.setRecordTableItem(mRecordItemsUp);
 		mTableUp.getTable().setSelection(0);
 		mTableUp.getTable().setFocus();
@@ -90,11 +79,8 @@ class CompositeRecordTable extends Composite {
 		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER, true, false)
 				.getMyGridData());
 
-		mTableBottom = new RecordTableViewer(wBottomComp, mCompositeEntry);
-
-		if (mRecordItemsBottom.length > 0) {
-			mTableBottom.setRecordTableItem(mRecordItemsBottom);
-		}
+		mTableBottom = new RecordTableViewer(wBottomComp, mCtl);
+		mTableBottom.setRecordTableItem(mRecordItemsBottom);
 
 		wBottomComp.addControlListener(new ControlListener() {
 
@@ -160,11 +146,12 @@ class CompositeRecordTable extends Composite {
 				mTableBottom.removeFilter(vf);
 	}
 
-	void updateForSearch(RecordTableItem[][] pRecordTableItems) {
-		mRecordItemsUp = pRecordTableItems[0];
-		mRecordItemsBottom = pRecordTableItems[1];
-		mSashForm.dispose();
-		initLayout();
-		this.layout();
+	void updateForSearch() {
+		updateTable();
+//		mRecordItemsUp = pRecordTableItems[0];
+//		mRecordItemsBottom = pRecordTableItems[1];
+//		mSashForm.dispose();
+//		initLayout();
+//		this.layout();
 	}
 }
