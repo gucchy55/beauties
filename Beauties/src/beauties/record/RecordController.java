@@ -16,9 +16,9 @@ public class RecordController {
 	private int mBookId;
 	private DateRange mDateRange;
 
-	private boolean mMonthPeriod = true;
+//	private boolean mMonthPeriod = true;
 	private boolean mSearchResult = false;
-	
+
 	private CompositeEntry mCompositeEntry;
 
 	private RecordTableItem[] mRecordItemsUp;
@@ -31,19 +31,19 @@ public class RecordController {
 		mDateRange = Util.getMonthDateRange(new Date(), DbUtil.getCutOff());
 		updateTableItems();
 	}
-	
+
 	private void updateTableItems() {
 		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBookId);
 		mRecordItemsUp = wRecordTableItemAll[0];
 		mRecordItemsBottom = wRecordTableItemAll[1];
 		mSummaryTableItems = DbUtil.getSummaryTableItems(mBookId, mDateRange);
 	}
-	
+
 	public void updateTable() {
 		updateTableItems();
 		mCompositeEntry.updateView();
 	}
-	
+
 	public void updateForSearch(String pQuery) {
 		RecordTableItem[][] wRecordTableItemAll = DbUtil.getSearchedRecordTableItemList(pQuery);
 		mRecordItemsUp = wRecordTableItemAll[0];
@@ -58,10 +58,10 @@ public class RecordController {
 	public DateRange getDateRange() {
 		return mDateRange;
 	}
-
-	public boolean getMonthPeriod() {
-		return mMonthPeriod;
-	}
+//
+//	public boolean getMonthPeriod() {
+//		return mMonthPeriod;
+//	}
 
 	public boolean getSearchResult() {
 		return mSearchResult;
@@ -87,12 +87,13 @@ public class RecordController {
 		this.mDateRange = pDateRange;
 	}
 
-	public void setMonthPeriod(boolean pMonthPeriod) {
-		this.mMonthPeriod = pMonthPeriod;
-	}
+//	public void setMonthPeriod(boolean pMonthPeriod) {
+//		this.mMonthPeriod = pMonthPeriod;
+//	}
 
 	public void setSearchResult(boolean pSearchResult) {
 		this.mSearchResult = pSearchResult;
+		mCompositeEntry.updateViewForSearch(mSearchResult);
 	}
 
 	public void setRecordItemsUp(RecordTableItem[] pRecordItemsUp) {
@@ -106,27 +107,34 @@ public class RecordController {
 	public void setSummaryTableItems(SummaryTableItem[] pSummaryTableItems) {
 		this.mSummaryTableItems = pSummaryTableItems;
 	}
-	
+
 	public boolean showBookColumn() {
 		return getBookId() == SystemData.getAllBookInt() || getSearchResult();
 	}
-	
+
 	public boolean showYear() {
 		return !getMonthPeriod() || getSearchResult();
 	}
-	
+
 	public Shell getShell() {
 		return mCompositeEntry.getShell();
 	}
-	
+
 	public RecordTableItem getSelectedRecordItem() {
 		return mCompositeEntry.getSelectedRecordItem();
 	}
-	
+
 	public boolean hasSelectedRecordTableItem() {
 		return mCompositeEntry.hasSelectedRecordTableItem();
 	}
+
 	public boolean openSearchDialog() {
 		return mCompositeEntry.openSearchDialog();
+	}
+
+	public boolean getMonthPeriod() {
+		DateRange wMonthRange = Util.getMonthDateRange(mDateRange.getEndDate(), DbUtil.getCutOff());
+		return mDateRange.getStartDate().equals(wMonthRange.getStartDate())
+				&& mDateRange.getEndDate().equals(wMonthRange.getEndDate());
 	}
 }

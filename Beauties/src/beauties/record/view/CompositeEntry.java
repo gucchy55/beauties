@@ -38,6 +38,7 @@ public class CompositeEntry extends Composite {
 	}
 
 	public void updateView() {
+		mCompositeBookTab.updateMonthLabel();
 		mCompositeRecordTable.updateTable();
 		mCompositeSummaryTable.updateTable();
 		mCompositeRecordTable.setFocus();
@@ -53,12 +54,15 @@ public class CompositeEntry extends Composite {
 		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
 		if (wInputDialog.open() != Dialog.OK) 
 			return false;
-		mCompositeBookTab.setVisible(false);
-		mCompositeSummaryTable.setVisible(false);
 		mCtl.setSearchResult(true);
 		mCtl.updateForSearch(wInputDialog.getValue());
 		this.updateForSearch();
 		return true;
+	}
+	
+	public void updateViewForSearch(boolean pSearch) {
+		mCompositeBookTab.setVisible(!pSearch);
+		mCompositeSummaryTable.setVisible(!pSearch);
 	}
 	
 	public RecordTableItem getSelectedRecordItem() {

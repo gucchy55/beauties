@@ -28,7 +28,7 @@ public class OpenDialogPeriod extends Action {
 //			mCompositeEntry.setStartDate(wDialogPeriod.getStartDate());
 //			mCompositeEntry.setEndDate(wDialogPeriod.getEndDate());
 			mCtl.setDateRange(new DateRange(wDialogPeriod.getStartDate(), wDialogPeriod.getEndDate()));
-			mCtl.setMonthPeriod(false);
+//			mCtl.setMonthPeriod(false);
 			mCtl.updateTable();
 //			new UpdateEntry(mCompositeEntry).run();
 		}

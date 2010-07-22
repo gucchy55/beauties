@@ -38,6 +38,9 @@ class RecordTableViewer extends TableViewer {
 
 	private RecordController mCtl;
 	private RecordTableItem[] mRecordTableItems;
+	
+	private TableColumn mBookCol;
+	private TableColumn mDateCol;
 
 	public RecordTableViewer(Composite pComp, RecordController pCtl) {
 		super(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
@@ -53,14 +56,14 @@ class RecordTableViewer extends TableViewer {
 		wTable.setHeaderVisible(true);
 
 		// 列のヘッダの設定
-		TableColumn wActIdCol = new TableColumn(wTable, SWT.LEFT);
-		wActIdCol.setText("帳簿");
-		wActIdCol.setWidth(mCtl.showBookColumn() ? 60 : 0);
-		wActIdCol.setResizable(mCtl.showBookColumn());
+		mBookCol = new TableColumn(wTable, SWT.LEFT);
+		mBookCol.setText("帳簿");
+		
 
-		TableColumn wDateCol = new TableColumn(wTable, SWT.CENTER);
-		wDateCol.setText("日付");
-		wDateCol.setWidth(mCtl.showYear() ? 80 : 62);
+		mDateCol = new TableColumn(wTable, SWT.CENTER);
+		mDateCol.setText("日付");
+		
+		updateColumnWidths();
 
 		TableColumn wItemNameCol = new TableColumn(wTable, SWT.LEFT);
 		wItemNameCol.setText("項目");
@@ -149,8 +152,10 @@ class RecordTableViewer extends TableViewer {
 		return this.getTable().getItemCount() != 0 && !this.getSelection().isEmpty();
 	}
 	
-	void setForSearchResults() {
-		
+	void updateColumnWidths() {
+		mBookCol.setWidth(mCtl.showBookColumn() ? 60 : 0);
+		mBookCol.setResizable(mCtl.showBookColumn());
+		mDateCol.setWidth(mCtl.showYear() ? 80 : 62);
 	}
 	
 	void updateTableItem(RecordTableItem[] pRecordTableItems) {
@@ -161,6 +166,7 @@ class RecordTableViewer extends TableViewer {
 		this.setInput(mRecordTableItems);
 		this.setLabelProvider(new TableLabelProvider(mCtl.showYear()));
 		this.setInput(mRecordTableItems);
+		updateColumnWidths();
 		this.refresh();
 	}
 }
