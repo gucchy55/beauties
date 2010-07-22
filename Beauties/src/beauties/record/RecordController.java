@@ -16,7 +16,7 @@ public class RecordController {
 	private int mBookId;
 	private DateRange mDateRange;
 
-//	private boolean mMonthPeriod = true;
+	private boolean mMonthPeriod = true;
 	private boolean mSearchResult = false;
 
 	private CompositeEntry mCompositeEntry;
@@ -87,9 +87,9 @@ public class RecordController {
 		this.mDateRange = pDateRange;
 	}
 
-//	public void setMonthPeriod(boolean pMonthPeriod) {
-//		this.mMonthPeriod = pMonthPeriod;
-//	}
+	public void setMonthPeriod(boolean pMonthPeriod) {
+		this.mMonthPeriod = pMonthPeriod;
+	}
 
 	public void setSearchResult(boolean pSearchResult) {
 		this.mSearchResult = pSearchResult;
@@ -133,8 +133,12 @@ public class RecordController {
 	}
 
 	public boolean getMonthPeriod() {
+		if (mMonthPeriod)
+			return true;
 		DateRange wMonthRange = Util.getMonthDateRange(mDateRange.getEndDate(), DbUtil.getCutOff());
-		return mDateRange.getStartDate().equals(wMonthRange.getStartDate())
+		mMonthPeriod = mDateRange.getStartDate().equals(wMonthRange.getStartDate())
 				&& mDateRange.getEndDate().equals(wMonthRange.getEndDate());
+		return mMonthPeriod;
+			
 	}
 }
