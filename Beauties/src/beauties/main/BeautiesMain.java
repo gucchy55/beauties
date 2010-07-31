@@ -118,6 +118,10 @@ public class BeautiesMain extends ApplicationWindow {
 				wButton.setSelection(true);
 			}
 		}
+		addListenerToLeftButtons();
+	}
+
+	private void addListenerToLeftButtons() {
 		for (Map.Entry<Button, RightType> entry : mRightTypeMap.entrySet()) {
 			Button wButton = entry.getKey();
 			wButton.addSelectionListener(new SelectionAdapter() {

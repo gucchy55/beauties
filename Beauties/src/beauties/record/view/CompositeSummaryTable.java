@@ -36,26 +36,22 @@ class CompositeSummaryTable extends Composite {
 	CompositeSummaryTable(Composite pParent, RecordController pCTL) {
 		super(pParent, SWT.NONE);
 		mCTL = pCTL;
-		mSelectionChangedListener = new ISelectionChangedListener() {
-			@Override
-			public void selectionChanged(SelectionChangedEvent event) {
-				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-				SummaryTableItem wTableItem = (SummaryTableItem) sel.getFirstElement();
-				CompositeEntry wParent = (CompositeEntry) getParent();
-				wParent.updateRecordFilter(wTableItem.getRecordTableItemFilter());
-			}
-		};
+		mSelectionChangedListener = createSelectionChangedListener();
 		
-		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
+		initLayout();
+		mSummaryTableViewer = createSummaryTable();
 
-		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true)
-				.getMyGridData();
-		wGridData.widthHint = mRightWidthHint;
-		this.setLayoutData(wGridData);
+		mSummaryTableViewer.setContentProvider(new SummaryTableContentProvider());
+		mSummaryTableViewer.setInput(mCTL.getSummaryTableItems());
+		mSummaryTableViewer.setLabelProvider(new SummaryTableLabelProvider());
+		mSummaryTableViewer.getTable().setSelection(0);
+		mSummaryTableViewer.addSelectionChangedListener(mSelectionChangedListener);
+	}
 
-		mSummaryTableViewer = new TableViewer(this, SWT.FULL_SELECTION | SWT.BORDER
+	private TableViewer createSummaryTable() {
+		TableViewer wSummaryTableViewer = new TableViewer(this, SWT.FULL_SELECTION | SWT.BORDER
 				| SWT.VIRTUAL);
-		Table wTable = mSummaryTableViewer.getTable();
+		Table wTable = wSummaryTableViewer.getTable();
 
 		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
 				.getMyGridData());
@@ -73,15 +69,29 @@ class CompositeSummaryTable extends Composite {
 		TableColumn wValueCol = new TableColumn(wTable, SWT.RIGHT);
 		wValueCol.setText("合計");
 		wValueCol.setWidth(80);
+		
+		return wSummaryTableViewer;
+	}
 
-		mSummaryTableViewer.setContentProvider(new SummaryTableContentProvider());
-		mSummaryTableViewer.setInput(mCTL.getSummaryTableItems());
+	private void initLayout() {
+		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
 
-		mSummaryTableViewer.setLabelProvider(new SummaryTableLabelProvider());
+		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true)
+				.getMyGridData();
+		wGridData.widthHint = mRightWidthHint;
+		this.setLayoutData(wGridData);
+	}
 
-		mSummaryTableViewer.getTable().setSelection(0);
-
-		mSummaryTableViewer.addSelectionChangedListener(mSelectionChangedListener);
+	private ISelectionChangedListener createSelectionChangedListener() {
+		return new ISelectionChangedListener() {
+			@Override
+			public void selectionChanged(SelectionChangedEvent event) {
+				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+				SummaryTableItem wTableItem = (SummaryTableItem) sel.getFirstElement();
+				CompositeEntry wParent = (CompositeEntry) getParent();
+				wParent.updateRecordFilter(wTableItem.getRecordTableItemFilter());
+			}
+		};
 	}
 
 	void updateTable() {

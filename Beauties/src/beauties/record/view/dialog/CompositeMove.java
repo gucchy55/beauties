@@ -3,7 +3,6 @@ package beauties.record.view.dialog;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +23,7 @@ import beauties.model.db.DbUtil;
 import beauties.record.model.RecordTableItem;
 import beauties.record.model.RecordTableItemForMove;
 
+import util.Util;
 import util.view.MyGridData;
 import util.view.MyGridLayout;
 
@@ -49,16 +49,14 @@ class CompositeMove extends Composite {
 	private Combo mNoteCombo;
 	private String[] mNoteItems;
 
-//	private static final int mNoteCandidateCount = 10;
 	private static final int mVisibleComboItemCount = 10;
 
 	public CompositeMove(Composite pParent, int pBookId) {
 		super(pParent, SWT.NONE);
 
 		mBookId = pBookId;
-		if (mBookId == SystemData.getAllBookInt()) {
+		if (mBookId == SystemData.getAllBookInt())
 			mBookId = SystemData.getBookMap(false).keySet().iterator().next();
-		}
 		initLayout();
 		initWidgets();
 		mDateTime.setFocus();
@@ -75,8 +73,6 @@ class CompositeMove extends Composite {
 			mExpenseRecord = pRecordTableItem;
 			mIncomeRecord = DbUtil.getMovePairRecord(pRecordTableItem);
 		}
-		mExpenseRecord = DbUtil.getMovePairRecord(mIncomeRecord);
-
 		mBookId = mIncomeRecord.getBookId();
 		initLayout();
 		initWidgets();
@@ -84,111 +80,30 @@ class CompositeMove extends Composite {
 	}
 
 	private void initLayout() {
-		GridData wGridData;
-
 		GridLayout wGridLayout = new GridLayout(2, false);
 		wGridLayout.verticalSpacing = 10;
 		this.setLayout(wGridLayout);
-
-		// DateTime
-		Label wDateLabel = new Label(this, SWT.NONE);
-		wDateLabel.setText("日付");
-		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
-		mDateTime.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-
-			public void focusLost(FocusEvent event) {
-			}
-		});
-
-		// BookName (from)
-		Label wBookFromLabel = new Label(this, SWT.NONE);
-		wBookFromLabel.setText("移動元");
-
-		mBookFromCombo = new Combo(this, SWT.READ_ONLY);
-
-		// BookName (to)
-		Label wBookToLabel = new Label(this, SWT.NONE);
-		wBookToLabel.setText("移動先");
-
-		mBookToCombo = new Combo(this, SWT.READ_ONLY);
-
-		// BookName (Common)
 		mBookNameMap = SystemData.getBookMap(false);
-		mBookIdList.clear();
-		mBookFromCombo.removeAll();
-		mBookToCombo.removeAll();
+		
+		createDateTime();
 
-		Iterator<Integer> wKeyIt = mBookNameMap.keySet().iterator();
-		while (wKeyIt.hasNext()) {
-			int wBookId = wKeyIt.next();
-			mBookIdList.add(wBookId);
-			mBookFromCombo.add(mBookNameMap.get(wBookId));
-			mBookToCombo.add(mBookNameMap.get(wBookId));
-		}
+		createFromBookCombo();
 
-		mBookToCombo.select(mBookIdList.indexOf(mBookId));
-		wKeyIt = mBookNameMap.keySet().iterator();
-		while (wKeyIt.hasNext()) {
-			int wBookId = wKeyIt.next();
-			if (wBookId != mBookId) {
-				mBookFromCombo.select(mBookIdList.indexOf(wBookId));
-				break;
-			}
-		}
+		createToBookCombo();
 
-		mBookFromCombo.setVisibleItemCount(mVisibleComboItemCount);
-		mBookToCombo.setVisibleItemCount(mVisibleComboItemCount);
+		setBookCombos();
 
-		// Value & Frequency
-		Label wValueLabel = new Label(this, SWT.NONE);
-		wValueLabel.setText("金額");
+		createValueSpinners();
 
-		Composite wValuesRowComp = new Composite(this, SWT.NONE);
-		wGridData = new GridData(GridData.FILL_HORIZONTAL);
-		wValuesRowComp.setLayoutData(wGridData);
+		createNoteCombo();
+	}
 
-		wValuesRowComp.setLayout(new MyGridLayout(4, false).getMyGridLayout());
-		this.setLayoutData(new MyGridData(GridData.BEGINNING,
-				GridData.BEGINNING, true, false).getMyGridData());
-
-		mValueSpinner = new Spinner(wValuesRowComp, SWT.BORDER);
-		mValueSpinner.setValues(0, 0, Integer.MAX_VALUE, 0, 100, 10);
-		mValueSpinner.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-
-			public void focusLost(FocusEvent event) {
-
-			}
-		});
-
-		Label wSpaceLabel = new Label(wValuesRowComp, SWT.NONE);
-		wSpaceLabel.setText("    ");
-
-		Label wFrequencyLabel = new Label(wValuesRowComp, SWT.NONE);
-		wFrequencyLabel.setText("回数");
-
-		mFrequencySpinner = new Spinner(wValuesRowComp, SWT.BORDER);
-		mFrequencySpinner.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-
-			public void focusLost(FocusEvent event) {
-
-			}
-		});
-
-		// Note
+	private void createNoteCombo() {
 		Label wNoteLabel = new Label(this, SWT.NONE);
 		wNoteLabel.setText("備考");
 
 		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
-		wGridData = new GridData(GridData.FILL_HORIZONTAL);
+		GridData wGridData = new GridData(GridData.FILL_HORIZONTAL);
 		mNoteCombo.setLayoutData(wGridData);
 		mNoteCombo.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent event) {
@@ -199,6 +114,71 @@ class CompositeMove extends Composite {
 				getShell().setImeInputMode(SWT.NONE);
 			}
 		});
+	}
+
+	private void createValueSpinners() {
+		Label wValueLabel = new Label(this, SWT.NONE);
+		wValueLabel.setText("金額");
+
+		Composite wValuesRowComp = new Composite(this, SWT.NONE);
+		GridData wGridData = new GridData(GridData.FILL_HORIZONTAL);
+		wValuesRowComp.setLayoutData(wGridData);
+
+		wValuesRowComp.setLayout(new MyGridLayout(4, false).getMyGridLayout());
+		this.setLayoutData(new MyGridData(GridData.BEGINNING,
+				GridData.BEGINNING, true, false).getMyGridData());
+
+		mValueSpinner = new Spinner(wValuesRowComp, SWT.BORDER);
+		mValueSpinner.setValues(0, 0, Integer.MAX_VALUE, 0, 100, 10);
+		mValueSpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
+
+		Label wSpaceLabel = new Label(wValuesRowComp, SWT.NONE);
+		wSpaceLabel.setText("    ");
+
+		Label wFrequencyLabel = new Label(wValuesRowComp, SWT.NONE);
+		wFrequencyLabel.setText("回数");
+
+		mFrequencySpinner = new Spinner(wValuesRowComp, SWT.BORDER);
+		mFrequencySpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
+	}
+
+	private void setBookCombos() {
+		for (Map.Entry<Integer, String> wEntry : mBookNameMap.entrySet()) {
+			mBookIdList.add(wEntry.getKey());
+			mBookFromCombo.add(wEntry.getValue());
+			mBookToCombo.add(wEntry.getValue());
+		}
+		mBookToCombo.select(mBookIdList.indexOf(mBookId));
+		for (int wBookId : mBookIdList) {
+			if (wBookId != mBookId) {
+				mBookFromCombo.select(mBookIdList.indexOf(wBookId));
+				break;
+			}
+		}
+
+		mBookFromCombo.setVisibleItemCount(mVisibleComboItemCount);
+		mBookToCombo.setVisibleItemCount(mVisibleComboItemCount);
+	}
+
+	private void createToBookCombo() {
+		Label wBookToLabel = new Label(this, SWT.NONE);
+		wBookToLabel.setText("移動先");
+
+		mBookToCombo = new Combo(this, SWT.READ_ONLY);
+	}
+
+	private void createFromBookCombo() {
+		Label wBookFromLabel = new Label(this, SWT.NONE);
+		wBookFromLabel.setText("移動元");
+
+		mBookFromCombo = new Combo(this, SWT.READ_ONLY);
+	}
+
+	private void createDateTime() {
+		Label wDateLabel = new Label(this, SWT.NONE);
+		wDateLabel.setText("日付");
+		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
+		mDateTime.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
 	}
 
 	private void initWidgets() {
@@ -229,9 +209,9 @@ class CompositeMove extends Composite {
 		mValueSpinner.setSelection((int) mIncomeRecord.getIncome());
 		mFrequencySpinner.setSelection(mIncomeRecord.getFrequency());
 
-		if (!"".equals(mIncomeRecord.getNote())) {
+		if (!"".equals(mIncomeRecord.getNote()))
 			mNoteCombo.setItem(0, mIncomeRecord.getNote());
-		}
+		
 		mNoteCombo.select(0);
 
 	}

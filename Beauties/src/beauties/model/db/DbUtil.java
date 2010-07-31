@@ -205,6 +205,24 @@ public class DbUtil {
 		return wItemName;
 
 	}
+	
+	public static String getCategoryNameById(int pCategoryId) {
+		ResultSet wResultSet = mDbAccess.executeQuery("select " + mCategoryNameCol + " from "
+				+ mCategoryTable + " where " + mCategoryIdCol + " = " + pCategoryId);
+
+		String wName = "";
+
+		try {
+			wResultSet.next();
+			wName = wResultSet.getString(mCategoryNameCol);
+			wResultSet.close();
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		}
+
+		return wName;
+
+	}
 
 	public static RecordTableItem[][] getRecordTableItems(DateRange pDateRange, int pBookId) {
 		List<RecordTableItem> wRecordTableItemListUp = new ArrayList<RecordTableItem>();
@@ -399,26 +417,31 @@ public class DbUtil {
 		return wResultMap;
 	}
 
-	// For each category
-	public static Map<Integer, String> getItemNameMap(int pBookId, int pCategoryId) {
-		Map<Integer, String> wResultMap = new LinkedHashMap<Integer, String>();
+	// For all categories
+	public static List<Integer> getItemIdList(int pBookId, boolean pIncome) {
+		List<Integer> wResultList = new ArrayList<Integer>();
+		int wRexp = mIncomeRexp;
+		if (!pIncome)
+			wRexp = mExpenseRexp;
 
-		String wQuery = "select " + mItemTable + "." + mItemIdCol + ", " + mItemTable + "."
-				+ mItemNameCol;
+		String wQuery = "select " + mItemTable + "." + mItemIdCol;
 		wQuery += " from " + mItemTable + " , " + mBookItemTable + ", " + mCategoryTable;
 		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "."
 				+ mItemIdCol + " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable
-				+ "." + mCategoryIdCol + " and " + mBookItemTable + "." + mBookIdCol + " = "
-				+ pBookId + " and " + mCategoryTable + "." + mCategoryIdCol + " = " + pCategoryId
-				+ " and " + mBookItemTable + "." + mDelFlgCol + " = b'0' " + " and " + mItemTable
-				+ "." + mDelFlgCol + " = b'0' ";
+				+ "." + mCategoryIdCol;
+		if (pBookId != SystemData.getAllBookInt()) {
+			wQuery += " and " + mBookItemTable + "." + mBookIdCol + " = " + pBookId;
+		}
+		wQuery += " and " + mCategoryTable + "." + mCategoryRexpCol + " = " + wRexp + " and "
+				+ mBookItemTable + "." + mDelFlgCol + " = b'0' " + " and " + mItemTable + "."
+				+ mDelFlgCol + " = b'0' ";
 		wQuery += " order by " + mItemTable + "." + mSortKeyCol;
 		// System.out.println(wQuery);
 
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
 		try {
 			while (wResultSet.next()) {
-				wResultMap.put(wResultSet.getInt(mItemIdCol), wResultSet.getString(mItemNameCol));
+				wResultList.add(wResultSet.getInt(mItemIdCol));
 			}
 			wResultSet.close();
 
@@ -426,19 +449,47 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		return wResultMap;
+		return wResultList;
 	}
+	
+	public static List<Integer> getItemIdList(int pBookId, int pCategoryId) {
+		List<Integer> wResultList = new ArrayList<Integer>();
 
-	public static Map<Integer, String> getCategoryNameMap(int pBookId, boolean pIncome) {
-		Map<Integer, String> wResultMap = new LinkedHashMap<Integer, String>();
-		int wRexp = mIncomeRexp;
-		if (!pIncome) {
-			wRexp = mExpenseRexp;
+		String wQuery = "select " + mItemTable + "." + mItemIdCol;
+		wQuery += " from " + mItemTable + " , " + mBookItemTable + ", " + mCategoryTable;
+		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "."
+				+ mItemIdCol + " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable
+				+ "." + mCategoryIdCol + " and " + mBookItemTable + "." + mBookIdCol + " = "
+				+ pBookId;
+		if (pCategoryId > SystemData.getUndefinedInt())
+			wQuery += " and " + mCategoryTable + "." + mCategoryIdCol + " = " + pCategoryId;
+		wQuery += " and " + mBookItemTable + "." + mDelFlgCol + " = b'0' " + " and " + mItemTable
+				+ "." + mDelFlgCol + " = b'0' ";
+		wQuery += " order by " + mItemTable + "." + mSortKeyCol;
+		// System.out.println(wQuery);
+
+		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
+		try {
+			while (wResultSet.next()) {
+				wResultList.add(wResultSet.getInt(mItemIdCol));
+			}
+			wResultSet.close();
+
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
 		}
 
+		return wResultList;
+	}
+
+	public static List<Integer> getCategoryIdList(int pBookId, boolean pIncome) {
+		List<Integer> wResultList = new ArrayList<Integer>();
+		int wRexp = mIncomeRexp;
+		if (!pIncome)
+			wRexp = mExpenseRexp;
+
 		String wQuery = "select count( " + mItemTable + "." + mItemNameCol + " ), "
-				+ mCategoryTable + "." + mCategoryIdCol + ", " + mCategoryTable + "."
-				+ mCategoryNameCol;
+				+ mCategoryTable + "." + mCategoryIdCol;
 		wQuery += " from " + mItemTable + ", " + mBookItemTable + ", " + mCategoryTable;
 		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "."
 				+ mItemIdCol + " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable
@@ -457,8 +508,7 @@ public class DbUtil {
 		ResultSet wResultSet = mDbAccess.executeQuery(wQuery);
 		try {
 			while (wResultSet.next()) {
-				wResultMap.put(wResultSet.getInt(mCategoryIdCol), wResultSet
-						.getString(mCategoryNameCol));
+				wResultList.add(wResultSet.getInt(mCategoryIdCol));
 			}
 			wResultSet.close();
 
@@ -466,9 +516,9 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		return wResultMap;
+		return wResultList;
 	}
-
+	
 	// 設定時に使用
 	public static Map<Integer, String> getAllCategoryNameMap(boolean pIncome) {
 		Map<Integer, String> wResultMap = new LinkedHashMap<Integer, String>();

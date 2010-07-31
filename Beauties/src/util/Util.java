@@ -7,6 +7,10 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
+import org.eclipse.swt.events.FocusEvent;
+import org.eclipse.swt.events.FocusListener;
+import org.eclipse.swt.widgets.Shell;
+
 import beauties.model.DateRange;
 
 
@@ -110,6 +114,17 @@ public class Util {
 		wEndDate = getMonthDateRange(wEndDate, pCutOff).getEndDate();
 
 		return new DateRange(wFirstDate.getTime(), wEndDate);
+	}
+	
+	public static FocusListener getFocusListenerToDisableIme(final Shell pShell, final int pMode) {
+		return new FocusListener() {
+			public void focusGained(FocusEvent event) {
+				pShell.setImeInputMode(pMode);
+			}
+
+			public void focusLost(FocusEvent event) {
+			}
+		};
 	}
 
 //	public static IContentProposal[] createProposals(final String pContent,

@@ -34,16 +34,16 @@ import util.view.MyGridData;
 
 class RecordTableViewer extends TableViewer {
 
-	private RecordController mCtl;
+	private RecordController mCTL;
 	private RecordTableItem[] mRecordTableItems;
 
 	private TableColumn mBookCol;
 	private TableColumn mDateCol;
 
-	RecordTableViewer(Composite pComp, RecordController pCtl) {
+	RecordTableViewer(Composite pComp, RecordController pCTL) {
 		super(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
 
-		mCtl = pCtl;
+		mCTL = pCTL;
 
 		// テーブルの作成
 		Table wTable = this.getTable();
@@ -94,57 +94,65 @@ class RecordTableViewer extends TableViewer {
 		this.setContentProvider(new TableContentProvider());
 		this.setInput(mRecordTableItems);
 
-		this.setLabelProvider(new TableLabelProvider(mCtl.showYear()));
+		this.setLabelProvider(new TableLabelProvider(mCTL.showYear()));
 		this.setInput(mRecordTableItems);
 		updateColumnWidths();
 
-		this.addDoubleClickListener(new IDoubleClickListener() {
+		this.addDoubleClickListener(getDoubleClickListener());
+
+		wTable.addKeyListener(getKeyListener());
+	}
+
+	private IDoubleClickListener getDoubleClickListener() {
+		return new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				RecordTableItem wRecord = (RecordTableItem) sel.getFirstElement();
 				if (wRecord.isBalanceRow())
 					return;
 				if (wRecord.isMoveItem()) {
-					new OpenDialogModifyMove(mCtl).run();
+					new OpenDialogModifyMove(mCTL).run();
 				} else {
-					new OpenDialogModifyRecord(mCtl).run();
+					new OpenDialogModifyRecord(mCTL).run();
 				}
 			}
-		});
+		};
+	}
 
-		wTable.addKeyListener(new KeyListener() {
+	private KeyListener getKeyListener() {
+		return new KeyListener() {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (!mCtl.hasSelectedRecordTableItem())
+				if (!mCTL.hasSelectedRecordTableItem())
 					return;
 
 				// Enterキーが押されたら変更ダイアログ
 				if (e.character == SWT.CR) {
-					if (mCtl.getSelectedRecordItem().isMoveItem())
-						new OpenDialogModifyMove(mCtl).run();
+					if (mCTL.getSelectedRecordItem().isMoveItem())
+						new OpenDialogModifyMove(mCTL).run();
 					else
-						new OpenDialogModifyRecord(mCtl).run();
+						new OpenDialogModifyRecord(mCTL).run();
 				}
 
 				// DELキーが押されたら削除（確認ダイアログ）
 				if (e.character == SWT.DEL)
-					new DeleteRecord(mCtl).run();
+					new DeleteRecord(mCTL).run();
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.stateMask == SWT.CTRL) {
 					if (e.keyCode == 'i')
-						new OpenDialogNewRecord(mCtl).run();
+						new OpenDialogNewRecord(mCTL).run();
 					if (e.keyCode == 'm')
-						new OpenDialogNewMove(mCtl).run();
+						new OpenDialogNewMove(mCTL).run();
 					if (e.keyCode == 'f')
-						mCtl.openSearchDialog();
+						mCTL.openSearchDialog();
 				}
 			}
 
-		});
+		};
 	}
 
 	boolean hasSelectedItem() {
@@ -152,9 +160,9 @@ class RecordTableViewer extends TableViewer {
 	}
 
 	void updateColumnWidths() {
-		mBookCol.setWidth(mCtl.showBookColumn() ? 60 : 0);
-		mBookCol.setResizable(mCtl.showBookColumn());
-		mDateCol.setWidth(mCtl.showYear() ? 80 : 62);
+		mBookCol.setWidth(mCTL.showBookColumn() ? 60 : 0);
+		mBookCol.setResizable(mCTL.showBookColumn());
+		mDateCol.setWidth(mCTL.showYear() ? 80 : 62);
 //		for (TableColumn wColumn : this.getTable().getColumns()) {
 //			if (!wColumn.getResizable())
 //				continue;

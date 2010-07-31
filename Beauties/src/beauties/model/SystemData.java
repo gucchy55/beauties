@@ -13,7 +13,6 @@ import org.eclipse.swt.widgets.Display;
 
 import beauties.model.db.DbUtil;
 
-
 public class SystemData {
 
 	private static final int mUndefined = -1;
@@ -42,16 +41,17 @@ public class SystemData {
 	private static String mPathMemoDir = "memo";
 
 	private static boolean isDbUpdated = false;
-	
+
 	// for cache
 	private static boolean showGridLine;
 	private static boolean mGridLineIsCached = false;
-	
+
 	private static int mCutOff = mUndefined;
-	
+
 	private static Map<Integer, String> mItemNameMap = new HashMap<Integer, String>();
 	private static Map<Integer, Integer> mCategoryIdMap = new HashMap<Integer, Integer>();
-	
+	private static Map<Integer, String> mCategoryNameMap = new HashMap<Integer, String>();
+
 	private SystemData() {
 	}
 
@@ -183,7 +183,7 @@ public class SystemData {
 	public static void setDbUpdated(boolean pDbUpdated) {
 		isDbUpdated = pDbUpdated;
 	}
-	
+
 	public static boolean getDbUpdated() {
 		return isDbUpdated;
 	}
@@ -192,8 +192,9 @@ public class SystemData {
 		if (!isDbUpdated)
 			return;
 		Runtime wRuntime = Runtime.getRuntime();
-		String wCommand = "mysqldump -u " + mDbUser + " " + (("".equals(mDbPass)) ? "" : "-p" + mDbPass) + " "
-				+ mDbName + " > " + mDbName + ".dump";
+		String wCommand = "mysqldump -u " + mDbUser + " "
+				+ (("".equals(mDbPass)) ? "" : "-p" + mDbPass) + " " + mDbName + " > " + mDbName
+				+ ".dump";
 		String[] wCommands;
 		if (System.getProperty("os.name").contains("Windows")) {
 			wCommands = new String[] { "cmd", "/c", wCommand };
@@ -206,7 +207,7 @@ public class SystemData {
 			System.err.println("DB dump error: " + e.toString());
 		}
 	}
-	
+
 	public static boolean showGridLine() {
 		if (!mGridLineIsCached) {
 			showGridLine = DbUtil.showGridLine();
@@ -214,23 +215,29 @@ public class SystemData {
 		}
 		return showGridLine;
 	}
-	
+
 	public static int getCutOff() {
 		if (mCutOff == mUndefined)
 			mCutOff = DbUtil.getCutOff();
 		return mCutOff;
 	}
-	
+
 	public static String getItemName(int pItemId) {
 		if (mItemNameMap.get(pItemId) == null)
 			mItemNameMap.put(pItemId, DbUtil.getItemNameById(pItemId));
 		return mItemNameMap.get(pItemId);
 	}
-	
+
 	public static int getCategoryByItemId(int pItemId) {
 		if (mCategoryIdMap.get(pItemId) == null)
 			mCategoryIdMap.put(pItemId, DbUtil.getCategoryIdByItemId(pItemId));
 		return mCategoryIdMap.get(pItemId);
+	}
+
+	public static String getCategoryName(int pCategoryId) {
+		if (mCategoryNameMap.get(pCategoryId) == null)
+			mCategoryNameMap.put(pCategoryId, DbUtil.getCategoryNameById(pCategoryId));
+		return mCategoryNameMap.get(pCategoryId);
 	}
 
 	public static void crearCache() {
@@ -238,6 +245,7 @@ public class SystemData {
 		mCutOff = mUndefined;
 		mItemNameMap.clear();
 		mCategoryIdMap.clear();
+		mCategoryNameMap.clear();
 	}
-	
+
 }

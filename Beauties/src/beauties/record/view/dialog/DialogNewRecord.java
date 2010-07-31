@@ -80,9 +80,4 @@ public class DialogNewRecord extends Dialog {
 			return false;
 		}
 	}
-	
-	public int getBookId() {
-		return mBookId;
-	}
-
 }

@@ -26,6 +26,7 @@ import beauties.model.SystemData;
 import beauties.model.db.DbUtil;
 import beauties.record.model.RecordTableItem;
 
+import util.Util;
 import util.view.MyGridData;
 import util.view.MyGridLayout;
 
@@ -39,12 +40,10 @@ class CompositeRecord extends Composite {
 	private RecordTableItem mRecordTableItem;
 
 	private static final String mCategoryAllName = "（すべて）";
-	private static final int mCategoryAllId = -1;
+	private static final int mCategoryAllId = SystemData.getUndefinedInt();
 
 	// Map of ID & Name
 	private Map<Integer, String> mBookNameMap;
-	private Map<Integer, String> mCategoryNameMap;
-	private Map<Integer, String> mItemNameMap;
 
 	// Map of ComboIndex & ID
 	private List<Integer> mBookIdList = new ArrayList<Integer>();
@@ -61,7 +60,6 @@ class CompositeRecord extends Composite {
 	private Combo mNoteCombo;
 	private String[] mNoteItems;
 
-	// private static final int mNoteCandidateCount = 10;
 	private static final int mVisibleComboItemCount = 10;
 
 	public CompositeRecord(Composite pParent, int pBookId) {
@@ -69,9 +67,8 @@ class CompositeRecord extends Composite {
 
 		mBookId = pBookId;
 
-		if (mBookId == SystemData.getAllBookInt()) {
+		if (mBookId == SystemData.getAllBookInt())
 			mBookId = SystemData.getBookMap(false).keySet().iterator().next();
-		}
 
 		mIncome = false;
 		initLayout();
@@ -84,23 +81,125 @@ class CompositeRecord extends Composite {
 		super(pParent, SWT.NONE);
 		mRecordTableItem = pRecordTableItem;
 		mBookId = mRecordTableItem.getBookId();
-		if (DbUtil.isIncomeCategory(SystemData.getCategoryByItemId(mRecordTableItem.getItemId()))) {
-			mIncome = true;
-		} else {
-			mIncome = false;
-		}
+		mIncome = DbUtil.isIncomeCategory(SystemData.getCategoryByItemId(mRecordTableItem.getItemId()));
 		initLayout();
 		initWidgets();
 		setWidgets();
 	}
 
 	private void initLayout() {
-		GridData wGridData;
-
 		GridLayout wGridLayout = new GridLayout(2, false);
 		wGridLayout.verticalSpacing = 10;
 		this.setLayout(wGridLayout);
 
+		initBookCombo();
+
+		initDateTime();
+
+		initInExCombo();
+
+		initCategoryCombo();
+
+		initItemCombo();
+
+		initValueSpinners();
+
+		initNoteCombo();
+
+	}
+
+	private void initNoteCombo() {
+		// Note
+		Label wNoteLabel = new Label(this, SWT.NONE);
+		wNoteLabel.setText("備考");
+
+		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
+		GridData wGridData = new GridData(GridData.FILL_HORIZONTAL);
+		mNoteCombo.setLayoutData(wGridData);
+		mNoteCombo.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent event) {
+				getShell().setImeInputMode(SWT.NATIVE);
+			}
+
+			public void focusLost(FocusEvent event) {
+				getShell().setImeInputMode(SWT.NONE);
+			}
+		});
+	}
+
+	private void initValueSpinners() {
+		Label wValueLabel = new Label(this, SWT.NONE);
+		wValueLabel.setText("金額");
+
+		Composite wValuesRowComp = new Composite(this, SWT.NONE);
+		GridData wGridData = new GridData(GridData.FILL_HORIZONTAL);
+		wValuesRowComp.setLayoutData(wGridData);
+
+		wValuesRowComp.setLayout(new MyGridLayout(4, false).getMyGridLayout());
+		this.setLayoutData(new MyGridData(GridData.BEGINNING, GridData.BEGINNING, true, false)
+				.getMyGridData());
+
+		mValueSpinner = new Spinner(wValuesRowComp, SWT.BORDER);
+		mValueSpinner.setValues(0, 0, Integer.MAX_VALUE, 0, 100, 10);
+		mValueSpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
+
+		Label wSpaceLabel = new Label(wValuesRowComp, SWT.NONE);
+		wSpaceLabel.setText("    ");
+
+		Label wFrequencyLabel = new Label(wValuesRowComp, SWT.NONE);
+		wFrequencyLabel.setText("回数");
+
+		mFrequencySpinner = new Spinner(wValuesRowComp, SWT.BORDER);
+		mFrequencySpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
+	}
+
+	private void initItemCombo() {
+		Label wItemLabel = new Label(this, SWT.NONE);
+		wItemLabel.setText("項目");
+		mItemCombo = new Combo(this, SWT.READ_ONLY);
+	}
+
+	private void initCategoryCombo() {
+		Label wCategoryLabel = new Label(this, SWT.NONE);
+		wCategoryLabel.setText("分類");
+		mCategoryCombo = new Combo(this, SWT.READ_ONLY);
+	}
+
+	private void initInExCombo() {
+		Label wInExLabel = new Label(this, SWT.NONE);
+		wInExLabel.setText("収支");
+
+		mIncomeExpenseCombo = new Combo(this, SWT.READ_ONLY);
+		mIncomeExpenseCombo.add("収入");
+		mIncomeExpenseCombo.add("支出");
+		if (mIncome) {
+			mIncomeExpenseCombo.select(0);
+		} else {
+			mIncomeExpenseCombo.select(1);
+		}
+		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
+			public void modifyText(ModifyEvent e) {
+				modifyIncomeExpense();
+			}
+		});
+	}
+
+	private void initDateTime() {
+		// DateTime
+		Label wDateLabel = new Label(this, SWT.NONE);
+		wDateLabel.setText("日付");
+		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
+		mDateTime.addFocusListener(new FocusListener() {
+			public void focusGained(FocusEvent event) {
+				getShell().setImeInputMode(SWT.NONE);
+			}
+
+			public void focusLost(FocusEvent event) {
+			}
+		});
+	}
+
+	private void initBookCombo() {
 		// BookName
 		Label wBookLabel = new Label(this, SWT.NONE);
 		wBookLabel.setText("帳簿");
@@ -126,106 +225,6 @@ class CompositeRecord extends Composite {
 				modifyBookId();
 			}
 		});
-
-		// DateTime
-		Label wDateLabel = new Label(this, SWT.NONE);
-		wDateLabel.setText("日付");
-		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
-		mDateTime.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-
-			public void focusLost(FocusEvent event) {
-			}
-		});
-
-		// InExLabel
-		Label wInExLabel = new Label(this, SWT.NONE);
-		wInExLabel.setText("収支");
-
-		mIncomeExpenseCombo = new Combo(this, SWT.READ_ONLY);
-		mIncomeExpenseCombo.add("収入");
-		mIncomeExpenseCombo.add("支出");
-		if (mIncome) {
-			mIncomeExpenseCombo.select(0);
-		} else {
-			mIncomeExpenseCombo.select(1);
-		}
-		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
-			public void modifyText(ModifyEvent e) {
-				modifyIncomeExpense();
-			}
-		});
-
-		// Category
-		Label wCategoryLabel = new Label(this, SWT.NONE);
-		wCategoryLabel.setText("分類");
-
-		mCategoryCombo = new Combo(this, SWT.READ_ONLY);
-
-		// Item
-		Label wItemLabel = new Label(this, SWT.NONE);
-		wItemLabel.setText("項目");
-
-		mItemCombo = new Combo(this, SWT.READ_ONLY);
-
-		// Value & Frequency
-		Label wValueLabel = new Label(this, SWT.NONE);
-		wValueLabel.setText("金額");
-
-		Composite wValuesRowComp = new Composite(this, SWT.NONE);
-		wGridData = new GridData(GridData.FILL_HORIZONTAL);
-		wValuesRowComp.setLayoutData(wGridData);
-
-		wValuesRowComp.setLayout(new MyGridLayout(4, false).getMyGridLayout());
-		this.setLayoutData(new MyGridData(GridData.BEGINNING, GridData.BEGINNING, true, false)
-				.getMyGridData());
-
-		mValueSpinner = new Spinner(wValuesRowComp, SWT.BORDER);
-		mValueSpinner.setValues(0, 0, Integer.MAX_VALUE, 0, 100, 10);
-		mValueSpinner.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-
-			public void focusLost(FocusEvent event) {
-			}
-		});
-
-		Label wSpaceLabel = new Label(wValuesRowComp, SWT.NONE);
-		wSpaceLabel.setText("    ");
-
-		Label wFrequencyLabel = new Label(wValuesRowComp, SWT.NONE);
-		wFrequencyLabel.setText("回数");
-
-		mFrequencySpinner = new Spinner(wValuesRowComp, SWT.BORDER);
-		mFrequencySpinner.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-
-			public void focusLost(FocusEvent event) {
-			}
-		});
-
-		// Note
-		Label wNoteLabel = new Label(this, SWT.NONE);
-		wNoteLabel.setText("備考");
-
-		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
-		wGridData = new GridData(GridData.FILL_HORIZONTAL);
-		mNoteCombo.setLayoutData(wGridData);
-		mNoteCombo.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NATIVE);
-			}
-
-			public void focusLost(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-		});
-
 	}
 
 	private void initWidgets() {
@@ -258,22 +257,20 @@ class CompositeRecord extends Composite {
 		mDateTime.setDay(wCal.get(Calendar.DAY_OF_MONTH));
 
 		mItemId = mRecordTableItem.getItemId();
-		if (!mItemIdList.contains(mItemId)) {
+		if (!mItemIdList.contains(mItemId)) 
 			mItemIdList.add(mItemId);
-			mItemNameMap.put(mItemId, SystemData.getItemName(mItemId));
-		}
+
 		mItemCombo.select(mItemIdList.indexOf(mItemId));
 
-		if (mIncome) {
+		if (mIncome)
 			mValueSpinner.setSelection((int) mRecordTableItem.getIncome());
-		} else {
+		else
 			mValueSpinner.setSelection((int) mRecordTableItem.getExpense());
-		}
+
 		mFrequencySpinner.setSelection(mRecordTableItem.getFrequency());
 
-		if (!"".equals(mRecordTableItem.getNote())) {
+		if (!"".equals(mRecordTableItem.getNote()))
 			mNoteCombo.setItem(0, mRecordTableItem.getNote());
-		}
 		mNoteCombo.select(0);
 
 	}
@@ -286,11 +283,7 @@ class CompositeRecord extends Composite {
 	}
 
 	private void modifyIncomeExpense() {
-		if (mIncomeExpenseCombo.getSelectionIndex() == 0) {
-			mIncome = true;
-		} else {
-			mIncome = false;
-		}
+		mIncome = mIncomeExpenseCombo.getSelectionIndex() == 0;
 		updateCategoryCombo();
 		updateItemCombo();
 		updateNoteCombo();
@@ -308,21 +301,19 @@ class CompositeRecord extends Composite {
 	}
 
 	private void updateCategoryCombo() {
-		for (Listener l : mCategoryCombo.getListeners(SWT.Modify)) {
+		for (Listener l : mCategoryCombo.getListeners(SWT.Modify))
 			mCategoryCombo.removeListener(SWT.Modify, l);
-		}
-		mCategoryNameMap = DbUtil.getCategoryNameMap(mBookId, mIncome);
+
 		mCategoryCombo.removeAll();
 		mCategoryIdList.clear();
 
 		mCategoryCombo.add(mCategoryAllName);
 		mCategoryIdList.add(mCategoryAllId);
+		mCategoryIdList.addAll(DbUtil.getCategoryIdList(mBookId, mIncome));
 
-		Iterator<Integer> wKeyIt = mCategoryNameMap.keySet().iterator();
-		while (wKeyIt.hasNext()) {
-			int wCategoryId = wKeyIt.next();
-			mCategoryIdList.add(wCategoryId);
-			mCategoryCombo.add(mCategoryNameMap.get(wCategoryId));
+		for (int wId : mCategoryIdList) {
+			if (wId != mCategoryAllId)
+				mCategoryCombo.add(SystemData.getCategoryName(wId));
 		}
 
 		mCategoryCombo.setVisibleItemCount(mVisibleComboItemCount);
@@ -340,29 +331,21 @@ class CompositeRecord extends Composite {
 	}
 
 	private void updateItemCombo() {
-		for (Listener l : mItemCombo.getListeners(SWT.Modify)) {
+		for (Listener l : mItemCombo.getListeners(SWT.Modify))
 			mItemCombo.removeListener(SWT.Modify, l);
-		}
-		if (mCategoryId == mCategoryAllId) {
-			mItemNameMap = DbUtil.getItemNameMap(mBookId, mIncome);
-		} else {
-			mItemNameMap = DbUtil.getItemNameMap(mBookId, mCategoryId);
-		}
 
+		if (mCategoryId == mCategoryAllId)
+			mItemIdList = DbUtil.getItemIdList(mBookId, mIncome);
+		else
+			mItemIdList = DbUtil.getItemIdList(mBookId, mCategoryId);
+		
 		mItemCombo.removeAll();
-		mItemIdList.clear();
-
-		Iterator<Integer> wKeyIt = mItemNameMap.keySet().iterator();
-		while (wKeyIt.hasNext()) {
-			int wItemId = wKeyIt.next();
-			mItemIdList.add(wItemId);
-			mItemCombo.add(mItemNameMap.get(wItemId));
-		}
+		for (int wId : mItemIdList)
+			mItemCombo.add(SystemData.getItemName(wId));
 
 		mItemCombo.select(0);
-		if (!mItemIdList.isEmpty()) {
+		if (!mItemIdList.isEmpty())
 			mItemId = mItemIdList.get(0);
-		}
 
 		mItemCombo.pack();
 		mItemCombo.setVisibleItemCount(10);
@@ -372,7 +355,6 @@ class CompositeRecord extends Composite {
 				modifyItemId();
 			}
 		});
-
 	}
 
 	private void updateNoteCombo() {
