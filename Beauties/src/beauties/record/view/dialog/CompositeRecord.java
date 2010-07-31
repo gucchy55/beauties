@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.FocusEvent;
@@ -62,7 +61,7 @@ class CompositeRecord extends Composite {
 	private Combo mNoteCombo;
 	private String[] mNoteItems;
 
-//	private static final int mNoteCandidateCount = 10;
+	// private static final int mNoteCandidateCount = 10;
 	private static final int mVisibleComboItemCount = 10;
 
 	public CompositeRecord(Composite pParent, int pBookId) {
@@ -85,8 +84,7 @@ class CompositeRecord extends Composite {
 		super(pParent, SWT.NONE);
 		mRecordTableItem = pRecordTableItem;
 		mBookId = mRecordTableItem.getBookId();
-		if (DbUtil.isIncomeCategory(DbUtil
-				.getCategoryIdByItemId(mRecordTableItem.getItemId()))) {
+		if (DbUtil.isIncomeCategory(SystemData.getCategoryByItemId(mRecordTableItem.getItemId()))) {
 			mIncome = true;
 		} else {
 			mIncome = false;
@@ -181,8 +179,8 @@ class CompositeRecord extends Composite {
 		wValuesRowComp.setLayoutData(wGridData);
 
 		wValuesRowComp.setLayout(new MyGridLayout(4, false).getMyGridLayout());
-		this.setLayoutData(new MyGridData(GridData.BEGINNING,
-				GridData.BEGINNING, true, false).getMyGridData());
+		this.setLayoutData(new MyGridData(GridData.BEGINNING, GridData.BEGINNING, true, false)
+				.getMyGridData());
 
 		mValueSpinner = new Spinner(wValuesRowComp, SWT.BORDER);
 		mValueSpinner.setValues(0, 0, Integer.MAX_VALUE, 0, 100, 10);
@@ -238,15 +236,18 @@ class CompositeRecord extends Composite {
 
 		updateNoteCombo();
 
-//		IControlContentAdapter wContentAdapter = new ComboContentAdapter();
-//		IContentProposalProvider wContentProvider = new IContentProposalProvider() {
-//			public IContentProposal[] getProposals(String contents, int position) {
-//				return Util.createProposals(contents, position, mNoteCombo
-//						.getItems(), mNoteCandidateCount);
-//			}
-//		};
-//		new ContentProposalAdapter(mNoteCombo, wContentAdapter, wContentProvider, null,
-//				null);
+		// IControlContentAdapter wContentAdapter = new ComboContentAdapter();
+		// IContentProposalProvider wContentProvider = new
+		// IContentProposalProvider() {
+		// public IContentProposal[] getProposals(String contents, int position)
+		// {
+		// return Util.createProposals(contents, position, mNoteCombo
+		// .getItems(), mNoteCandidateCount);
+		// }
+		// };
+		// new ContentProposalAdapter(mNoteCombo, wContentAdapter,
+		// wContentProvider, null,
+		// null);
 	}
 
 	private void setWidgets() {
@@ -259,7 +260,7 @@ class CompositeRecord extends Composite {
 		mItemId = mRecordTableItem.getItemId();
 		if (!mItemIdList.contains(mItemId)) {
 			mItemIdList.add(mItemId);
-			mItemNameMap.put(mItemId, DbUtil.getItemNameById(mItemId));
+			mItemNameMap.put(mItemId, SystemData.getItemName(mItemId));
 		}
 		mItemCombo.select(mItemIdList.indexOf(mItemId));
 
@@ -423,15 +424,13 @@ class CompositeRecord extends Composite {
 	}
 
 	private RecordTableItem createNewRecordTableItem() {
-		return new RecordTableItem.Builder(getSelectedBookId(), getSelectedItemId(),
-				new GregorianCalendar(mDateTime
-						.getYear(), mDateTime.getMonth(), mDateTime.getDay())
-						.getTime())
-				.frequency(mFrequencySpinner.getSelection())
-				.note(mNoteCombo.getText())
-				.income(mIncome ? mValueSpinner.getSelection() : 0)
-				.expense(mIncome ? 0 : mValueSpinner.getSelection())
-				.build();
+		return new RecordTableItem.Builder(
+				getSelectedBookId(),
+				getSelectedItemId(),
+				new GregorianCalendar(mDateTime.getYear(), mDateTime.getMonth(), mDateTime.getDay())
+						.getTime()).frequency(mFrequencySpinner.getSelection()).note(
+				mNoteCombo.getText()).income(mIncome ? mValueSpinner.getSelection() : 0).expense(
+				mIncome ? 0 : mValueSpinner.getSelection()).build();
 	}
 
 }

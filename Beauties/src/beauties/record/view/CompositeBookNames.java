@@ -42,10 +42,6 @@ public class CompositeBookNames extends Composite {
 		}
 	}
 	
-	public Map<Integer, String> getBookNameMap() {
-		return mBookNameMap;
-	}
-
 	public Map<Integer, Button> getBookButtonMap() {
 		return mBookButtonMap;
 	}

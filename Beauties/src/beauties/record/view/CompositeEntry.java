@@ -1,7 +1,5 @@
 package beauties.record.view;
 
-import org.eclipse.jface.dialogs.Dialog;
-import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -44,25 +42,14 @@ public class CompositeEntry extends Composite {
 		mCompositeRecordTable.setFocus();
 	}
 	
-	void updateForSearch() {
-		mCompositeActionTab.updateForSearch();
-		mCompositeRecordTable.updateForSearch();
-	}
-
-	public boolean openSearchDialog() {
-		this.getShell().setImeInputMode(SWT.NATIVE);
-		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
-		if (wInputDialog.open() != Dialog.OK) 
-			return false;
-		mCtl.setSearchResult(true);
-		mCtl.updateForSearch(wInputDialog.getValue());
-		this.updateForSearch();
-		return true;
-	}
-	
 	public void updateViewForSearch(boolean pSearch) {
 		mCompositeBookTab.setVisible(!pSearch);
 		mCompositeSummaryTable.setVisible(!pSearch);
+		if (!pSearch)
+			return;
+		mCompositeActionTab.updateForSearch();
+		mCompositeRecordTable.updateForSearch();
+		mCompositeRecordTable.setFocus();
 	}
 	
 	public RecordTableItem getSelectedRecordItem() {

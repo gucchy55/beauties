@@ -10,6 +10,7 @@ import beauties.annual.view.CompositeAnnualMain;
 import beauties.config.view.MyPreferenceManager;
 import beauties.memo.CompositeMemoMain;
 import beauties.model.RightType;
+import beauties.model.SystemData;
 import beauties.record.view.CompositeEntry;
 
 public class InitMainWindow extends Action {
@@ -32,6 +33,7 @@ public class InitMainWindow extends Action {
 		Composite wMainComposite = wMainJfaceWindow.getmMainComposite();
 		if (mInputRightType == RightType.Setting) {
 			new PreferenceDialog(wMainJfaceWindow.getShell(), new MyPreferenceManager()).open();
+			SystemData.crearCache();
 			mInputRightType = RightType.Main;
 			wMainJfaceWindow.setRightType(RightType.Main);
 		}

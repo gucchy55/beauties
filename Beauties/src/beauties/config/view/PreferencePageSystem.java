@@ -12,6 +12,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 
+import beauties.model.SystemData;
 import beauties.model.db.DbUtil;
 
 import util.view.MyGridLayout;
@@ -34,7 +35,7 @@ class PreferencePageSystem extends PreferencePage {
 		// 締め日
 		new Label(wMainComposite, SWT.NONE).setText("締め日: ");
 		mCutOffSpinner = new Spinner(wMainComposite, SWT.BORDER);
-		mCutOffSpinner.setValues(DbUtil.getCutOff(), 1, 31, 0, 1, 10);
+		mCutOffSpinner.setValues(SystemData.getCutOff(), 1, 31, 0, 1, 10);
 		mCutOffSpinner.addFocusListener(new FocusListener() {
 			public void focusGained(FocusEvent event) {
 				getShell().setImeInputMode(SWT.NONE);
@@ -68,7 +69,7 @@ class PreferencePageSystem extends PreferencePage {
 
 		// 罫線表示有無
 		mLineGridCheckButton = new Button(wMainComposite, SWT.CHECK);
-		mLineGridCheckButton.setSelection(DbUtil.showGridLine());
+		mLineGridCheckButton.setSelection(SystemData.showGridLine());
 		mLineGridCheckButton.setText("罫線を表示する");
 		mLineGridCheckButton.setLayoutData(wGridData);
 

@@ -4,9 +4,6 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
-//import model.SystemData;
-
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -20,8 +17,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
 import beauties.model.DateRange;
-import beauties.model.db.DbUtil;
-
+import beauties.model.SystemData;
 import util.Util;
 import util.view.MyGridData;
 import util.view.MyGridLayout;
@@ -32,8 +28,8 @@ public class DialogAnnualPeriod extends Dialog {
 	private Combo mStartMonthCombo;
 	private Spinner mEndYearSpinner;
 	private Combo mEndMonthCombo;
-//	private Date mStartDate;
-//	private Date mEndDate;
+	// private Date mStartDate;
+	// private Date mEndDate;
 	private DateRange mDateRange;
 
 	private CompositeAnnualMain mCompositeAnnualMain;
@@ -47,7 +43,8 @@ public class DialogAnnualPeriod extends Dialog {
 	protected Control createDialogArea(Composite parent) {
 		Composite wComp = (Composite) super.createDialogArea(parent);
 		wComp.setLayout(new MyGridLayout(9, false).getMyGridLayout());
-		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true).getMyGridData();
+		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true)
+				.getMyGridData();
 		wComp.setLayoutData(wGridData);
 
 		Label wLabel1 = new Label(wComp, SWT.NONE);
@@ -67,7 +64,8 @@ public class DialogAnnualPeriod extends Dialog {
 		wLabel.setText("月 〜 ");
 
 		Calendar wCal = Calendar.getInstance();
-		wCal.setTime(Util.getMonthDateRange(mCompositeAnnualMain.getStartDate(), DbUtil.getCutOff()).getEndDate());
+		wCal.setTime(Util.getMonthDateRange(mCompositeAnnualMain.getStartDate(),
+				SystemData.getCutOff()).getEndDate());
 		mStartYearSpinner.setSelection(wCal.get(Calendar.YEAR));
 		mStartMonthCombo.select(wCal.get(Calendar.MONTH));
 
@@ -106,13 +104,17 @@ public class DialogAnnualPeriod extends Dialog {
 	protected void buttonPressed(int pButtonId) {
 		int wReturnCode = IDialogConstants.CANCEL_ID;
 		if (pButtonId == IDialogConstants.OK_ID) { // 0
-			Date wInputStartDate = new GregorianCalendar(mStartYearSpinner.getSelection(), mStartMonthCombo
-					.getSelectionIndex(), 1).getTime();
-			Date wInputEndDate = new GregorianCalendar(mEndYearSpinner.getSelection(), mEndMonthCombo
-					.getSelectionIndex(), 1).getTime();
-//			mStartDate = Util.getMonthDateRange(wInputStartDate, DbUtil.getCutOff()).getStartDate();
-//			mEndDate = Util.getMonthDateRange(wInputEndDate, DbUtil.getCutOff()).getEndDate();
-			mDateRange = new DateRange(Util.getMonthDateRange(wInputStartDate, DbUtil.getCutOff()).getStartDate(), Util.getMonthDateRange(wInputEndDate, DbUtil.getCutOff()).getEndDate());
+			Date wInputStartDate = new GregorianCalendar(mStartYearSpinner.getSelection(),
+					mStartMonthCombo.getSelectionIndex(), 1).getTime();
+			Date wInputEndDate = new GregorianCalendar(mEndYearSpinner.getSelection(),
+					mEndMonthCombo.getSelectionIndex(), 1).getTime();
+			// mStartDate = Util.getMonthDateRange(wInputStartDate,
+			// DbUtil.getCutOff()).getStartDate();
+			// mEndDate = Util.getMonthDateRange(wInputEndDate,
+			// DbUtil.getCutOff()).getEndDate();
+			mDateRange = new DateRange(Util.getMonthDateRange(wInputStartDate,
+					SystemData.getCutOff()).getStartDate(), Util.getMonthDateRange(wInputEndDate,
+					SystemData.getCutOff()).getEndDate());
 			if (mDateRange.getStartDate().after(mDateRange.getEndDate())) {
 				MessageDialog.openWarning(getShell(), "エラー", "不正な期間です");
 				setReturnCode(IDialogConstants.CANCEL_ID);
@@ -127,13 +129,13 @@ public class DialogAnnualPeriod extends Dialog {
 		super.buttonPressed(wReturnCode);
 	}
 
-//	public Date getStartDate() {
-//		return mStartDate;
-//	}
-//
-//	public Date getEndDate() {
-//		return mEndDate;
-//	}
+	// public Date getStartDate() {
+	// return mStartDate;
+	// }
+	//
+	// public Date getEndDate() {
+	// return mEndDate;
+	// }
 	public DateRange getDateRange() {
 		return mDateRange;
 	}

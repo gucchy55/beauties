@@ -14,7 +14,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import beauties.model.db.DbUtil;
+import beauties.model.SystemData;
 import beauties.record.OpenDialogPeriod;
 import beauties.record.RecordController;
 import util.Util;
@@ -23,25 +23,79 @@ import util.view.MyGridLayout;
 
 class CompositeBookTab extends Composite {
 
-	// private Date mEndDate;
-
 	private static final int mPeriodWidthHint = 130;
 	private static final int mArrowWidthHint = 30;
 
 	private Composite mPeriodComp;
 	private CompositeBookNames mBookNameComp;
-	private RecordController mCtl;
+	private RecordController mCTL;
 
 	private Label mThisMonthLabel;
 
-	public CompositeBookTab(Composite pParent, RecordController pCtl) {
+	CompositeBookTab(Composite pParent, RecordController pCTL) {
 		super(pParent, SWT.NONE);
-		mCtl = pCtl;
+		mCTL = pCTL;
 
-		init();
+		create();
 	}
 
-	private void init() {
+	private void create() {
+		initLayout();
+		createPrevMonthButton();
+		createThisMonthLabel();
+		createNextMonthButton();
+		createBookNameComp();
+	}
+
+	private void createNextMonthButton() {
+		Button wNextMonthButton = new Button(mPeriodComp, SWT.ARROW | SWT.RIGHT);
+		wNextMonthButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				mCTL.setDateRange(Util.getMonthDateRange(Util.getAdjusentMonth(mCTL.getDateRange()
+						.getEndDate(), 1), SystemData.getCutOff()));
+				mCTL.updateTable();
+			}
+		});
+		GridData wGridDataArrow = new MyGridData(GridData.FILL, GridData.FILL, false, true)
+				.getMyGridData();
+		wGridDataArrow.widthHint = mArrowWidthHint;
+		wNextMonthButton.setLayoutData(wGridDataArrow);
+	}
+
+	private void createThisMonthLabel() {
+		mThisMonthLabel = new Label(mPeriodComp, SWT.CENTER);
+		updateMonthLabel();
+
+		mThisMonthLabel.addMouseListener(new MouseAdapter() {
+			public void mouseDoubleClick(MouseEvent arg0) {
+				new OpenDialogPeriod(mCTL).run();
+			}
+		});
+
+		GridData wGridDataLabel = new MyGridData(GridData.FILL, GridData.CENTER, true, true)
+				.getMyGridData();
+		mThisMonthLabel.setLayoutData(wGridDataLabel);
+	}
+
+	private void createPrevMonthButton() {
+		Button wPrevMonthButton = new Button(mPeriodComp, SWT.ARROW | SWT.LEFT);
+		wPrevMonthButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				mCTL.setDateRange(Util.getMonthDateRange(Util.getAdjusentMonth(mCTL.getDateRange()
+						.getEndDate(), -1), SystemData.getCutOff()));
+				mCTL.updateTable();
+			}
+		});
+
+		GridData wGridDataArrow = new MyGridData(GridData.FILL, GridData.FILL, false, true)
+				.getMyGridData();
+		wGridDataArrow.widthHint = mArrowWidthHint;
+		wPrevMonthButton.setLayoutData(wGridDataArrow);
+	}
+
+	private void initLayout() {
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, false)
 				.getMyGridData());
@@ -52,82 +106,33 @@ class CompositeBookTab extends Composite {
 				.getMyGridData();
 		wGridData.widthHint = mPeriodWidthHint;
 		mPeriodComp.setLayoutData(wGridData);
+	}
 
-		Button wPrevMonthButton = new Button(mPeriodComp, SWT.ARROW | SWT.LEFT);
-		wPrevMonthButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// mCtl.setMonthPeriod(true);
-				mCtl.setDateRange(Util.getMonthDateRange(Util.getAdjusentMonth(mCtl.getDateRange()
-						.getEndDate(), -1), DbUtil.getCutOff()));
-				mCtl.updateTable();
-			}
-		});
+	private void createBookNameComp() {
+		mBookNameComp = new CompositeBookNames(this, mCTL.getBookId());
 
-		GridData wGridDataArrow = new MyGridData(GridData.FILL, GridData.FILL, false, true)
-				.getMyGridData();
-		wGridDataArrow.widthHint = mArrowWidthHint;
-		wPrevMonthButton.setLayoutData(wGridDataArrow);
-
-		mThisMonthLabel = new Label(mPeriodComp, SWT.CENTER);
-		updateMonthLabel();
-
-		mThisMonthLabel.addMouseListener(new MouseAdapter() {
-			public void mouseDoubleClick(MouseEvent arg0) {
-				new OpenDialogPeriod(mCtl).run();
-			}
-		});
-
-		GridData wGridDataLabel = new MyGridData(GridData.FILL, GridData.CENTER, true, true)
-				.getMyGridData();
-		mThisMonthLabel.setLayoutData(wGridDataLabel);
-
-		Button wNextMonthButton = new Button(mPeriodComp, SWT.ARROW | SWT.RIGHT);
-		wNextMonthButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				// mCtl.setMonthPeriod(true);
-				mCtl.setDateRange(Util.getMonthDateRange(Util.getAdjusentMonth(mCtl.getDateRange()
-						.getEndDate(), 1), DbUtil.getCutOff()));
-				mCtl.updateTable();
-				// UpdateEntry wAdjusentEntry = new UpdateEntry(mCompositeEntry,
-				// Util.getAdjusentMonth(mCtl.getDateRange().getEndDate(), 1));
-				// wAdjusentEntry.run();
-			}
-		});
-		wNextMonthButton.setLayoutData(wGridDataArrow);
-
-		mBookNameComp = new CompositeBookNames(this, mCtl.getBookId());
-
-		mBookNameComp.getBookButtonMap().get(mCtl.getBookId()).setSelection(true);
+		mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setSelection(true);
 		for (Map.Entry<Integer, Button> entry : mBookNameComp.getBookButtonMap().entrySet()) {
 			final int wBookId = entry.getKey();
 			Button wButton = entry.getValue();
-
-			// if (mCtl.getBookId() == wBookId) {
-			// wButton.setSelection(true);
-			// // wButton.setEnabled(false);
-			// } else {
 			wButton.addSelectionListener(new SelectionAdapter() {
 				public void widgetSelected(SelectionEvent e) {
-					if (mCtl.getBookId() == wBookId) {
+					if (mCTL.getBookId() == wBookId) {
 						((Button) e.getSource()).setSelection(true);
 						return;
 					}
-					mBookNameComp.getBookButtonMap().get(mCtl.getBookId()).setSelection(false);
-					mCtl.setBookId(wBookId);
-					mCtl.updateTable();
-					// new UpdateEntry(mCompositeEntry).run();
+					mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setSelection(false);
+					mCTL.setBookId(wBookId);
+					mCTL.updateTable();
 				}
 			});
-			// }
 		}
 	}
 
-	public void updateMonthLabel() {
-		if (mCtl.getMonthPeriod()) {
+	void updateMonthLabel() {
+		if (mCTL.getMonthPeriod()) {
 			DateFormat df = new SimpleDateFormat("yyyy/MM");
-			mThisMonthLabel.setText(df.format(mCtl.getDateRange().getEndDate()));
+			mThisMonthLabel.setText(df.format(mCTL.getDateRange().getEndDate()));
 		} else {
 			mThisMonthLabel.setText("期間指定");
 		}

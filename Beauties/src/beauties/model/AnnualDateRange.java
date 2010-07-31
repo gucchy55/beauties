@@ -3,8 +3,6 @@ package beauties.model;
 import java.util.Date;
 import java.util.List;
 
-import beauties.model.db.DbUtil;
-
 import util.Util;
 
 public class AnnualDateRange {
@@ -18,7 +16,7 @@ public class AnnualDateRange {
 	}
 
 	private void configureDateRangeList() {
-		Date wStartDateNow = Util.getMonthDateRange(new Date(), DbUtil.getCutOff()).getStartDate();
+		Date wStartDateNow = Util.getMonthDateRange(new Date(), SystemData.getCutOff()).getStartDate();
 
 		if (mDateRangeList.size() < 2 || wStartDateNow.before(mDateRangeList.get(1).getStartDate()))
 			return;

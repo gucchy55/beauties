@@ -2,6 +2,9 @@ package beauties.record;
 
 import java.util.Date;
 
+import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Shell;
 
 import util.Util;
@@ -28,7 +31,7 @@ public class RecordController {
 	public RecordController(CompositeEntry pCompositeEntry) {
 		mCompositeEntry = pCompositeEntry;
 		mBookId = SystemData.getBookMap(false).keySet().iterator().next();
-		mDateRange = Util.getMonthDateRange(new Date(), DbUtil.getCutOff());
+		mDateRange = Util.getMonthDateRange(new Date(), SystemData.getCutOff());
 		updateTableItems();
 	}
 
@@ -44,7 +47,7 @@ public class RecordController {
 		mCompositeEntry.updateView();
 	}
 
-	public void updateForSearch(String pQuery) {
+	public void updateItemsForSearch(String pQuery) {
 		RecordTableItem[][] wRecordTableItemAll = DbUtil.getSearchedRecordTableItemList(pQuery);
 		mRecordItemsUp = wRecordTableItemAll[0];
 		mRecordItemsBottom = wRecordTableItemAll[1];
@@ -58,10 +61,6 @@ public class RecordController {
 	public DateRange getDateRange() {
 		return mDateRange;
 	}
-//
-//	public boolean getMonthPeriod() {
-//		return mMonthPeriod;
-//	}
 
 	public boolean getSearchResult() {
 		return mSearchResult;
@@ -129,13 +128,19 @@ public class RecordController {
 	}
 
 	public boolean openSearchDialog() {
-		return mCompositeEntry.openSearchDialog();
+		this.getShell().setImeInputMode(SWT.NATIVE);
+		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
+		if (wInputDialog.open() != Dialog.OK) 
+			return false;
+		this.updateItemsForSearch(wInputDialog.getValue());
+		this.setSearchResult(true);
+		return true;
 	}
 
 	public boolean getMonthPeriod() {
 		if (mMonthPeriod)
 			return true;
-		DateRange wMonthRange = Util.getMonthDateRange(mDateRange.getEndDate(), DbUtil.getCutOff());
+		DateRange wMonthRange = Util.getMonthDateRange(mDateRange.getEndDate(), SystemData.getCutOff());
 		mMonthPeriod = mDateRange.getStartDate().equals(wMonthRange.getStartDate())
 				&& mDateRange.getEndDate().equals(wMonthRange.getEndDate());
 		return mMonthPeriod;

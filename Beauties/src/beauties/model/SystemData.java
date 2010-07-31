@@ -2,6 +2,7 @@ package beauties.model;
 
 import java.io.IOException;
 import java.text.DecimalFormat;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -41,7 +42,16 @@ public class SystemData {
 	private static String mPathMemoDir = "memo";
 
 	private static boolean isDbUpdated = false;
-
+	
+	// for cache
+	private static boolean showGridLine;
+	private static boolean mGridLineIsCached = false;
+	
+	private static int mCutOff = mUndefined;
+	
+	private static Map<Integer, String> mItemNameMap = new HashMap<Integer, String>();
+	private static Map<Integer, Integer> mCategoryIdMap = new HashMap<Integer, Integer>();
+	
 	private SystemData() {
 	}
 
@@ -196,5 +206,38 @@ public class SystemData {
 			System.err.println("DB dump error: " + e.toString());
 		}
 	}
+	
+	public static boolean showGridLine() {
+		if (!mGridLineIsCached) {
+			showGridLine = DbUtil.showGridLine();
+			mGridLineIsCached = true;
+		}
+		return showGridLine;
+	}
+	
+	public static int getCutOff() {
+		if (mCutOff == mUndefined)
+			mCutOff = DbUtil.getCutOff();
+		return mCutOff;
+	}
+	
+	public static String getItemName(int pItemId) {
+		if (mItemNameMap.get(pItemId) == null)
+			mItemNameMap.put(pItemId, DbUtil.getItemNameById(pItemId));
+		return mItemNameMap.get(pItemId);
+	}
+	
+	public static int getCategoryByItemId(int pItemId) {
+		if (mCategoryIdMap.get(pItemId) == null)
+			mCategoryIdMap.put(pItemId, DbUtil.getCategoryIdByItemId(pItemId));
+		return mCategoryIdMap.get(pItemId);
+	}
 
+	public static void crearCache() {
+		mGridLineIsCached = false;
+		mCutOff = mUndefined;
+		mItemNameMap.clear();
+		mCategoryIdMap.clear();
+	}
+	
 }

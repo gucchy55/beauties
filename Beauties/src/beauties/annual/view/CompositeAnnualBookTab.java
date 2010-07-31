@@ -18,7 +18,7 @@ import org.eclipse.swt.widgets.Label;
 import beauties.annual.OpenDialogAnnualPeriod;
 import beauties.annual.UpdateAnnual;
 import beauties.model.DateRange;
-import beauties.model.db.DbUtil;
+import beauties.model.SystemData;
 import beauties.record.view.CompositeBookNames;
 import util.Util;
 import util.view.MyGridData;
@@ -59,11 +59,11 @@ class CompositeAnnualBookTab extends Composite {
 								Util.getMonthDateRange(
 										Util.getAdjusentMonth(mCompositeAnnualMain.getStartDate(),
 												-mCompositeAnnualMain.getMonthCount()),
-										DbUtil.getCutOff()).getStartDate(),
+										SystemData.getCutOff()).getStartDate(),
 								Util.getMonthDateRange(
 										Util.getAdjusentMonth(mCompositeAnnualMain.getEndDate(),
 												-mCompositeAnnualMain.getMonthCount()),
-										DbUtil.getCutOff()).getEndDate()));
+										SystemData.getCutOff()).getEndDate()));
 				new UpdateAnnual(mCompositeAnnualMain).run();
 			}
 		});
@@ -77,7 +77,7 @@ class CompositeAnnualBookTab extends Composite {
 		if (mCompositeAnnualMain.isAnnualPeriod()) {
 			DateFormat df = new SimpleDateFormat("yyyy年");
 			wThisMonthLabel.setText(df.format(Util.getMonthDateRange(
-					mCompositeAnnualMain.getStartDate(), DbUtil.getCutOff()).getEndDate()));
+					mCompositeAnnualMain.getStartDate(), SystemData.getCutOff()).getEndDate()));
 		} else {
 			wThisMonthLabel.setText("期間指定");
 		}
@@ -99,12 +99,12 @@ class CompositeAnnualBookTab extends Composite {
 				mCompositeAnnualMain.setDateRange(new DateRange(
 						Util.getMonthDateRange(
 								Util.getAdjusentMonth(mCompositeAnnualMain.getStartDate(),
-										mCompositeAnnualMain.getMonthCount()), DbUtil.getCutOff())
+										mCompositeAnnualMain.getMonthCount()), SystemData.getCutOff())
 								.getStartDate(),
 							Util.getMonthDateRange(
 									Util.getAdjusentMonth(mCompositeAnnualMain.getEndDate(),
 											mCompositeAnnualMain.getMonthCount()),
-									DbUtil.getCutOff())
+									SystemData.getCutOff())
 									.getEndDate()));
 				new UpdateAnnual(mCompositeAnnualMain).run();
 			}

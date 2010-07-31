@@ -11,6 +11,7 @@ import org.eclipse.swt.widgets.Label;
 
 import beauties.annual.UpdateAnnual;
 import beauties.annual.model.AnnualViewType;
+import beauties.model.SystemData;
 import beauties.model.db.DbUtil;
 
 import util.Util;
@@ -48,7 +49,7 @@ class CompositeAnnualActionTab extends Composite {
 				public void widgetSelected(SelectionEvent e) {
 					mCompositeAnnualMain.setAnnualPeriod(true);
 					mCompositeAnnualMain.setMonthCount(12);
-					mCompositeAnnualMain.setDateRange(Util.getFiscalDateRange(DbUtil.getCutOff(), DbUtil.getFisCalMonth()));
+					mCompositeAnnualMain.setDateRange(Util.getFiscalDateRange(SystemData.getCutOff(), DbUtil.getFisCalMonth()));
 //					DateRange wDateRange = Util.getFiscalPeriod(DbUtil.getCutOff());
 //					mCompositeAnnualMain.setStartDate(wDateRange.getStartDate());
 //					mCompositeAnnualMain.setEndDate(wDateRange.getEndDate());

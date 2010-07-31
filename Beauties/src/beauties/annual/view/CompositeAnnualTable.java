@@ -61,7 +61,7 @@ class CompositeAnnualTable extends Composite {
 		// 年月列テーブル
 		TableViewer wRowHeader = new TableViewer(this, SWT.MULTI | SWT.BORDER | SWT.VIRTUAL);
 		mRowHeaderTable = wRowHeader.getTable();
-		mRowHeaderTable.setLinesVisible(DbUtil.showGridLine());
+		mRowHeaderTable.setLinesVisible(SystemData.showGridLine());
 		mRowHeaderTable.setHeaderVisible(true);
 
 		MyGridData wRowHeaderGridData = new MyGridData(GridData.BEGINNING, GridData.BEGINNING,
@@ -78,7 +78,7 @@ class CompositeAnnualTable extends Composite {
 
 		if (mCompositeAnnualMain.getDateRange() == null) {
 			wDateRangeList = Util.getDateRangeListByMonthCnt(Util.getMonthDateRange(new Date(),
-					DbUtil.getCutOff()).getEndDate(), mCompositeAnnualMain.getMonthCount(), DbUtil
+					SystemData.getCutOff()).getEndDate(), mCompositeAnnualMain.getMonthCount(), SystemData
 					.getCutOff());
 			mCompositeAnnualMain.setDateRange(new DateRange(wDateRangeList.get(0).getStartDate(),
 					wDateRangeList.get(wDateRangeList.size() - 1).getEndDate()));
@@ -88,7 +88,7 @@ class CompositeAnnualTable extends Composite {
 
 		} else {
 			wDateRangeList = Util.getMonthDateRangeListFromLongRange(mCompositeAnnualMain
-					.getDateRange(), DbUtil.getCutOff());
+					.getDateRange(), SystemData.getCutOff());
 		}
 
 		if (!mCompositeAnnualMain.isAnnualPeriod()) {
@@ -126,7 +126,7 @@ class CompositeAnnualTable extends Composite {
 				.getMyGridData());
 
 		// 線を表示する
-		mMainTable.setLinesVisible(DbUtil.showGridLine());
+		mMainTable.setLinesVisible(SystemData.showGridLine());
 		// ヘッダを可視にする
 		mMainTable.setHeaderVisible(true);
 

@@ -21,7 +21,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import beauties.model.SystemData;
-import beauties.model.db.DbUtil;
 import beauties.record.DeleteRecord;
 import beauties.record.OpenDialogModifyMove;
 import beauties.record.OpenDialogModifyRecord;
@@ -41,7 +40,7 @@ class RecordTableViewer extends TableViewer {
 	private TableColumn mBookCol;
 	private TableColumn mDateCol;
 
-	public RecordTableViewer(Composite pComp, RecordController pCtl) {
+	RecordTableViewer(Composite pComp, RecordController pCtl) {
 		super(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
 
 		mCtl = pCtl;
@@ -51,7 +50,7 @@ class RecordTableViewer extends TableViewer {
 		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
 				.getMyGridData());
 		// 線を表示する
-		wTable.setLinesVisible(DbUtil.showGridLine());
+		wTable.setLinesVisible(SystemData.showGridLine());
 		// ヘッダを可視にする
 		wTable.setHeaderVisible(true);
 
@@ -87,7 +86,7 @@ class RecordTableViewer extends TableViewer {
 		wNoteCol.setWidth(250);
 	}
 
-	public void setRecordTableItem(RecordTableItem[] pRecordTableItems) {
+	void setRecordTableItem(RecordTableItem[] pRecordTableItems) {
 
 		final Table wTable = this.getTable();
 		mRecordTableItems = pRecordTableItems;

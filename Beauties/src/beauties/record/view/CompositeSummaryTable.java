@@ -19,7 +19,6 @@ import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
 import beauties.model.SystemData;
-import beauties.model.db.DbUtil;
 import beauties.record.RecordController;
 import beauties.record.model.SummaryTableItem;
 
@@ -30,23 +29,19 @@ class CompositeSummaryTable extends Composite {
 
 	private static final int mRightWidthHint = 200;
 
-	private RecordController mCtl;
-	private SummaryTableItem[] mSummaryTableItems;
+	private RecordController mCTL;
 	private TableViewer mSummaryTableViewer;
 	private ISelectionChangedListener mSelectionChangedListener;
 
-	public CompositeSummaryTable(Composite pParent, RecordController pCtl) {
+	CompositeSummaryTable(Composite pParent, RecordController pCTL) {
 		super(pParent, SWT.NONE);
-		mCtl = pCtl;
-		mSummaryTableItems = mCtl.getSummaryTableItems();
-		
+		mCTL = pCTL;
 		mSelectionChangedListener = new ISelectionChangedListener() {
 			@Override
 			public void selectionChanged(SelectionChangedEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				SummaryTableItem wTableItem = (SummaryTableItem) sel.getFirstElement();
 				CompositeEntry wParent = (CompositeEntry) getParent();
-
 				wParent.updateRecordFilter(wTableItem.getRecordTableItemFilter());
 			}
 		};
@@ -66,7 +61,7 @@ class CompositeSummaryTable extends Composite {
 				.getMyGridData());
 
 		// 線を表示する
-		wTable.setLinesVisible(DbUtil.showGridLine());
+		wTable.setLinesVisible(SystemData.showGridLine());
 		// ヘッダを可視にする
 		wTable.setHeaderVisible(true);
 
@@ -80,7 +75,7 @@ class CompositeSummaryTable extends Composite {
 		wValueCol.setWidth(80);
 
 		mSummaryTableViewer.setContentProvider(new SummaryTableContentProvider());
-		mSummaryTableViewer.setInput(mSummaryTableItems);
+		mSummaryTableViewer.setInput(mCTL.getSummaryTableItems());
 
 		mSummaryTableViewer.setLabelProvider(new SummaryTableLabelProvider());
 
@@ -89,14 +84,12 @@ class CompositeSummaryTable extends Composite {
 		mSummaryTableViewer.addSelectionChangedListener(mSelectionChangedListener);
 	}
 
-	public void updateTable() {
-		mSummaryTableItems = mCtl.getSummaryTableItems();
-		
+	void updateTable() {
 		mSummaryTableViewer.removeSelectionChangedListener(mSelectionChangedListener);
-		mSummaryTableViewer.setContentProvider(new SummaryTableContentProvider());
-		mSummaryTableViewer.setInput(mSummaryTableItems);
-		mSummaryTableViewer.setLabelProvider(new SummaryTableLabelProvider());
-		mSummaryTableViewer.setInput(mSummaryTableItems);
+//		mSummaryTableViewer.setContentProvider(new SummaryTableContentProvider());
+//		mSummaryTableViewer.setInput(mCTL.getSummaryTableItems());
+//		mSummaryTableViewer.setLabelProvider(new SummaryTableLabelProvider());
+		mSummaryTableViewer.setInput(mCTL.getSummaryTableItems());
 		mSummaryTableViewer.addSelectionChangedListener(mSelectionChangedListener);
 		mSummaryTableViewer.refresh();
 	}
@@ -125,11 +118,6 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		switch (columnIndex) {
 		case 0:
 			return wItem.getName();
-			// if (wItem.getItemId() == SystemData.getUndefinedInt()) {
-			// return wItem.getItemName();
-			// } else {
-			// return ("  " + wItem.getItemName());
-			// }
 		case 1:
 			return SystemData.getFormatedFigures(wItem.getValue());
 		}
@@ -152,24 +140,6 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 	@Override
 	public Color getBackground(Object pElement, int pColumnIndex) {
 		return ((SummaryTableItem) pElement).getEntryColor();
-		// SummaryTableItem wItem = (SummaryTableItem) pElement;
-		//		
-		// if (wItem.isAppearedSum()) {
-		// // みかけ収支（赤）
-		// return SystemData.getColorRed();
-		// } else if (wItem.isAppearedIncomeExpense()) {
-		// // みかけ収入、支出（緑）
-		// return SystemData.getColorGreen();
-		// } else if (wItem.isSpecial()) {
-		// // 残高、営業収支等（青）
-		// return SystemData.getColorBlue();
-		// } else if (wItem.isCategory()) {
-		// // カテゴリ（黄色）
-		// return SystemData.getColorYellow();
-		// } else {
-		// // アイテム（グレー）
-		// return SystemData.getColorGray();
-		// }
 	}
 
 	@Override

@@ -1,6 +1,5 @@
 package beauties.record.view;
 
-
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
@@ -22,66 +21,79 @@ import util.view.MyGridLayout;
 
 class CompositeRecordTable extends Composite {
 
-	private RecordTableItem[] mRecordItemsUp;
-	private RecordTableItem[] mRecordItemsBottom;
-	
-	private RecordController mCtl;
+	private RecordController mCTL;
 
 	private RecordTableViewer mTableUp;
 	private RecordTableViewer mTableBottom;
 	private SashForm mSashForm;
 
-	public CompositeRecordTable(Composite pParent, RecordController pCtl) {
+	CompositeRecordTable(Composite pParent, RecordController pCTL) {
 		super(pParent, SWT.NONE);
-		mCtl = pCtl;
-		updateItems();
+		mCTL = pCTL;
+		create();
+	}
+
+	void updateTable() {
+		mTableUp.updateTableItem(mCTL.getRecordItemsUp());
+		mTableBottom.updateTableItem(mCTL.getRecordItemsBottom());
+	}
+
+	private void create() {
 		initLayout();
-	}
-	
-	public void updateTable() {
-		updateItems();
-		mTableUp.updateTableItem(mRecordItemsUp);
-		mTableBottom.updateTableItem(mRecordItemsBottom);
-	}
-	
-	private void updateItems() {
-		mRecordItemsUp = mCtl.getRecordItemsUp();
-		
-		mRecordItemsBottom = mCtl.getRecordItemsBottom();
-		
-	}
 
-	private void initLayout() {
-		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		this
-				.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
-						.getMyGridData());
+		createTableUp();
 
-		mSashForm = new SashForm(this, SWT.VERTICAL);
-		mSashForm.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		mSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
-				.getMyGridData());
+		Composite wBottomComp = createBottomComp();
 
-		mTableUp = new RecordTableViewer(mSashForm, mCtl);
-		mTableUp.setRecordTableItem(mRecordItemsUp);
-		mTableUp.getTable().setSelection(0);
-		mTableUp.getTable().setFocus();
+		createMiddleLabel(wBottomComp);
 
-		Composite wBottomComp = new Composite(mSashForm, SWT.NONE);
-		wBottomComp.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
-				.getMyGridData());
+		createTableButtom(wBottomComp);
 
 		mSashForm.setWeights(SystemData.getRecordTableWeights());
 
+		addFocusListenerToTableUp();
+		addFocusListenerToTableBottom();
+	}
+
+	private void createTableButtom(Composite wBottomComp) {
+		mTableBottom = new RecordTableViewer(wBottomComp, mCTL);
+		mTableBottom.setRecordTableItem(mCTL.getRecordItemsBottom());
+	}
+
+	private void createMiddleLabel(Composite wBottomComp) {
 		Label wLabel = new Label(wBottomComp, SWT.NONE);
 		wLabel.setText("当月の収支予定");
 		wLabel.setLayoutData(new MyGridData(GridData.FILL, GridData.CENTER, true, false)
 				.getMyGridData());
+	}
 
-		mTableBottom = new RecordTableViewer(wBottomComp, mCtl);
-		mTableBottom.setRecordTableItem(mRecordItemsBottom);
+	private void addFocusListenerToTableBottom() {
+		mTableBottom.getTable().addFocusListener(new FocusListener() {
+			public void focusLost(FocusEvent arg0) {
+			}
 
+			public void focusGained(FocusEvent arg0) {
+				mTableUp.getTable().deselectAll();
+			}
+		});
+	}
+
+	private void addFocusListenerToTableUp() {
+		mTableUp.getTable().addFocusListener(new FocusListener() {
+			public void focusLost(FocusEvent arg0) {
+			}
+
+			public void focusGained(FocusEvent arg0) {
+				mTableBottom.getTable().deselectAll();
+			}
+		});
+	}
+
+	private Composite createBottomComp() {
+		Composite wBottomComp = new Composite(mSashForm, SWT.NONE);
+		wBottomComp.setLayout(new MyGridLayout(1, false).getMyGridLayout());
+		wBottomComp.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+				.getMyGridData());
 		wBottomComp.addControlListener(new ControlListener() {
 
 			@Override
@@ -94,23 +106,26 @@ class CompositeRecordTable extends Composite {
 
 			}
 		});
+		return wBottomComp;
+	}
 
-		mTableUp.getTable().addFocusListener(new FocusListener() {
-			public void focusLost(FocusEvent arg0) {
-			}
+	private void createTableUp() {
+		mTableUp = new RecordTableViewer(mSashForm, mCTL);
+		mTableUp.setRecordTableItem(mCTL.getRecordItemsUp());
+		mTableUp.getTable().setSelection(0);
+		mTableUp.getTable().setFocus();
+	}
 
-			public void focusGained(FocusEvent arg0) {
-				mTableBottom.getTable().deselectAll();
-			}
-		});
-		mTableBottom.getTable().addFocusListener(new FocusListener() {
-			public void focusLost(FocusEvent arg0) {
-			}
+	private void initLayout() {
+		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
+		this
+				.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+						.getMyGridData());
 
-			public void focusGained(FocusEvent arg0) {
-				mTableUp.getTable().deselectAll();
-			}
-		});
+		mSashForm = new SashForm(this, SWT.VERTICAL);
+		mSashForm.setLayout(new MyGridLayout(1, false).getMyGridLayout());
+		mSashForm.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+				.getMyGridData());
 
 	}
 
@@ -148,10 +163,5 @@ class CompositeRecordTable extends Composite {
 
 	void updateForSearch() {
 		updateTable();
-//		mRecordItemsUp = pRecordTableItems[0];
-//		mRecordItemsBottom = pRecordTableItems[1];
-//		mSashForm.dispose();
-//		initLayout();
-//		this.layout();
 	}
 }

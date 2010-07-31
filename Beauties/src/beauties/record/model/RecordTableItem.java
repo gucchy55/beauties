@@ -79,14 +79,14 @@ public final class RecordTableItem {
 	public String getItemName() {
 		if (this.isBalanceRow)
 			return mBalanceItem;
-		return DbUtil.getItemNameById(mItemId);
+		return SystemData.getItemName(mItemId);
 	}
 
 	public int getCategoryId() {
 		// return mCategoryId;
 		if (this.isBalanceRow)
 			return SystemData.getUndefinedInt();
-		return DbUtil.getCategoryIdByItemId(mItemId);
+		return SystemData.getCategoryByItemId(mItemId);
 	}
 
 	public int getGroupId() {
@@ -211,6 +211,10 @@ public final class RecordTableItem {
 		
 		public RecordTableItem build() {
 			return new RecordTableItem(this);
+		}
+		
+		public boolean isMoveRecord() {
+			return DbUtil.isMoveRecord(this.mActId);
 		}
 	}
 	
