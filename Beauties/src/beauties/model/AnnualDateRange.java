@@ -43,7 +43,7 @@ public class AnnualDateRange {
 	}
 
 	private void addSummationRanges(int pIndex) {
-		DateRange wWholeRange = new DateRange(getStartDate(), getEndDate());
+		DateRange wWholeRange = new DateRange(getStartDate(), mDateRangeList.get(pIndex - 1).getEndDate());
 		mSumIndex = pIndex;
 		mAveIndex = pIndex + 1;
 		for (int i = 0; i < 2; i++)

@@ -11,7 +11,6 @@ import beauties.record.view.dialog.DialogPeriod;
 
 public class OpenDialogPeriod extends Action {
 
-//	private CompositeEntry mCompositeEntry;
 	private RecordController mCtl; 
 
 	public OpenDialogPeriod(RecordController pCtl) {
@@ -25,12 +24,9 @@ public class OpenDialogPeriod extends Action {
 		int wRet = wDialogPeriod.open();
 
 		if (wRet == IDialogConstants.OK_ID) { // Updated
-//			mCompositeEntry.setStartDate(wDialogPeriod.getStartDate());
-//			mCompositeEntry.setEndDate(wDialogPeriod.getEndDate());
 			mCtl.setDateRange(new DateRange(wDialogPeriod.getStartDate(), wDialogPeriod.getEndDate()));
 			mCtl.setMonthPeriod(false);
 			mCtl.updateTable();
-//			new UpdateEntry(mCompositeEntry).run();
 		}
 	}
 }

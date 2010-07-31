@@ -129,7 +129,7 @@ class CompositeRecordTable extends Composite {
 		return !getSelectedRecordItem().isBalanceRow();
 	}
 
-	public void updateRecordFilter(ViewerFilter pFilter) {
+	void updateRecordFilter(ViewerFilter pFilter) {
 		removeFilter();
 		if (pFilter != null) {
 			mTableUp.addFilter(pFilter);
@@ -137,7 +137,7 @@ class CompositeRecordTable extends Composite {
 		}
 	}
 
-	public void removeFilter() {
+	private void removeFilter() {
 		if (mTableUp.getFilters().length > 0)
 			for (ViewerFilter vf : mTableUp.getFilters())
 				mTableUp.removeFilter(vf);

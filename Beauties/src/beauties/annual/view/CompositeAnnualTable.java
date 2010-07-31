@@ -131,7 +131,7 @@ class CompositeAnnualTable extends Composite {
 		mMainTable.setHeaderVisible(true);
 
 		// 格納する値の取得
-		mSummaryTableItems = new ArrayList<SummaryTableItem[]>();
+//		mSummaryTableItems = new ArrayList<SummaryTableItem[]>();
 		if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Original) {
 			mSummaryTableItems = DbUtil.getAnnualSummaryTableItemsOriginal(wAnnualDateRange);
 		} else if (mCompositeAnnualMain.getAnnualViewType() == AnnualViewType.Category) {

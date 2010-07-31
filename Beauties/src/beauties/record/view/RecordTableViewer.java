@@ -3,7 +3,6 @@ package beauties.record.view;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 
-
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
@@ -38,7 +37,7 @@ class RecordTableViewer extends TableViewer {
 
 	private RecordController mCtl;
 	private RecordTableItem[] mRecordTableItems;
-	
+
 	private TableColumn mBookCol;
 	private TableColumn mDateCol;
 
@@ -49,7 +48,8 @@ class RecordTableViewer extends TableViewer {
 
 		// テーブルの作成
 		Table wTable = this.getTable();
-		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+				.getMyGridData());
 		// 線を表示する
 		wTable.setLinesVisible(DbUtil.showGridLine());
 		// ヘッダを可視にする
@@ -58,12 +58,9 @@ class RecordTableViewer extends TableViewer {
 		// 列のヘッダの設定
 		mBookCol = new TableColumn(wTable, SWT.LEFT);
 		mBookCol.setText("帳簿");
-		
 
 		mDateCol = new TableColumn(wTable, SWT.CENTER);
 		mDateCol.setText("日付");
-		
-		updateColumnWidths();
 
 		TableColumn wItemNameCol = new TableColumn(wTable, SWT.LEFT);
 		wItemNameCol.setText("項目");
@@ -93,11 +90,14 @@ class RecordTableViewer extends TableViewer {
 	public void setRecordTableItem(RecordTableItem[] pRecordTableItems) {
 
 		final Table wTable = this.getTable();
-		this.setContentProvider(new TableContentProvider());
 		mRecordTableItems = pRecordTableItems;
+
+		this.setContentProvider(new TableContentProvider());
 		this.setInput(mRecordTableItems);
 
 		this.setLabelProvider(new TableLabelProvider(mCtl.showYear()));
+		this.setInput(mRecordTableItems);
+		updateColumnWidths();
 
 		this.addDoubleClickListener(new IDoubleClickListener() {
 			public void doubleClick(DoubleClickEvent event) {
@@ -151,23 +151,23 @@ class RecordTableViewer extends TableViewer {
 	boolean hasSelectedItem() {
 		return this.getTable().getItemCount() != 0 && !this.getSelection().isEmpty();
 	}
-	
+
 	void updateColumnWidths() {
 		mBookCol.setWidth(mCtl.showBookColumn() ? 60 : 0);
 		mBookCol.setResizable(mCtl.showBookColumn());
 		mDateCol.setWidth(mCtl.showYear() ? 80 : 62);
+//		for (TableColumn wColumn : this.getTable().getColumns()) {
+//			if (!wColumn.getResizable())
+//				continue;
+//			wColumn.pack();
+//		}
 	}
-	
+
 	void updateTableItem(RecordTableItem[] pRecordTableItems) {
-//		this.remove(mRecordTableItems);
-//		this.setContentProvider(new TableContentProvider());
 		mRecordTableItems = pRecordTableItems;
-		this.setContentProvider(new TableContentProvider());
 		this.setInput(mRecordTableItems);
-		this.setLabelProvider(new TableLabelProvider(mCtl.showYear()));
-		this.setInput(mRecordTableItems);
-		updateColumnWidths();
 		this.refresh();
+		updateColumnWidths();
 	}
 }
 
@@ -192,6 +192,7 @@ class TableLabelProvider implements ITableLabelProvider {
 	public TableLabelProvider(boolean showYear) {
 		this.showYear = showYear;
 	}
+
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
@@ -205,7 +206,8 @@ class TableLabelProvider implements ITableLabelProvider {
 			if (this.showYear)
 				return mDateFormatLong.format(wRecord.getDate());
 			else
-				return mDateFormat.format(wRecord.getDate()) + "(" + Util.getDayOfTheWeekShort(wRecord.getDate()) + ")";
+				return mDateFormat.format(wRecord.getDate()) + "("
+						+ Util.getDayOfTheWeekShort(wRecord.getDate()) + ")";
 		case 2:
 			return wRecord.getItemName();
 		case 3:
@@ -234,7 +236,7 @@ class TableLabelProvider implements ITableLabelProvider {
 
 	public void removeListener(ILabelProviderListener listener) {
 	}
-	
+
 	private String getNumerical(int pValue) {
 		if (pValue == 0)
 			return "";
@@ -243,27 +245,27 @@ class TableLabelProvider implements ITableLabelProvider {
 
 }
 
-//class IdFilter extends ViewerFilter {
+// class IdFilter extends ViewerFilter {
 //
-//	private CompositeEntry mCompositeEntry;
+// private CompositeEntry mCompositeEntry;
 //
-//	public IdFilter(CompositeEntry pCompositeEntry) {
-//		mCompositeEntry = pCompositeEntry;
-//	}
+// public IdFilter(CompositeEntry pCompositeEntry) {
+// mCompositeEntry = pCompositeEntry;
+// }
 //
-//	public boolean select(Viewer pViewer, Object pParent, Object pElement) {
-//		RecordTableItem wRecord = (RecordTableItem) pElement;
-//		if (mCompositeEntry.getCategoryId() != SystemData.getUndefinedInt()) {
-//			return (wRecord.getCategoryId() == mCompositeEntry.getCategoryId());
-//		} else if (mCompositeEntry.getItemId() != SystemData.getUndefinedInt()) {
-//			return (wRecord.getItemId() == mCompositeEntry.getItemId());
-//		} else if (mCompositeEntry.isAllIncome()) {
-//			return (wRecord.isIncome());
-//		} else if (mCompositeEntry.isAllExpense()) {
-//			return (wRecord.isExpense());
-//		} else {
-//			return true;
-//		}
-//	}
+// public boolean select(Viewer pViewer, Object pParent, Object pElement) {
+// RecordTableItem wRecord = (RecordTableItem) pElement;
+// if (mCompositeEntry.getCategoryId() != SystemData.getUndefinedInt()) {
+// return (wRecord.getCategoryId() == mCompositeEntry.getCategoryId());
+// } else if (mCompositeEntry.getItemId() != SystemData.getUndefinedInt()) {
+// return (wRecord.getItemId() == mCompositeEntry.getItemId());
+// } else if (mCompositeEntry.isAllIncome()) {
+// return (wRecord.isIncome());
+// } else if (mCompositeEntry.isAllExpense()) {
+// return (wRecord.isExpense());
+// } else {
+// return true;
+// }
+// }
 //
-//}
+// }
