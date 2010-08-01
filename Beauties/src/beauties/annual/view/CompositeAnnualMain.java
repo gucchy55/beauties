@@ -12,6 +12,8 @@ public class CompositeAnnualMain extends Composite {
 
 	private AnnualController mCTL;
 	private CompositeAnnualTable mCompositeAnnualTable;
+	private CompositeAnnualActionTab mCompositeAnnualActionTab;
+	private CompositeAnnualBookTab mCompositeAnnualBookTab;
 	
 	public CompositeAnnualMain(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -25,8 +27,8 @@ public class CompositeAnnualMain extends Composite {
 
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		new CompositeAnnualBookTab(this, mCTL);
-		new CompositeAnnualActionTab(this, mCTL);
+		mCompositeAnnualBookTab = new CompositeAnnualBookTab(this, mCTL);
+		mCompositeAnnualActionTab = new CompositeAnnualActionTab(this, mCTL);
 
 		mCompositeAnnualTable = new CompositeAnnualTable(this, mCTL);
 
@@ -40,12 +42,13 @@ public class CompositeAnnualMain extends Composite {
 //		mCompositeAnnualTable.updateTable();
 //	}
 	
-	public void recreateMainTable() {
+	public void updateTable() {
+		mCompositeAnnualBookTab.updateView();
+		mCompositeAnnualActionTab.updateFiscalButton();
 		mCompositeAnnualTable.recreateMainTable();
 	}
 	
 	public void copyToClipboard() {
 		mCompositeAnnualTable.copySelectedTextToClipboard();
 	}
-
 }

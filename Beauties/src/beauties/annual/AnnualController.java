@@ -78,7 +78,7 @@ public class AnnualController {
 	
 	public void recreateMainTable() {
 		updateTableItems();
-		mCompositeAnnualMain.recreateMainTable();
+		mCompositeAnnualMain.updateTable();
 	}
 
 	public int getBookId() {

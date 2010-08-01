@@ -1,5 +1,8 @@
 package beauties.annual.view;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -17,11 +20,14 @@ import util.view.MyRowLayout;
 class CompositeAnnualActionTab extends Composite {
 
 	private AnnualController mCTL;
+	private Map<AnnualViewType, Button> mAnnualViewTypeMap;
+	private Button mFiscalButton;
 
 	CompositeAnnualActionTab(Composite pParent, AnnualController pCTL) {
 		super(pParent, SWT.NONE);
 		mCTL = pCTL;
-
+		mAnnualViewTypeMap = new HashMap<AnnualViewType, Button>();
+		
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false)
 				.getMyGridData());
@@ -48,9 +54,9 @@ class CompositeAnnualActionTab extends Composite {
 	}
 
 	private void createFiscalButton() {
-		Button wAnnualPeriodButton = new Button(this, SWT.TOGGLE);
-		wAnnualPeriodButton.setText("年度表示");
-		wAnnualPeriodButton.addSelectionListener(new SelectionAdapter() {
+		mFiscalButton = new Button(this, SWT.TOGGLE);
+		mFiscalButton.setText("年度表示");
+		mFiscalButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				mCTL.setFiscalPeriod(((Button) e.getSource()).getSelection());
@@ -73,10 +79,12 @@ class CompositeAnnualActionTab extends Composite {
 					((Button) e.getSource()).setSelection(true);
 					return;
 				}
+				mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setSelection(false);
 				mCTL.setAnnualViewType(AnnualViewType.Category);
 				mCTL.recreateMainTable();
 			}
 		});
+		mAnnualViewTypeMap.put(AnnualViewType.Category, wCategoryButton);
 	}
 
 	private void createItemButton() {
@@ -89,10 +97,12 @@ class CompositeAnnualActionTab extends Composite {
 					((Button) e.getSource()).setSelection(true);
 					return;
 				}
+				mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setSelection(false);
 				mCTL.setAnnualViewType(AnnualViewType.Item);
 				mCTL.recreateMainTable();
 			}
 		});
+		mAnnualViewTypeMap.put(AnnualViewType.Item, wItemButton);
 	}
 
 	private void createOriginalButton() {
@@ -104,9 +114,15 @@ class CompositeAnnualActionTab extends Composite {
 				if (mCTL.getAnnualViewType() == AnnualViewType.Original) {
 					((Button) e.getSource()).setSelection(true);
 				}
+				mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setSelection(false);
 				mCTL.setAnnualViewType(AnnualViewType.Original);
 				mCTL.recreateMainTable();
 			}
 		});
+		mAnnualViewTypeMap.put(AnnualViewType.Original, wOriginalButton);
+	}
+	
+	void updateFiscalButton() {
+		mFiscalButton.setSelection(mCTL.getFiscalPeriod());
 	}
 }

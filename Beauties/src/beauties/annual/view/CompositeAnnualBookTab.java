@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 
 import beauties.annual.AnnualController;
 import beauties.annual.OpenDialogAnnualPeriod;
+import beauties.annual.model.AnnualViewType;
 import beauties.model.SystemData;
 import beauties.record.view.CompositeBookNames;
 import util.Util;
@@ -123,7 +124,7 @@ class CompositeAnnualBookTab extends Composite {
 		}
 	}
 
-	void updatePeriodLabel() {
+	private void updatePeriodLabel() {
 		if (mCTL.getFiscalPeriod()) {
 			mThisMonthLabel
 					.setText(mDF.format(Util.getMonthDateRange(
@@ -132,5 +133,9 @@ class CompositeAnnualBookTab extends Composite {
 		} else {
 			mThisMonthLabel.setText("期間指定");
 		}
+	}
+	
+	void updateView() {
+		this.setVisible(mCTL.getAnnualViewType() != AnnualViewType.Original);
 	}
 }
