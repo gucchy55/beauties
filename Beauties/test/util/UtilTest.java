@@ -3,8 +3,7 @@ package util;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
-import java.util.List;
-
+import beauties.model.AnnualDateRange;
 import beauties.model.DateRange;
 
 
@@ -117,7 +116,7 @@ public class UtilTest extends TestCase {
 				&& wExpected.getEndDate().equals(wResult.getEndDate()));
 	}
 
-	public void testGetMonthDateRangeListFromLongRange1() {
+	public void testGetAnnualDateRangeFromDateRange1() {
 		int wCutOff = 24;
 		// 2009.11.1 --> 2009.10.25
 		Date wStartDate = Util.getMonthDateRange(new GregorianCalendar(2009, 10, 1).getTime(),
@@ -130,13 +129,13 @@ public class UtilTest extends TestCase {
 		// 2011.1.24
 		Date wExpectedEnd = new GregorianCalendar(2011, 0, 24).getTime();
 		DateRange wDateRange = new DateRange(wStartDate, wEndDate);
-		List<DateRange> wResultList = Util.getMonthDateRangeListFromLongRange(wDateRange, wCutOff);
-		assertTrue(wExpectedStart.equals(wResultList.get(0).getStartDate())
-				&& wExpectedEnd.equals(wResultList.get(wResultList.size() - 1).getEndDate()));
-		assertTrue(wResultList.size() == 15);
+		AnnualDateRange wResult = Util.getAnnualDateRangeFromDateRange(wDateRange, wCutOff);
+		assertTrue(wExpectedStart.equals(wResult.getStartDate())
+				&& wExpectedEnd.equals(wResult.getEndDate()));
+		assertTrue(wResult.size() == (wResult.hasSumIndex() ? 17 : 15));
 	}
 	
-	public void testGetMonthDateRangeListFromLongRange2() {
+	public void testAnnualDateRangeFromDateRange2() {
 		int wCutOff = 31;
 		// 2009.11.1 --> 2009.11.1
 		Date wStartDate = Util.getMonthDateRange(new GregorianCalendar(2009, 10, 1).getTime(),
@@ -149,13 +148,13 @@ public class UtilTest extends TestCase {
 		// 2010.12.31
 		Date wExpectedEnd = new GregorianCalendar(2010, 11, 31).getTime();
 		DateRange wDateRange = new DateRange(wStartDate, wEndDate);
-		List<DateRange> wResultList = Util.getMonthDateRangeListFromLongRange(wDateRange, wCutOff);
-		assertTrue(wExpectedStart.equals(wResultList.get(0).getStartDate())
-				&& wExpectedEnd.equals(wResultList.get(wResultList.size() - 1).getEndDate()));
-		assertTrue(wResultList.size() == 14);
+		AnnualDateRange wResult = Util.getAnnualDateRangeFromDateRange(wDateRange, wCutOff);
+		assertTrue(wExpectedStart.equals(wResult.getStartDate())
+				&& wExpectedEnd.equals(wResult.getEndDate()));
+		assertTrue(wResult.size() == 14);
 	}
 
-	public void testGetDateRangeListByMonthCnt1() {
+	public void testGetAnnualDateRange1() {
 		int wCutOff = 24;
 		// 2010.12.30
 		Date wEndDate = new GregorianCalendar(2010, 11, 30).getTime();
@@ -163,13 +162,13 @@ public class UtilTest extends TestCase {
 		Date wExpectedStart = new GregorianCalendar(2009, 9, 25).getTime();
 		// 2011.1.24
 		Date wExpectedEnd = new GregorianCalendar(2011, 0, 24).getTime();
-		List<DateRange> wResultList = Util.getDateRangeListByMonthCnt(wEndDate, 15, wCutOff);
+		AnnualDateRange wResult = Util.getAnnualDateRange(wEndDate, 15, wCutOff);
 		
-		assertTrue(wExpectedStart.equals(wResultList.get(0).getStartDate())
-				&& wExpectedEnd.equals(wResultList.get(wResultList.size() - 1).getEndDate()));
+		assertTrue(wExpectedStart.equals(wResult.getStartDate())
+				&& wExpectedEnd.equals(wResult.getEndDate()));
 	}
 	
-	public void testGetDateRangeListByMonthCnt2() {
+	public void testGetAnnualDateRange2() {
 		int wCutOff = 31;
 		// 2010.12.30
 		Date wEndDate = new GregorianCalendar(2010, 11, 30).getTime();
@@ -178,32 +177,32 @@ public class UtilTest extends TestCase {
 		// 2010.12.31
 		Date wExpectedEnd = new GregorianCalendar(2010, 11, 31).getTime();
 
-		List<DateRange> wResultList = Util.getDateRangeListByMonthCnt(wEndDate, 14, wCutOff);
+		AnnualDateRange wResultList = Util.getAnnualDateRange(wEndDate, 14, wCutOff);
 		
-		assertTrue(wExpectedStart.equals(wResultList.get(0).getStartDate())
-				&& wExpectedEnd.equals(wResultList.get(wResultList.size() - 1).getEndDate()));
+		assertTrue(wExpectedStart.equals(wResultList.getStartDate())
+				&& wExpectedEnd.equals(wResultList.getEndDate()));
 	}
 
 
-	public void testGetFiscalPeriod1() {
+	public void testGetAnnualDateRangeFiscal1() {
 		int wCutOff = 24;
 		int wFiscalMonth = 1;
 		// 2010.12.24-12:00 --> 2009.12.25 - 2010.12.24
 		Calendar wCal = new GregorianCalendar(2010,11,24,12,0,0);
 		Date wExpectedStart = new GregorianCalendar(2009, 11, 25).getTime();
 		Date wExpectedEnd = new GregorianCalendar(2010,11,24).getTime();
-		DateRange wResult = Util.getFiscalDateRange(wCal, wCutOff, wFiscalMonth);
+		AnnualDateRange wResult = Util.getAnnualDateRangeFiscal(wCal, wCutOff, wFiscalMonth);
 		assertTrue(wExpectedStart.equals(wResult.getStartDate()) && wExpectedEnd.equals(wResult.getEndDate()));
 	}
 	
-	public void testGetFiscalPeriod2() {
+	public void testGetAnnualDateRangeFiscal2() {
 		int wCutOff = 24;
 		int wFiscalMonth = 4;
 		// 2010.3.24-12:00 --> 2009.3.25 - 2010.3.24
 		Calendar wCal = new GregorianCalendar(2010,2,24,12,0,0);
 		Date wExpectedStart = new GregorianCalendar(2009, 2, 25).getTime();
 		Date wExpectedEnd = new GregorianCalendar(2010,2,24).getTime();
-		DateRange wResult = Util.getFiscalDateRange(wCal, wCutOff, wFiscalMonth);
+		AnnualDateRange wResult = Util.getAnnualDateRangeFiscal(wCal, wCutOff, wFiscalMonth);
 		assertTrue(wExpectedStart.equals(wResult.getStartDate()) && wExpectedEnd.equals(wResult.getEndDate()));
 	}
 }

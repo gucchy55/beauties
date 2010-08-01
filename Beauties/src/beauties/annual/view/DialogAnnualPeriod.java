@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
+import beauties.annual.AnnualController;
 import beauties.model.DateRange;
 import beauties.model.SystemData;
 import util.Util;
@@ -28,15 +29,13 @@ public class DialogAnnualPeriod extends Dialog {
 	private Combo mStartMonthCombo;
 	private Spinner mEndYearSpinner;
 	private Combo mEndMonthCombo;
-	// private Date mStartDate;
-	// private Date mEndDate;
 	private DateRange mDateRange;
 
-	private CompositeAnnualMain mCompositeAnnualMain;
+	private AnnualController mCTL;
 
-	public DialogAnnualPeriod(Shell parentShell, CompositeAnnualMain pCompositeAnnualMain) {
-		super(parentShell);
-		mCompositeAnnualMain = pCompositeAnnualMain;
+	public DialogAnnualPeriod(AnnualController pCTL) {
+		super(pCTL.getShell());
+		mCTL = pCTL;
 	}
 
 	@Override
@@ -50,42 +49,51 @@ public class DialogAnnualPeriod extends Dialog {
 		Label wLabel1 = new Label(wComp, SWT.NONE);
 		wLabel1.setText("期間");
 
-		mStartYearSpinner = new Spinner(wComp, SWT.BORDER);
-		mStartYearSpinner.setValues(0, 0, 9999, 0, 1, 10);
+		createStartMonth(wComp);
+
 		Label wLabel = new Label(wComp, SWT.NONE);
-		wLabel.setText("年");
-
-		mStartMonthCombo = new Combo(wComp, SWT.BORDER | SWT.READ_ONLY);
-		for (int i = 0; i < 12; i++) {
-			mStartMonthCombo.add(Integer.toString(i + 1));
-		}
-
-		wLabel = new Label(wComp, SWT.NONE);
 		wLabel.setText("月 〜 ");
 
-		Calendar wCal = Calendar.getInstance();
-		wCal.setTime(Util.getMonthDateRange(mCompositeAnnualMain.getStartDate(),
-				SystemData.getCutOff()).getEndDate());
-		mStartYearSpinner.setSelection(wCal.get(Calendar.YEAR));
-		mStartMonthCombo.select(wCal.get(Calendar.MONTH));
-
-		mEndYearSpinner = new Spinner(wComp, SWT.BORDER);
-		mEndYearSpinner.setValues(0, 0, 9999, 0, 1, 10);
-		wLabel = new Label(wComp, SWT.NONE);
-		wLabel.setText("年");
-
-		mEndMonthCombo = new Combo(wComp, SWT.BORDER | SWT.READ_ONLY);
-		for (int i = 0; i < 12; i++) {
-			mEndMonthCombo.add(Integer.toString(i + 1));
-		}
+		createEndMonth(wComp);
+		
 		wLabel = new Label(wComp, SWT.NONE);
 		wLabel.setText("月");
 
-		wCal.setTime(mCompositeAnnualMain.getEndDate());
+		return wComp;
+	}
+
+	private void createStartMonth(Composite pComp) {
+		mStartYearSpinner = new Spinner(pComp, SWT.BORDER);
+		mStartYearSpinner.setValues(0, 0, 9999, 0, 1, 10);
+		Label wLabel = new Label(pComp, SWT.NONE);
+		wLabel.setText("年");
+
+		mStartMonthCombo = new Combo(pComp, SWT.BORDER | SWT.READ_ONLY);
+		for (int i = 0; i < 12; i++) {
+			mStartMonthCombo.add(Integer.toString(i + 1));
+		}
+		
+		Calendar wCal = Calendar.getInstance();
+		wCal.setTime(Util.getMonthDateRange(mCTL.getAnnualDateRange().getStartDate(),
+				SystemData.getCutOff()).getEndDate());
+		mStartYearSpinner.setSelection(wCal.get(Calendar.YEAR));
+		mStartMonthCombo.select(wCal.get(Calendar.MONTH));
+	}
+	
+	private void createEndMonth(Composite pComp) {
+		mEndYearSpinner = new Spinner(pComp, SWT.BORDER);
+		mEndYearSpinner.setValues(0, 0, 9999, 0, 1, 10);
+		Label wLabel = new Label(pComp, SWT.NONE);
+		wLabel.setText("年");
+
+		mEndMonthCombo = new Combo(pComp, SWT.BORDER | SWT.READ_ONLY);
+		for (int i = 0; i < 12; i++) {
+			mEndMonthCombo.add(Integer.toString(i + 1));
+		}
+		Calendar wCal = Calendar.getInstance();
+		wCal.setTime(mCTL.getAnnualDateRange().getEndDate());
 		mEndYearSpinner.setSelection(wCal.get(Calendar.YEAR));
 		mEndMonthCombo.select(wCal.get(Calendar.MONTH));
-
-		return wComp;
 	}
 
 	@Override
@@ -108,10 +116,6 @@ public class DialogAnnualPeriod extends Dialog {
 					mStartMonthCombo.getSelectionIndex(), 1).getTime();
 			Date wInputEndDate = new GregorianCalendar(mEndYearSpinner.getSelection(),
 					mEndMonthCombo.getSelectionIndex(), 1).getTime();
-			// mStartDate = Util.getMonthDateRange(wInputStartDate,
-			// DbUtil.getCutOff()).getStartDate();
-			// mEndDate = Util.getMonthDateRange(wInputEndDate,
-			// DbUtil.getCutOff()).getEndDate();
 			mDateRange = new DateRange(Util.getMonthDateRange(wInputStartDate,
 					SystemData.getCutOff()).getStartDate(), Util.getMonthDateRange(wInputEndDate,
 					SystemData.getCutOff()).getEndDate());
@@ -129,13 +133,6 @@ public class DialogAnnualPeriod extends Dialog {
 		super.buttonPressed(wReturnCode);
 	}
 
-	// public Date getStartDate() {
-	// return mStartDate;
-	// }
-	//
-	// public Date getEndDate() {
-	// return mEndDate;
-	// }
 	public DateRange getDateRange() {
 		return mDateRange;
 	}

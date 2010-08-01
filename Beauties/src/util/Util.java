@@ -11,6 +11,7 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Shell;
 
+import beauties.model.AnnualDateRange;
 import beauties.model.DateRange;
 
 
@@ -71,7 +72,7 @@ public class Util {
 		return new DateRange(wStartCal.getTime(), wEndCal.getTime());
 	}
 
-	public static List<DateRange> getMonthDateRangeListFromLongRange(DateRange pDateRange,
+	private static List<DateRange> getMonthDateRangeListFromLongRange(DateRange pDateRange,
 			int pCutOff) {
 		List<DateRange> wDateRangeList = new ArrayList<DateRange>();
 		for (int i = 0;; i++) {
@@ -86,22 +87,40 @@ public class Util {
 	}
 
 	// 過去pMonths分を返す
-	public static List<DateRange> getDateRangeListByMonthCnt(Date pDate, int pMonths, int pCutOff) {
+	private static List<DateRange> getDateRangeListByMonthCnt(Date pDate, int pMonths, int pCutOff) {
+		Date wBaseEndDate = getMonthDateRange(pDate, pCutOff).getEndDate();
 		List<DateRange> wDateRangeList = new ArrayList<DateRange>();
 		for (int i = 0; i < pMonths; i++) {
-			DateRange wDateRange = getMonthDateRange(getAdjusentMonth(pDate, -(pMonths - i - 1)),
+			DateRange wDateRange = getMonthDateRange(getAdjusentMonth(wBaseEndDate, -(pMonths - i - 1)),
 					pCutOff);
 			wDateRangeList.add(wDateRange);
 		}
 
 		return wDateRangeList;
 	}
-
-	public static DateRange getFiscalDateRange(int pCutOff, int pFiscalMonth) {
-		return getFiscalDateRange(Calendar.getInstance(), pCutOff, pFiscalMonth);
+	
+	public static AnnualDateRange getAnnualDateRange(Date pDate, int pMonths, int pCutOff) {
+		return new AnnualDateRange(getDateRangeListByMonthCnt(pDate, pMonths, pCutOff));
+	}
+	
+	public static AnnualDateRange getAnnualDateRangeFromDateRange(DateRange pDateRange,
+			int pCutOff) {
+		return new AnnualDateRange(getMonthDateRangeListFromLongRange(pDateRange, pCutOff));
 	}
 
-	static DateRange getFiscalDateRange(Calendar pCal, int pCutOff, int pFiscalMonth) {
+//	private static DateRange getFiscalDateRange(int pCutOff, int pFiscalMonth) {
+//		return getFiscalDateRange(Calendar.getInstance(), pCutOff, pFiscalMonth);
+//	}
+	
+	public static AnnualDateRange getAnnualDateRangeFiscal(Calendar pCal, int pCutOff, int pFiscalMonth) {
+		return getAnnualDateRangeFromDateRange(getFiscalDateRange(pCal, pCutOff, pFiscalMonth), pCutOff);
+	}
+
+	public static AnnualDateRange getAnnualDateRangeFiscal(int pCutOff, int pFiscalMonth) {
+		return getAnnualDateRangeFromDateRange(getFiscalDateRange(Calendar.getInstance(), pCutOff, pFiscalMonth), pCutOff);
+	}
+	
+	private static DateRange getFiscalDateRange(Calendar pCal, int pCutOff, int pFiscalMonth) {
 		Calendar wFirstDate = new GregorianCalendar(pCal.get(Calendar.YEAR), pFiscalMonth - 1, 1);
 
 		while (wFirstDate.after(pCal))

@@ -95,18 +95,6 @@ public class RecordController {
 		mCompositeEntry.updateViewForSearch(mSearchResult);
 	}
 
-	public void setRecordItemsUp(RecordTableItem[] pRecordItemsUp) {
-		this.mRecordItemsUp = pRecordItemsUp;
-	}
-
-	public void setRecordItemsBottom(RecordTableItem[] pRecordItemsBottom) {
-		this.mRecordItemsBottom = pRecordItemsBottom;
-	}
-
-	public void setSummaryTableItems(SummaryTableItem[] pSummaryTableItems) {
-		this.mSummaryTableItems = pSummaryTableItems;
-	}
-
 	public boolean showBookColumn() {
 		return getBookId() == SystemData.getAllBookInt() || getSearchResult();
 	}

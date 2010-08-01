@@ -59,13 +59,9 @@ public class BeautiesMain extends ApplicationWindow {
 		setExceptionHandler(new IExceptionHandler() {
 			public void handleException(Throwable e) {
 				StringBuffer wStack = new StringBuffer();
-				for (int i = 0; i < e.getStackTrace().length; i++) {
-					if (i == 10) {
-						wStack.append("...");
-						break;
-					}
+				for (int i = 0; i < ((e.getStackTrace().length > 10) ? 10 : e.getStackTrace().length); i++)
 					wStack.append(e.getStackTrace()[i] + "\n");
-				}
+				wStack.append("...");
 				MessageDialog.openWarning(pShell, "Internal Error", e.toString() + "\n\n" + wStack);
 				e.printStackTrace();
 			}

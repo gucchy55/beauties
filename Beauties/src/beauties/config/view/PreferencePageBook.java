@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.IInputValidator;
@@ -77,13 +76,13 @@ class PreferencePageBook extends PreferencePage {
 		wBookAddButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				InputDialog wInputDialog = new InputDialog(getShell(), "帳簿追加", "新しい帳簿名", "", null);
-				if (wInputDialog.open() == Dialog.OK) {
-					DbUtil.addNewBook(wInputDialog.getValue());
-					updateBookTableWithDb();
-					mTableViewerBooks.getTable().setSelection(
-							mTableViewerBooks.getTable().getItemCount() - 1);
+				if (wInputDialog.open() != Dialog.OK)
+					return;
+				DbUtil.addNewBook(wInputDialog.getValue());
+				updateBookTableWithDb();
+				mTableViewerBooks.getTable().setSelection(
+						mTableViewerBooks.getTable().getItemCount() - 1);
 
-				}
 			}
 		});
 
@@ -92,17 +91,17 @@ class PreferencePageBook extends PreferencePage {
 		wBookModifyButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
-				if (wBook != null) {
-					InputDialog wInputDialog = new InputDialog(getShell(), "帳簿名変更", "", wBook
-							.getName(), null);
-					if (wInputDialog.open() == Dialog.OK) {
-						DbUtil.updateBook(wBook.getId(), wInputDialog.getValue(), wBook
-								.getBalance());
-						int wIndex = mTableViewerBooks.getTable().getSelectionIndex();
-						updateBookTableWithDb();
-						mTableViewerBooks.getTable().setSelection(wIndex);
-					}
+				if (wBook == null)
+					return;
+				InputDialog wInputDialog = new InputDialog(getShell(), "帳簿名変更", "",
+						wBook.getName(), null);
+				if (wInputDialog.open() == Dialog.OK) {
+					DbUtil.updateBook(wBook.getId(), wInputDialog.getValue(), wBook.getBalance());
+					int wIndex = mTableViewerBooks.getTable().getSelectionIndex();
+					updateBookTableWithDb();
+					mTableViewerBooks.getTable().setSelection(wIndex);
 				}
+
 			}
 		});
 
@@ -111,13 +110,14 @@ class PreferencePageBook extends PreferencePage {
 		wDeleteButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
-				if (wBook != null) {
-					if (MessageDialog.openConfirm(getShell(), "帳簿削除", wBook.getName()
-							+ " - 本当に削除しますか？")) {
-						DbUtil.removeBook(wBook.getId());
-						updateBookTableWithDb();
-					}
+				if (wBook == null)
+					return;
+				if (MessageDialog
+						.openConfirm(getShell(), "帳簿削除", wBook.getName() + " - 本当に削除しますか？")) {
+					DbUtil.removeBook(wBook.getId());
+					updateBookTableWithDb();
 				}
+
 			}
 		});
 
@@ -126,15 +126,16 @@ class PreferencePageBook extends PreferencePage {
 		wUpButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
-				if (wBook != null) {
-					int wOldIndex = mBookList.indexOf(wBook);
-					if (wOldIndex > 0) {
-						mBookList.remove(wBook);
-						mBookList.add(wOldIndex - 1, wBook);
-						mOrderChanged = true;
-						updateBookTable();
-					}
+				if (wBook == null)
+					return;
+				int wOldIndex = mBookList.indexOf(wBook);
+				if (wOldIndex > 0) {
+					mBookList.remove(wBook);
+					mBookList.add(wOldIndex - 1, wBook);
+					mOrderChanged = true;
+					updateBookTable();
 				}
+
 			}
 		});
 
@@ -143,15 +144,16 @@ class PreferencePageBook extends PreferencePage {
 		wDownButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
-				if (wBook != null) {
-					int wOldIndex = mBookList.indexOf(wBook);
-					if (wOldIndex < mBookList.size() - 1) {
-						mBookList.remove(wBook);
-						mBookList.add(wOldIndex + 1, wBook);
-						mOrderChanged = true;
-						updateBookTable();
-					}
+				if (wBook == null)
+					return;
+				int wOldIndex = mBookList.indexOf(wBook);
+				if (wOldIndex < mBookList.size() - 1) {
+					mBookList.remove(wBook);
+					mBookList.add(wOldIndex + 1, wBook);
+					mOrderChanged = true;
+					updateBookTable();
 				}
+
 			}
 		});
 
@@ -216,20 +218,17 @@ class PreferencePageBook extends PreferencePage {
 		wBalanceModifyButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
-				if (wBook == null) {
+				if (wBook == null)
 					return;
-				}
 				InputDialog dlg = new InputDialog(getShell(), "初期値変更", "初期値を入力してください", Integer
 						.toString((int) wBook.getBalance()), new IInputValidator() {
 					public String isValid(String newText) {
 						if (newText.matches("[0-9]+"))
 							return null; // Valid
-						else {
-							if (newText.length() == 0)
-								return "Input figures"; // null
-							else
-								return "Error: only figures are allowed";
-						}
+						if (newText.length() == 0)
+							return "Input figures"; // null
+						return "Error: only figures are allowed";
+
 					}
 				});
 				if (dlg.open() == Dialog.OK) {

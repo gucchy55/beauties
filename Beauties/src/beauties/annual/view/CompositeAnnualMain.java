@@ -1,34 +1,21 @@
 package beauties.annual.view;
 
-import java.util.Date;
-
-
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Control;
-
-import beauties.annual.model.AnnualViewType;
-import beauties.model.DateRange;
-import beauties.model.SystemData;
+import beauties.annual.AnnualController;
 
 import util.view.MyGridData;
 import util.view.MyGridLayout;
 
 public class CompositeAnnualMain extends Composite {
 
-	private int mBookId = SystemData.getAllBookInt();
-//	private Date mStartDate = null;
-//	private Date mEndDate = null;
-	private DateRange mDateRange = null;
-	private boolean isAnnualPeriod = false;
-	private AnnualViewType mAnnualViewType = AnnualViewType.Category;
-	private int mMonthCount = 13;
-
+	private AnnualController mCTL;
 	private CompositeAnnualTable mCompositeAnnualTable;
-
+	
 	public CompositeAnnualMain(Composite pParent) {
 		super(pParent, SWT.NONE);
+		mCTL = new AnnualController(this);
 		init();
 	}
 
@@ -38,10 +25,10 @@ public class CompositeAnnualMain extends Composite {
 
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		new CompositeAnnualBookTab(this);
-		new CompositeAnnualActionTab(this);
+		new CompositeAnnualBookTab(this, mCTL);
+		new CompositeAnnualActionTab(this, mCTL);
 
-		mCompositeAnnualTable = new CompositeAnnualTable(this);
+		mCompositeAnnualTable = new CompositeAnnualTable(this, mCTL);
 
 		GridData wGridData = new GridData(GridData.FILL_BOTH);
 		wGridData.horizontalSpan = 2;
@@ -49,71 +36,12 @@ public class CompositeAnnualMain extends Composite {
 
 	}
 
-	public void updateView() {
-
-		for (Control wCtrl : this.getChildren()) {
-			wCtrl.dispose();
-		}
-		
-		this.init();
-		this.layout();
-
-	}
-
-	public int getBookId() {
-		return mBookId;
-	}
-
-	public Date getStartDate() {
-		return mDateRange.getStartDate();
-	}
-
-	public Date getEndDate() {
-		return mDateRange.getEndDate();
-	}
-	
-	public DateRange getDateRange() {
-		return mDateRange;
-	}
-
-	public boolean isAnnualPeriod() {
-		return isAnnualPeriod;
-	}
-
-	public AnnualViewType getAnnualViewType() {
-		return mAnnualViewType;
-	}
-
-	public int getMonthCount() {
-		return mMonthCount;
-	}
-
-	public void setBookId(int pBookId) {
-		this.mBookId = pBookId;
-	}
-
-//	public void setStartDate(Date pStartDate) {
-//		this.mStartDate = pStartDate;
-//	}
-//
-//	public void setEndDate(Date pEndDate) {
-//		this.mEndDate = pEndDate;
+//	public void updateTable() {
+//		mCompositeAnnualTable.updateTable();
 //	}
 	
-	public void setDateRange(DateRange pDateRange) {
-		this.mDateRange = pDateRange;
-	}
-
-	public void setAnnualPeriod(boolean isAnnualPeriod) {
-		this.isAnnualPeriod = isAnnualPeriod;
-	}
-
-	public void setAnnualViewType(AnnualViewType pAnnualViewType) {
-		this.mAnnualViewType = pAnnualViewType;
-	}
-
-	public void setMonthCount(int pMonthCount) {
-		this.mMonthCount = pMonthCount;
+	public void recreateMainTable() {
+		mCompositeAnnualTable.recreateMainTable();
 	}
 	
 	public void copyToClipboard() {

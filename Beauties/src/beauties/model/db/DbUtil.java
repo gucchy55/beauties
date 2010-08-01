@@ -205,7 +205,7 @@ public class DbUtil {
 		return wItemName;
 
 	}
-	
+
 	public static String getCategoryNameById(int pCategoryId) {
 		ResultSet wResultSet = mDbAccess.executeQuery("select " + mCategoryNameCol + " from "
 				+ mCategoryTable + " where " + mCategoryIdCol + " = " + pCategoryId);
@@ -451,7 +451,7 @@ public class DbUtil {
 
 		return wResultList;
 	}
-	
+
 	public static List<Integer> getItemIdList(int pBookId, int pCategoryId) {
 		List<Integer> wResultList = new ArrayList<Integer>();
 
@@ -518,7 +518,7 @@ public class DbUtil {
 
 		return wResultList;
 	}
-	
+
 	// 設定時に使用
 	public static Map<Integer, String> getAllCategoryNameMap(boolean pIncome) {
 		Map<Integer, String> wResultMap = new LinkedHashMap<Integer, String>();
@@ -661,14 +661,14 @@ public class DbUtil {
 			int wGroupId = groupShouldBeChanged(pBeforeRecord, pAfterRecord) ? getNewGroupId()
 					: pBeforeRecord.getGroupId();
 
-//			// 年月, BookId, ItemIdが変更された場合は新規のGroupIdを使用
-//			if (pAfterRecord.getYear() != pBeforeRecord.getYear()
-//					|| pAfterRecord.getMonth() != pBeforeRecord.getMonth()
-//					|| pAfterRecord.getBookId() != pBeforeRecord.getBookId()
-//					|| pAfterRecord.getItemId() != pBeforeRecord.getItemId())
-//				wGroupId = getNewGroupId();
-//			else
-//				wGroupId = pBeforeRecord.getGroupId();
+			// // 年月, BookId, ItemIdが変更された場合は新規のGroupIdを使用
+			// if (pAfterRecord.getYear() != pBeforeRecord.getYear()
+			// || pAfterRecord.getMonth() != pBeforeRecord.getMonth()
+			// || pAfterRecord.getBookId() != pBeforeRecord.getBookId()
+			// || pAfterRecord.getItemId() != pBeforeRecord.getItemId())
+			// wGroupId = getNewGroupId();
+			// else
+			// wGroupId = pBeforeRecord.getGroupId();
 
 			// 新規のレコードを追加
 			Calendar wCalBase = Calendar.getInstance();
@@ -746,11 +746,11 @@ public class DbUtil {
 
 				wQueryFrom = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryFromValues + ", "
 						+ wDate + wQueryNote2 + "," + (pMoveItem.getFrequency() - i) + ")";
-//				System.out.println(wQueryFrom);
+				// System.out.println(wQueryFrom);
 				mDbAccess.executeUpdate(wQueryFrom);
 				wQueryTo = wQueryBase + wQueryNote1 + wQueryFreq + ") " + wQueryToValues + ", "
 						+ wDate + wQueryNote2 + "," + (pMoveItem.getFrequency() - i) + ")";
-//				System.out.println(wQueryTo);
+				// System.out.println(wQueryTo);
 				mDbAccess.executeUpdate(wQueryTo);
 			}
 
@@ -1153,6 +1153,26 @@ public class DbUtil {
 
 	}
 
+	private static Map<Integer, List<SummaryTableItem>> createSummaryTableItemsInCaseOfNoRecord(
+			Map<Integer, List<SummaryTableItem>> pSummaryTableItemListMap,
+			AnnualDateRange pAnnualDateRange) {
+		List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
+		List<SummaryTableItem> wListIncome = new ArrayList<SummaryTableItem>();
+		List<SummaryTableItem> wListExpense = new ArrayList<SummaryTableItem>();
+		
+		for (int i = 0; i < pAnnualDateRange.size(); i++) {
+			wList.add(SummaryTableItemFactory.createAppearedProfit("総収支", 0));
+			wListIncome.add(SummaryTableItemFactory.createAppearedIncome("総収入", 0));
+			wListExpense.add(SummaryTableItemFactory.createAppearedExpense("総支出", 0));
+		}
+		pSummaryTableItemListMap.put(0, wList);
+		pSummaryTableItemListMap.put(1, wListIncome);
+		int wKey = mExpenseRexp * 1000000;
+		pSummaryTableItemListMap.put(wKey, wListExpense);
+		
+		return pSummaryTableItemListMap;
+	}
+
 	private static void addAnnualSummaryTableItemsForSumAve(AnnualDateRange pAnnualDateRange,
 			ResultSet pResultSet, Map<Integer, List<SummaryTableItem>> pSummaryTableItemListMap) {
 
@@ -1227,8 +1247,15 @@ public class DbUtil {
 
 		ResultSet wResultSet = mDbAccess.executeQuery(getQueryStringForAnnualSummaryTableItems(
 				pBookId, pAnnualDateRange, pItem));
+
 		try {
-			while (wResultSet.next()) {
+			boolean hasResults = true;
+			if (!wResultSet.next()) {
+				wSummaryTableItemListMap = createSummaryTableItemsInCaseOfNoRecord(wSummaryTableItemListMap, pAnnualDateRange);
+				hasResults = false;
+			}
+
+			while (hasResults) {
 				int wId = pItem ? wResultSet.getInt(mItemTable + "." + mItemIdCol) : wResultSet
 						.getInt(mCategoryTable + "." + mCategoryIdCol);
 
@@ -1239,6 +1266,9 @@ public class DbUtil {
 				else
 					addAnnualSummaryTableItemsForNormal(pAnnualDateRange, wResultSet,
 							wSummaryTableItemListMap, pItem, wId);
+
+				if (!wResultSet.next())
+					break;
 
 			}
 			wResultSet.close();

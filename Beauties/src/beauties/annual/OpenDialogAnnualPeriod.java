@@ -4,29 +4,26 @@ import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.swt.SWT;
 
-import beauties.annual.view.CompositeAnnualMain;
 import beauties.annual.view.DialogAnnualPeriod;
 
 
 public class OpenDialogAnnualPeriod extends Action {
 
-	private CompositeAnnualMain mCompositeAnnualMain;
+	private AnnualController mCTL;
 
-	public OpenDialogAnnualPeriod(CompositeAnnualMain pCompositeAnnualMain) {
-		mCompositeAnnualMain = pCompositeAnnualMain;
+	public OpenDialogAnnualPeriod(AnnualController pCTL) {
+		mCTL = pCTL;
 	}
 
 	@Override
 	public void run() {
-		mCompositeAnnualMain.getShell().setImeInputMode(SWT.NONE);
-		DialogAnnualPeriod wDialogAnnualPeriod = new DialogAnnualPeriod(mCompositeAnnualMain.getShell(),
-				mCompositeAnnualMain);
+		mCTL.getShell().setImeInputMode(SWT.NONE);
+		DialogAnnualPeriod wDialogAnnualPeriod = new DialogAnnualPeriod(mCTL);
 		int wRet = wDialogAnnualPeriod.open();
 
 		if (wRet == IDialogConstants.OK_ID) { // Updated
-			mCompositeAnnualMain.setDateRange(wDialogAnnualPeriod.getDateRange());
-			mCompositeAnnualMain.setAnnualPeriod(false);
-			new UpdateAnnual(mCompositeAnnualMain).run();
+			mCTL.setDateRange(wDialogAnnualPeriod.getDateRange());
+			mCTL.recreateMainTable();
 		}
 	}
 }
