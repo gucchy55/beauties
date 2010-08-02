@@ -153,11 +153,16 @@ public class BeautiesMain extends ApplicationWindow {
 	}
 
 	private void openConfigDialog() {
+		mRightTypeMap.get(mRightType).setBackground(null);
+		mRightTypeMap.get(mRightType).setSelection(false);
+
 		new PreferenceDialog(getShell(), new MyPreferenceManager()).open();
 		SystemData.crearCache();
-		mRightTypeMap.get(mRightType).setBackground(null);
+
 		mRightType = RightType.Main;
 		mRightTypeMap.get(mRightType).setBackground(SystemData.getColorYellow());
+		mRightTypeMap.get(mRightType).setSelection(true);
+		
 		mRightComposite.dispose();
 		createRightComposite();
 	}
