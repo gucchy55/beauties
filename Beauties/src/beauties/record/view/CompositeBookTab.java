@@ -32,8 +32,8 @@ class CompositeBookTab extends Composite {
 
 	private Label mThisMonthLabel;
 
-	CompositeBookTab(Composite pParent, RecordController pCTL) {
-		super(pParent, SWT.NONE);
+	CompositeBookTab(RecordController pCTL) {
+		super(pCTL.getComposite(), SWT.NONE);
 		mCTL = pCTL;
 
 		create();
@@ -112,6 +112,7 @@ class CompositeBookTab extends Composite {
 		mBookNameComp = new CompositeBookNames(this, mCTL.getBookId());
 
 		mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setSelection(true);
+		mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setBackground(SystemData.getColorYellow());
 		for (Map.Entry<Integer, Button> entry : mBookNameComp.getBookButtonMap().entrySet()) {
 			final int wBookId = entry.getKey();
 			Button wButton = entry.getValue();
@@ -122,7 +123,9 @@ class CompositeBookTab extends Composite {
 						return;
 					}
 					mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setSelection(false);
+					mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setBackground(null);
 					mCTL.setBookId(wBookId);
+					mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setBackground(SystemData.getColorYellow());
 					mCTL.updateTable();
 				}
 			});

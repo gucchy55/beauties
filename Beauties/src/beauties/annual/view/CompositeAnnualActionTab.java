@@ -1,7 +1,6 @@
 package beauties.annual.view;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -13,6 +12,7 @@ import org.eclipse.swt.widgets.Label;
 
 import beauties.annual.AnnualController;
 import beauties.annual.model.AnnualViewType;
+import beauties.model.SystemData;
 
 import util.view.MyGridData;
 import util.view.MyRowLayout;
@@ -20,14 +20,14 @@ import util.view.MyRowLayout;
 class CompositeAnnualActionTab extends Composite {
 
 	private AnnualController mCTL;
-	private Map<AnnualViewType, Button> mAnnualViewTypeMap;
+	private EnumMap<AnnualViewType, Button> mAnnualViewTypeMap;
 	private Button mFiscalButton;
 
-	CompositeAnnualActionTab(Composite pParent, AnnualController pCTL) {
-		super(pParent, SWT.NONE);
+	CompositeAnnualActionTab(AnnualController pCTL) {
+		super(pCTL.getComposite(), SWT.NONE);
 		mCTL = pCTL;
-		mAnnualViewTypeMap = new HashMap<AnnualViewType, Button>();
-		
+		mAnnualViewTypeMap = new EnumMap<AnnualViewType, Button>(AnnualViewType.class);
+
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false)
 				.getMyGridData());
@@ -35,12 +35,9 @@ class CompositeAnnualActionTab extends Composite {
 		createCopyButton();
 
 		createFiscalButton();
-	
-		createCategoryButton();
 
-		createItemButton();
+		createAnnualViewTypeButtons();
 
-		createOriginalButton();
 	}
 
 	private void createCopyButton() {
@@ -60,69 +57,41 @@ class CompositeAnnualActionTab extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				mCTL.setFiscalPeriod(((Button) e.getSource()).getSelection());
+				mFiscalButton.setBackground(mFiscalButton.getSelection() ? SystemData.getColorYellow() : null);
 				mCTL.recreateMainTable();
 			}
 		});
 	}
 
-	private void createCategoryButton() {
+	private void createAnnualViewTypeButtons() {
 		Label wSpaceLabel = new Label(this, SWT.NONE);
 		wSpaceLabel.setText("   ");
 
-		Button wCategoryButton = new Button(this, SWT.TOGGLE);
-		wCategoryButton.setText(" 分類別 ");
-		wCategoryButton.setSelection(true);
-		wCategoryButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (mCTL.getAnnualViewType() == AnnualViewType.Category) {
-					((Button) e.getSource()).setSelection(true);
-					return;
+		for (final AnnualViewType wType : AnnualViewType.values()) {
+			Button wCategoryButton = new Button(this, SWT.TOGGLE);
+			wCategoryButton.setText(wType.toString());
+			mAnnualViewTypeMap.put(wType, wCategoryButton);
+			wCategoryButton.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					if (mCTL.getAnnualViewType() == wType) {
+						((Button) e.getSource()).setSelection(true);
+						return;
+					}
+					mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setSelection(false);
+					mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setBackground(null);
+					mCTL.setAnnualViewType(wType);
+					mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setBackground(SystemData.getColorYellow());
+					mCTL.recreateMainTable();
 				}
-				mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setSelection(false);
-				mCTL.setAnnualViewType(AnnualViewType.Category);
-				mCTL.recreateMainTable();
-			}
-		});
-		mAnnualViewTypeMap.put(AnnualViewType.Category, wCategoryButton);
+			});
+		}
+		mAnnualViewTypeMap.get(AnnualViewType.Category).setSelection(true);
+		mAnnualViewTypeMap.get(AnnualViewType.Category).setBackground(SystemData.getColorYellow());
 	}
 
-	private void createItemButton() {
-		Button wItemButton = new Button(this, SWT.TOGGLE);
-		wItemButton.setText(" 項目別 ");
-		wItemButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (mCTL.getAnnualViewType() == AnnualViewType.Item) {
-					((Button) e.getSource()).setSelection(true);
-					return;
-				}
-				mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setSelection(false);
-				mCTL.setAnnualViewType(AnnualViewType.Item);
-				mCTL.recreateMainTable();
-			}
-		});
-		mAnnualViewTypeMap.put(AnnualViewType.Item, wItemButton);
-	}
-
-	private void createOriginalButton() {
-		Button wOriginalButton = new Button(this, SWT.TOGGLE);
-		wOriginalButton.setText("特殊収支");
-		wOriginalButton.addSelectionListener(new SelectionAdapter() {
-			@Override
-			public void widgetSelected(SelectionEvent e) {
-				if (mCTL.getAnnualViewType() == AnnualViewType.Original) {
-					((Button) e.getSource()).setSelection(true);
-				}
-				mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setSelection(false);
-				mCTL.setAnnualViewType(AnnualViewType.Original);
-				mCTL.recreateMainTable();
-			}
-		});
-		mAnnualViewTypeMap.put(AnnualViewType.Original, wOriginalButton);
-	}
-	
 	void updateFiscalButton() {
 		mFiscalButton.setSelection(mCTL.getFiscalPeriod());
+		mFiscalButton.setBackground(mFiscalButton.getSelection() ? SystemData.getColorYellow() : null);
 	}
 }

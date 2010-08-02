@@ -27,10 +27,10 @@ public class CompositeAnnualMain extends Composite {
 
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		mCompositeAnnualBookTab = new CompositeAnnualBookTab(this, mCTL);
-		mCompositeAnnualActionTab = new CompositeAnnualActionTab(this, mCTL);
+		mCompositeAnnualBookTab = new CompositeAnnualBookTab(mCTL);
+		mCompositeAnnualActionTab = new CompositeAnnualActionTab(mCTL);
 
-		mCompositeAnnualTable = new CompositeAnnualTable(this, mCTL);
+		mCompositeAnnualTable = new CompositeAnnualTable(mCTL);
 
 		GridData wGridData = new GridData(GridData.FILL_BOTH);
 		wGridData.horizontalSpan = 2;
@@ -38,10 +38,6 @@ public class CompositeAnnualMain extends Composite {
 
 	}
 
-//	public void updateTable() {
-//		mCompositeAnnualTable.updateTable();
-//	}
-	
 	public void updateTable() {
 		mCompositeAnnualBookTab.updateView();
 		mCompositeAnnualActionTab.updateFiscalButton();

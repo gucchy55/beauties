@@ -1,15 +1,15 @@
 package beauties.model;
 
 public enum RightType {
-	Main(0),
-	Anual(1),
-	Memo(2),
-	Setting(3);
+	Main("記帳"),
+	Annual("年間一覧"),
+	Memo("メモ帳"),
+	Setting("設定");
 	
-	public final int value;
-	private RightType(int value) { this.value = value; }
+	private final String mName;
+	private RightType(String pName) { this.mName = pName; }
 	
-	public static RightType valueOf(int i) {
-	    return RightType.values()[i];
+	public String toString() {
+		return mName;
 	}
 }

@@ -12,7 +12,7 @@ import util.view.MyGridLayout;
 
 public class CompositeEntry extends Composite {
 
-	private RecordController mCtl;
+	private RecordController mCTL;
 	
 	private CompositeBookTab mCompositeBookTab;
 	private CompositeRecordTable mCompositeRecordTable;
@@ -21,7 +21,7 @@ public class CompositeEntry extends Composite {
 
 	public CompositeEntry(Composite pParent) {
 		super(pParent, SWT.NONE);
-		mCtl = new RecordController(this);
+		mCTL = new RecordController(this);
 		init();
 	}
 
@@ -29,10 +29,10 @@ public class CompositeEntry extends Composite {
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		mCompositeBookTab = new CompositeBookTab(this, mCtl);
-		mCompositeActionTab = new CompositeActionTab(this, mCtl);
-		mCompositeRecordTable = new CompositeRecordTable(this, mCtl);
-		mCompositeSummaryTable = new CompositeSummaryTable(this, mCtl);
+		mCompositeBookTab = new CompositeBookTab(mCTL);
+		mCompositeActionTab = new CompositeActionTab(mCTL);
+		mCompositeRecordTable = new CompositeRecordTable(mCTL);
+		mCompositeSummaryTable = new CompositeSummaryTable(mCTL);
 	}
 
 	public void updateView() {

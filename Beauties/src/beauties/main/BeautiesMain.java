@@ -1,9 +1,9 @@
 package beauties.main;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.EnumMap;
 
 import org.eclipse.jface.dialogs.MessageDialog;
+import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -17,9 +17,13 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
 
+import beauties.annual.view.CompositeAnnualMain;
+import beauties.config.view.MyPreferenceManager;
+import beauties.memo.CompositeMemoMain;
 import beauties.model.FileLoader;
 import beauties.model.RightType;
 import beauties.model.SystemData;
+import beauties.record.view.CompositeEntry;
 
 import util.view.MyFillLayout;
 import util.view.MyGridData;
@@ -31,13 +35,13 @@ public class BeautiesMain extends ApplicationWindow {
 
 	private Composite mMainComposite;
 	private Composite mLeftComposite;
+	private Composite mRightComposite;
 
 	private RightType mRightType = RightType.Main;
+	private EnumMap<RightType, Button> mRightTypeMap;
 
 	private static final int mLeftWidthHint = 100;
 	private static final int mLeftHeightHint = 200;
-	private static final String[] mLeftButtonNameArray = { "記帳", "年間一覧", "メモ帳", "設定" };
-	Map<Button, RightType> mRightTypeMap;
 
 	private Image mIcon;
 
@@ -55,11 +59,12 @@ public class BeautiesMain extends ApplicationWindow {
 		ImageData wImageData = new ImageData("image/beauties.gif");
 		mIcon = new Image(pShell.getDisplay(), wImageData);
 		pShell.setImage(mIcon);
-		
+
 		setExceptionHandler(new IExceptionHandler() {
 			public void handleException(Throwable e) {
 				StringBuffer wStack = new StringBuffer();
-				for (int i = 0; i < ((e.getStackTrace().length > 10) ? 10 : e.getStackTrace().length); i++)
+				for (int i = 0; i < ((e.getStackTrace().length > 10) ? 10
+						: e.getStackTrace().length); i++)
 					wStack.append(e.getStackTrace()[i] + "\n");
 				wStack.append("...");
 				MessageDialog.openWarning(pShell, "Internal Error", e.toString() + "\n\n" + wStack);
@@ -84,17 +89,13 @@ public class BeautiesMain extends ApplicationWindow {
 	}
 
 	private void init() {
-		createLeftComposite(mMainComposite);
-		new InitMainWindow(this).run();
+		createLeftComposite();
+		createRightComposite();
 	}
 
-	private void init(RightType pRightType) {
-		new InitMainWindow(this, pRightType).run();
-	}
+	private void createLeftComposite() {
 
-	public void createLeftComposite(Composite wParent) {
-
-		mLeftComposite = new Composite(wParent, SWT.NONE);
+		mLeftComposite = new Composite(mMainComposite, SWT.NONE);
 		mLeftComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getMyFillLayout());
 
 		GridData wGridData = new MyGridData(GridData.HORIZONTAL_ALIGN_FILL,
@@ -103,50 +104,64 @@ public class BeautiesMain extends ApplicationWindow {
 		wGridData.heightHint = mLeftHeightHint;
 		mLeftComposite.setLayoutData(wGridData);
 
-		mRightTypeMap = new LinkedHashMap<Button, RightType>();
+		mRightTypeMap = new EnumMap<RightType, Button>(RightType.class);
 
-		for (int i = 0; i < mLeftButtonNameArray.length; i++) {
-			String wButtonName = mLeftButtonNameArray[i];
+		for (final RightType wType : RightType.values()) {
 			Button wButton = new Button(mLeftComposite, SWT.TOGGLE);
-			wButton.setText(wButtonName);
-			mRightTypeMap.put(wButton, RightType.valueOf(i));
-			if (mRightType == RightType.valueOf(i)) {
-				wButton.setSelection(true);
-			}
+			wButton.setText(wType.toString());
+			mRightTypeMap.put(wType, wButton);
+			wButton.addSelectionListener(createSelectionAdapter(wType));
 		}
-		addListenerToLeftButtons();
+		mRightTypeMap.get(mRightType).setSelection(true);
+		mRightTypeMap.get(mRightType).setBackground(SystemData.getColorYellow());
 	}
 
-	private void addListenerToLeftButtons() {
-		for (Map.Entry<Button, RightType> entry : mRightTypeMap.entrySet()) {
-			Button wButton = entry.getKey();
-			wButton.addSelectionListener(new SelectionAdapter() {
-				public void widgetSelected(SelectionEvent e) {
-					Button wButton = (Button) e.getSource();
-					if (mRightType.equals(mRightTypeMap.get(wButton))) {
-						wButton.setSelection(true);
-						return;
-					}
-					if (!mRightTypeMap.get(wButton).equals(RightType.Setting)) {
-						mRightType = mRightTypeMap.get(wButton);
-					} else {
-						wButton.setSelection(false);
-					}
-					init(mRightTypeMap.get(wButton));
+	private SelectionAdapter createSelectionAdapter(final RightType wType) {
+		return new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				Button wButton = (Button) e.getSource();
+				if (mRightType.equals(wType)) {
+					wButton.setSelection(true);
+					return;
 				}
-			});
+				if (!wType.equals(RightType.Setting)) {
+					mRightTypeMap.get(mRightType).setBackground(null);
+					mRightTypeMap.get(mRightType).setSelection(false);
+					mRightType = wType;
+					wButton.setBackground(SystemData.getColorYellow());
+					mRightComposite.dispose();
+					createRightComposite();
+				} else {
+					openConfigDialog();
+				}
+			}
+		};
+	}
+
+	private void createRightComposite() {
+		switch (mRightType) {
+		case Annual:
+			mRightComposite = new CompositeAnnualMain(mMainComposite);
+			break;
+		case Memo:
+			mRightComposite = new CompositeMemoMain(mMainComposite);
+			break;
+		default:
+			mRightComposite = new CompositeEntry(mMainComposite);
 		}
+		mMainComposite.layout();
 	}
 
-	public Composite getmMainComposite() {
-		return mMainComposite;
+	private void openConfigDialog() {
+		new PreferenceDialog(getShell(), new MyPreferenceManager()).open();
+		SystemData.crearCache();
+		mRightTypeMap.get(mRightType).setBackground(null);
+		mRightType = RightType.Main;
+		mRightTypeMap.get(mRightType).setBackground(SystemData.getColorYellow());
+		mRightComposite.dispose();
+		createRightComposite();
 	}
 
-	public void setRightType(RightType pRightType) {
-		this.mRightType = pRightType;
-	}
-
-	
 	public static void main(String[] args) {
 		if (args.length > 0) {
 			new FileLoader(args[0]);

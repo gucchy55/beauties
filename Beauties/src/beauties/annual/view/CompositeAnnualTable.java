@@ -42,8 +42,8 @@ class CompositeAnnualTable extends Composite {
 
 	private AnnualController mCTL;
 
-	CompositeAnnualTable(Composite pParent, AnnualController pCTL) {
-		super(pParent, SWT.NONE);
+	CompositeAnnualTable(AnnualController pCTL) {
+		super(pCTL.getComposite(), SWT.NONE);
 		mCTL = pCTL;
 
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());

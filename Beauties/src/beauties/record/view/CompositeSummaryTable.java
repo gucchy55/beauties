@@ -33,8 +33,8 @@ class CompositeSummaryTable extends Composite {
 	private TableViewer mSummaryTableViewer;
 	private ISelectionChangedListener mSelectionChangedListener;
 
-	CompositeSummaryTable(Composite pParent, RecordController pCTL) {
-		super(pParent, SWT.NONE);
+	CompositeSummaryTable(RecordController pCTL) {
+		super(pCTL.getComposite(), SWT.NONE);
 		mCTL = pCTL;
 		mSelectionChangedListener = createSelectionChangedListener();
 		

@@ -27,8 +27,8 @@ class CompositeRecordTable extends Composite {
 	private RecordTableViewer mTableBottom;
 	private SashForm mSashForm;
 
-	CompositeRecordTable(Composite pParent, RecordController pCTL) {
-		super(pParent, SWT.NONE);
+	CompositeRecordTable(RecordController pCTL) {
+		super(pCTL.getComposite(), SWT.NONE);
 		mCTL = pCTL;
 		create();
 	}

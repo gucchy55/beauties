@@ -23,9 +23,9 @@ class CompositeActionTab extends Composite {
 	private Button mSearchButton;
 	private RecordController mCTL;
 
-	public CompositeActionTab(Composite pParent, RecordController pCtl) {
-		super(pParent, SWT.NONE);
-		mCTL = pCtl;
+	public CompositeActionTab(RecordController pCTL) {
+		super(pCTL.getComposite(), SWT.NONE);
+		mCTL = pCTL;
 		
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData());

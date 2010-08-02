@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import util.Util;
@@ -174,4 +175,7 @@ public class AnnualController {
 		mCompositeAnnualMain.copyToClipboard();
 	}
 	
+	public Composite getComposite() {
+		return mCompositeAnnualMain;
+	}
 }

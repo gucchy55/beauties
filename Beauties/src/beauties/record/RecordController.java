@@ -5,6 +5,7 @@ import java.util.Date;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import util.Util;
@@ -133,5 +134,9 @@ public class RecordController {
 				&& mDateRange.getEndDate().equals(wMonthRange.getEndDate());
 		return mMonthPeriod;
 			
+	}
+	
+	public Composite getComposite() {
+		return mCompositeEntry;
 	}
 }
