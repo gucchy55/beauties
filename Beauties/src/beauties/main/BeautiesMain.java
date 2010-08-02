@@ -107,7 +107,7 @@ public class BeautiesMain extends ApplicationWindow {
 		mRightTypeMap = new EnumMap<RightType, Button>(RightType.class);
 
 		for (final RightType wType : RightType.values()) {
-			Button wButton = new Button(mLeftComposite, SWT.TOGGLE);
+			Button wButton = new Button(mLeftComposite, (wType == RightType.Setting) ? SWT.PUSH : SWT.TOGGLE);
 			wButton.setText(wType.toString());
 			mRightTypeMap.put(wType, wButton);
 			wButton.addSelectionListener(createSelectionAdapter(wType));
@@ -153,11 +153,11 @@ public class BeautiesMain extends ApplicationWindow {
 	}
 
 	private void openConfigDialog() {
-		mRightTypeMap.get(mRightType).setBackground(null);
-		mRightTypeMap.get(mRightType).setSelection(false);
-
 		new PreferenceDialog(getShell(), new MyPreferenceManager()).open();
 		SystemData.crearCache();
+
+		mRightTypeMap.get(mRightType).setBackground(null);
+		mRightTypeMap.get(mRightType).setSelection(false);
 
 		mRightType = RightType.Main;
 		mRightTypeMap.get(mRightType).setBackground(SystemData.getColorYellow());
