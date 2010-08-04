@@ -32,11 +32,11 @@ import org.eclipse.swt.widgets.TableColumn;
 
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
+import beauties.common.model.Book;
 import beauties.common.view.MyFillLayout;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
 import beauties.common.view.MyRowLayout;
-import beauties.model.Book;
 
 
 class PreferencePageBook extends PreferencePage {

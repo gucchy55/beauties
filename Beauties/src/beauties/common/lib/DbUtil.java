@@ -16,12 +16,12 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+import beauties.common.model.AnnualDateRange;
+import beauties.common.model.Book;
+import beauties.common.model.DateRange;
+import beauties.common.model.IncomeExpense;
+import beauties.common.model.IncomeExpenseSummary;
 import beauties.config.model.ConfigItem;
-import beauties.model.AnnualDateRange;
-import beauties.model.Book;
-import beauties.model.DateRange;
-import beauties.model.IncomeExpense;
-import beauties.model.IncomeExpenseSummary;
 import beauties.record.model.RecordTableItem;
 import beauties.record.model.RecordTableItemForMove;
 import beauties.record.model.SummaryTableItem;

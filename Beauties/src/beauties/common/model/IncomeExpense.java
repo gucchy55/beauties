@@ -1,4 +1,4 @@
-package beauties.model;
+package beauties.common.model;
 
 public class IncomeExpense {
 

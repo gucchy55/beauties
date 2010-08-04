@@ -19,9 +19,9 @@ import org.eclipse.swt.widgets.Spinner;
 import beauties.annual.AnnualController;
 import beauties.common.lib.SystemData;
 import beauties.common.lib.Util;
+import beauties.common.model.DateRange;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
-import beauties.model.DateRange;
 
 public class DialogAnnualPeriod extends Dialog {
 

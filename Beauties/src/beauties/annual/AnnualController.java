@@ -18,9 +18,9 @@ import beauties.annual.view.DialogAnnualPeriod;
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
 import beauties.common.lib.Util;
+import beauties.common.model.AnnualDateRange;
+import beauties.common.model.DateRange;
 import beauties.common.view.IPeriodBookTabController;
-import beauties.model.AnnualDateRange;
-import beauties.model.DateRange;
 import beauties.record.model.SummaryTableItem;
 
 public class AnnualController implements IPeriodBookTabController {

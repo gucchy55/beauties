@@ -11,8 +11,8 @@ import org.eclipse.swt.events.FocusEvent;
 import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.widgets.Shell;
 
-import beauties.model.AnnualDateRange;
-import beauties.model.DateRange;
+import beauties.common.model.AnnualDateRange;
+import beauties.common.model.DateRange;
 
 
 public class Util {

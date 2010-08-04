@@ -20,12 +20,12 @@ import org.eclipse.swt.widgets.Shell;
 import beauties.annual.view.CompositeAnnualMain;
 import beauties.common.lib.FileLoader;
 import beauties.common.lib.SystemData;
+import beauties.common.model.RightType;
 import beauties.common.view.MyFillLayout;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
 import beauties.config.view.MyPreferenceManager;
 import beauties.memo.CompositeMemoMain;
-import beauties.model.RightType;
 import beauties.record.view.CompositeEntry;
 
 

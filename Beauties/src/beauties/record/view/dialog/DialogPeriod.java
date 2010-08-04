@@ -16,7 +16,7 @@ import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Shell;
 
-import beauties.model.DateRange;
+import beauties.common.model.DateRange;
 
 
 public class DialogPeriod extends Dialog {

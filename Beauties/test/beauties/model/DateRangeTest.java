@@ -5,7 +5,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 
 import beauties.common.lib.Util;
-import beauties.model.DateRange;
+import beauties.common.model.DateRange;
 
 import junit.framework.TestCase;
 
