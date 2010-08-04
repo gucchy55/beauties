@@ -4,6 +4,8 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import beauties.annual.AnnualController;
+import beauties.annual.model.AnnualViewType;
+import beauties.common.view.CompositePeriodBookTab;
 
 import util.view.MyGridData;
 import util.view.MyGridLayout;
@@ -13,7 +15,7 @@ public class CompositeAnnualMain extends Composite {
 	private AnnualController mCTL;
 	private CompositeAnnualTable mCompositeAnnualTable;
 	private CompositeAnnualActionTab mCompositeAnnualActionTab;
-	private CompositeAnnualBookTab mCompositeAnnualBookTab;
+	private CompositePeriodBookTab mCompositeAnnualBookTab;
 	
 	public CompositeAnnualMain(Composite pParent) {
 		super(pParent, SWT.NONE);
@@ -27,7 +29,7 @@ public class CompositeAnnualMain extends Composite {
 
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		mCompositeAnnualBookTab = new CompositeAnnualBookTab(mCTL);
+		mCompositeAnnualBookTab = new CompositePeriodBookTab(mCTL);
 		mCompositeAnnualActionTab = new CompositeAnnualActionTab(mCTL);
 
 		mCompositeAnnualTable = new CompositeAnnualTable(mCTL);
@@ -39,7 +41,7 @@ public class CompositeAnnualMain extends Composite {
 	}
 
 	public void updateTable() {
-		mCompositeAnnualBookTab.updateView();
+		mCompositeAnnualBookTab.setVisible(mCTL.getAnnualViewType() != AnnualViewType.Original);
 		mCompositeAnnualActionTab.updateFiscalButton();
 		mCompositeAnnualTable.recreateMainTable();
 	}

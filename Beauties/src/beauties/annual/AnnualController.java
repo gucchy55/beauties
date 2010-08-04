@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
@@ -13,13 +15,15 @@ import util.Util;
 import beauties.annual.model.AnnualHeaderItem;
 import beauties.annual.model.AnnualViewType;
 import beauties.annual.view.CompositeAnnualMain;
+import beauties.annual.view.DialogAnnualPeriod;
+import beauties.common.view.IPeriodBookTabController;
 import beauties.model.AnnualDateRange;
 import beauties.model.DateRange;
 import beauties.model.SystemData;
 import beauties.model.db.DbUtil;
 import beauties.record.model.SummaryTableItem;
 
-public class AnnualController {
+public class AnnualController implements IPeriodBookTabController {
 	private int mBookId = SystemData.getAllBookInt();
 	private AnnualDateRange mAnnualDateRange;
 	private boolean mFiscalPeriod = false;
@@ -32,7 +36,8 @@ public class AnnualController {
 	private AnnualHeaderItem[] mAnnualHeaderItems;
 	private List<String> mRowHeaderList;
 
-	private static final DateFormat mDF = new SimpleDateFormat("yyyy年MM月");
+	private static final DateFormat mDF_yyyymm = new SimpleDateFormat("yyyy年MM月");
+	private static final DateFormat mDF_yyyy = new SimpleDateFormat("yyyy年");
 
 	public AnnualController(CompositeAnnualMain pCompositeAnnualMain) {
 		mCompositeAnnualMain = pCompositeAnnualMain;
@@ -45,7 +50,7 @@ public class AnnualController {
 		// RowHeaders
 		mRowHeaderList.clear();
 		for (DateRange wDateRange : mAnnualDateRange.getDateRangeList())
-			mRowHeaderList.add(mDF.format(wDateRange.getEndDate()));
+			mRowHeaderList.add(mDF_yyyymm.format(wDateRange.getEndDate()));
 		if (mAnnualDateRange.hasSumIndex()) {
 			mRowHeaderList.set(mAnnualDateRange.getSumIndex(), "合計");
 			mRowHeaderList.set(mAnnualDateRange.getAveIndex(), "平均");
@@ -72,12 +77,7 @@ public class AnnualController {
 
 	}
 
-//	public void updateTable() {
-//		updateTableItems();
-//		mCompositeAnnualMain.updateTable();
-//	}
-	
-	public void recreateMainTable() {
+	public void updateTable() {
 		updateTableItems();
 		mCompositeAnnualMain.updateTable();
 	}
@@ -94,17 +94,14 @@ public class AnnualController {
 		this.mBookId = pBookId;
 	}
 
-//	public void setAnnualDateRange(AnnualDateRange pAnnualDateRange) {
-//		this.mAnnualDateRange = pAnnualDateRange;
-//		updateMonthCount();
-//	}
-
 	public void setFiscalPeriod(boolean pFiscalPeriod) {
 		this.mFiscalPeriod = pFiscalPeriod;
 		if (mFiscalPeriod)
-			mAnnualDateRange = Util.getAnnualDateRangeFiscal(SystemData.getCutOff(), DbUtil.getFisCalMonth());
+			mAnnualDateRange = Util.getAnnualDateRangeFiscal(SystemData.getCutOff(), DbUtil
+					.getFisCalMonth());
 		else
-			mAnnualDateRange = Util.getAnnualDateRange(new Date(), mMonthCount, SystemData.getCutOff());
+			mAnnualDateRange = Util.getAnnualDateRange(new Date(), mMonthCount, SystemData
+					.getCutOff());
 		updateMonthCount();
 	}
 
@@ -127,7 +124,7 @@ public class AnnualController {
 	public List<String> getRowHeaderList() {
 		return mRowHeaderList;
 	}
-	
+
 	public AnnualViewType getAnnualViewType() {
 		return mAnnualViewType;
 	}
@@ -142,6 +139,7 @@ public class AnnualController {
 		mAnnualDateRange = Util.getAnnualDateRangeFromDateRange(
 				new DateRange(wStartDate, wEndDate), SystemData.getCutOff());
 		updateMonthCount();
+		updateTable();
 	}
 
 	public void setNextPeriod() {
@@ -154,28 +152,48 @@ public class AnnualController {
 		mAnnualDateRange = Util.getAnnualDateRangeFromDateRange(
 				new DateRange(wStartDate, wEndDate), SystemData.getCutOff());
 		updateMonthCount();
+		updateTable();
 	}
 
 	private void updateMonthCount() {
 		mMonthCount = mAnnualDateRange.hasSumIndex() ? mAnnualDateRange.getDateRangeList().size() - 2
 				: mAnnualDateRange.getDateRangeList().size();
 	}
-	
+
 	public void setAnnualViewType(AnnualViewType pAnnualViewType) {
 		mAnnualViewType = pAnnualViewType;
 	}
-	
+
 	public void setDateRange(DateRange pDateRange) {
 		mAnnualDateRange = Util.getAnnualDateRangeFromDateRange(pDateRange, SystemData.getCutOff());
 		mFiscalPeriod = false;
 		updateMonthCount();
 	}
-	
+
 	public void copyToClipboard() {
 		mCompositeAnnualMain.copyToClipboard();
 	}
-	
+
 	public Composite getComposite() {
 		return mCompositeAnnualMain;
+	}
+
+	public void openDialogPeriod() {
+		getShell().setImeInputMode(SWT.NONE);
+		DialogAnnualPeriod wDialogAnnualPeriod = new DialogAnnualPeriod(this);
+		if (wDialogAnnualPeriod.open() == IDialogConstants.OK_ID) { // Updated
+			setDateRange(wDialogAnnualPeriod.getDateRange());
+			updateTable();
+		}
+		// new OpenDialogAnnualPeriod(this).run();
+	}
+
+	public String getPeriodLabelText() {
+		if (getFiscalPeriod())
+			return mDF_yyyy.format(Util.getMonthDateRange(
+					mAnnualDateRange.getStartDate(), SystemData.getCutOff())
+					.getEndDate());
+
+		return "期間指定";
 	}
 }

@@ -4,6 +4,8 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
+
+import beauties.common.view.CompositePeriodBookTab;
 import beauties.record.RecordController;
 import beauties.record.model.RecordTableItem;
 
@@ -14,7 +16,7 @@ public class CompositeEntry extends Composite {
 
 	private RecordController mCTL;
 	
-	private CompositeBookTab mCompositeBookTab;
+	private CompositePeriodBookTab mCompositePeriodBookTab;
 	private CompositeRecordTable mCompositeRecordTable;
 	private CompositeSummaryTable mCompositeSummaryTable;
 	private CompositeActionTab mCompositeActionTab;
@@ -29,21 +31,21 @@ public class CompositeEntry extends Composite {
 		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		mCompositeBookTab = new CompositeBookTab(mCTL);
+		mCompositePeriodBookTab = new CompositePeriodBookTab(mCTL);
 		mCompositeActionTab = new CompositeActionTab(mCTL);
 		mCompositeRecordTable = new CompositeRecordTable(mCTL);
 		mCompositeSummaryTable = new CompositeSummaryTable(mCTL);
 	}
 
 	public void updateView() {
-		mCompositeBookTab.updateMonthLabel();
+		mCompositePeriodBookTab.updateMonthLabel();
 		mCompositeRecordTable.updateTable();
 		mCompositeSummaryTable.updateTable();
 		mCompositeRecordTable.setFocus();
 	}
 	
 	public void updateViewForSearch(boolean pSearch) {
-		mCompositeBookTab.setVisible(!pSearch);
+		mCompositePeriodBookTab.setVisible(!pSearch);
 		mCompositeSummaryTable.setVisible(!pSearch);
 		if (!pSearch)
 			return;

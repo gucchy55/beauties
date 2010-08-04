@@ -58,7 +58,7 @@ class CompositeAnnualActionTab extends Composite {
 			public void widgetSelected(SelectionEvent e) {
 				mCTL.setFiscalPeriod(((Button) e.getSource()).getSelection());
 				mFiscalButton.setBackground(mFiscalButton.getSelection() ? SystemData.getColorYellow() : null);
-				mCTL.recreateMainTable();
+				mCTL.updateTable();
 			}
 		});
 	}
@@ -82,7 +82,7 @@ class CompositeAnnualActionTab extends Composite {
 					mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setBackground(null);
 					mCTL.setAnnualViewType(wType);
 					mAnnualViewTypeMap.get(mCTL.getAnnualViewType()).setBackground(SystemData.getColorYellow());
-					mCTL.recreateMainTable();
+					mCTL.updateTable();
 				}
 			});
 		}

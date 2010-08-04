@@ -1,4 +1,4 @@
-package beauties.record.view;
+package beauties.common.view;
 
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -14,13 +14,13 @@ import beauties.model.SystemData;
 import util.view.MyGridData;
 import util.view.MyRowLayout;
 
-public class CompositeBookNames extends Composite {
+class CompositeBookNames extends Composite {
 
 	private Map<Integer, String> mBookNameMap;
 	private Map<Integer, Button> mBookButtonMap;
 	private int mBookId;
 
-	public CompositeBookNames(Composite pParent, int pBookId) {
+	CompositeBookNames(Composite pParent, int pBookId) {
 		super(pParent, SWT.NONE);
 
 		mBookNameMap = SystemData.getBookMap(true);
@@ -42,7 +42,7 @@ public class CompositeBookNames extends Composite {
 		}
 	}
 	
-	public Map<Integer, Button> getBookButtonMap() {
+	Map<Integer, Button> getBookButtonMap() {
 		return mBookButtonMap;
 	}
 

@@ -8,6 +8,7 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
+import beauties.model.SystemData;
 import beauties.record.DeleteRecord;
 import beauties.record.OpenDialogModifyMove;
 import beauties.record.OpenDialogModifyRecord;
@@ -47,6 +48,7 @@ class CompositeActionTab extends Composite {
 		mSearchButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				Button wButton = (Button)e.getSource();
+				wButton.setBackground(wButton.getSelection() ? SystemData.getColorYellow() : null);
 				if(wButton.getSelection()) 
 					wButton.setSelection(mCTL.openSearchDialog());
 				else {

@@ -1,22 +1,27 @@
 package beauties.record;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 import org.eclipse.jface.dialogs.Dialog;
+import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
 import util.Util;
+import beauties.common.view.IPeriodBookTabController;
 import beauties.model.DateRange;
 import beauties.model.SystemData;
 import beauties.model.db.DbUtil;
 import beauties.record.model.RecordTableItem;
 import beauties.record.model.SummaryTableItem;
 import beauties.record.view.CompositeEntry;
+import beauties.record.view.dialog.DialogPeriod;
 
-public class RecordController {
+public class RecordController implements IPeriodBookTabController {
 	private int mBookId;
 	private DateRange mDateRange;
 
@@ -28,6 +33,8 @@ public class RecordController {
 	private RecordTableItem[] mRecordItemsUp;
 	private RecordTableItem[] mRecordItemsBottom;
 	private SummaryTableItem[] mSummaryTableItems;
+
+	private static final DateFormat mDF_yyyymm = new SimpleDateFormat("yyyy/MM");
 
 	public RecordController(CompositeEntry pCompositeEntry) {
 		mCompositeEntry = pCompositeEntry;
@@ -119,7 +126,7 @@ public class RecordController {
 	public boolean openSearchDialog() {
 		this.getShell().setImeInputMode(SWT.NATIVE);
 		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
-		if (wInputDialog.open() != Dialog.OK) 
+		if (wInputDialog.open() != Dialog.OK)
 			return false;
 		this.updateItemsForSearch(wInputDialog.getValue());
 		this.setSearchResult(true);
@@ -129,14 +136,47 @@ public class RecordController {
 	public boolean getMonthPeriod() {
 		if (mMonthPeriod)
 			return true;
-		DateRange wMonthRange = Util.getMonthDateRange(mDateRange.getEndDate(), SystemData.getCutOff());
+		DateRange wMonthRange = Util.getMonthDateRange(mDateRange.getEndDate(), SystemData
+				.getCutOff());
 		mMonthPeriod = mDateRange.getStartDate().equals(wMonthRange.getStartDate())
 				&& mDateRange.getEndDate().equals(wMonthRange.getEndDate());
 		return mMonthPeriod;
-			
+
 	}
-	
+
 	public Composite getComposite() {
 		return mCompositeEntry;
+	}
+
+	@Override
+	public String getPeriodLabelText() {
+		if (getMonthPeriod())
+			return mDF_yyyymm.format(mDateRange.getEndDate());
+		return "期間指定";
+	}
+
+	@Override
+	public void openDialogPeriod() {
+		getShell().setImeInputMode(SWT.NONE);
+		DialogPeriod wDialogPeriod = new DialogPeriod(getShell(), mDateRange);
+		if (wDialogPeriod.open() == IDialogConstants.OK_ID) { // Updated
+			mDateRange = new DateRange(wDialogPeriod.getStartDate(), wDialogPeriod.getEndDate());
+			mMonthPeriod = false;
+			updateTable();
+		}
+	}
+
+	@Override
+	public void setNextPeriod() {
+		mDateRange = Util.getMonthDateRange(Util.getAdjusentMonth(mDateRange
+				.getEndDate(), 1), SystemData.getCutOff());
+		updateTable();
+	}
+
+	@Override
+	public void setPrevPeriod() {
+		mDateRange = Util.getMonthDateRange(Util.getAdjusentMonth(mDateRange
+				.getEndDate(), -1), SystemData.getCutOff());
+		updateTable();
 	}
 }

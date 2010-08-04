@@ -1,3 +1,0 @@
-Manifest-Version: 1.0
-Main-Class: beauties.main.BeautiesMain
-Class-Path: ./lib/mysql-connector-java-5.1.10-bin.jar ./lib/org.eclipse.core.commands_3.5.0.I20090525-2000.jar ./lib/org.eclipse.equinox.common_3.5.1.R35x_v20090807-1100.jar ./lib/org.eclipse.jface_3.5.2.M20100120-0800.jar ./lib/swt.jar
