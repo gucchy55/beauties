@@ -6,11 +6,11 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 
 import beauties.common.view.CompositePeriodBookTab;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyGridLayout;
 import beauties.record.RecordController;
 import beauties.record.model.RecordTableItem;
 
-import util.view.MyGridData;
-import util.view.MyGridLayout;
 
 public class CompositeEntry extends Composite {
 

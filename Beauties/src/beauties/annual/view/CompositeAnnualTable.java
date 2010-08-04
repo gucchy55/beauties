@@ -25,11 +25,11 @@ import org.eclipse.swt.widgets.TableItem;
 
 import beauties.annual.AnnualController;
 import beauties.annual.model.AnnualHeaderItem;
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyGridLayout;
 import beauties.record.model.SummaryTableItem;
 
-import util.view.MyGridData;
-import util.view.MyGridLayout;
 
 class CompositeAnnualTable extends Composite {
 

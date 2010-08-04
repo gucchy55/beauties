@@ -22,8 +22,8 @@ import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
+import beauties.common.lib.DbUtil;
 import beauties.config.model.ConfigItem;
-import beauties.model.db.DbUtil;
 
 class DialogNewItem extends Dialog {
 

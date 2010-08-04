@@ -17,11 +17,11 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Spinner;
 
 import beauties.annual.AnnualController;
+import beauties.common.lib.SystemData;
+import beauties.common.lib.Util;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyGridLayout;
 import beauties.model.DateRange;
-import beauties.model.SystemData;
-import util.Util;
-import util.view.MyGridData;
-import util.view.MyGridLayout;
 
 public class DialogAnnualPeriod extends Dialog {
 

@@ -3,8 +3,8 @@ package beauties.record.model;
 import java.util.Calendar;
 import java.util.Date;
 
-import beauties.model.SystemData;
-import beauties.model.db.DbUtil;
+import beauties.common.lib.DbUtil;
+import beauties.common.lib.SystemData;
 
 
 

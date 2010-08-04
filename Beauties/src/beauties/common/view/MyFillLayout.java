@@ -1,4 +1,4 @@
-package util.view;
+package beauties.common.view;
 
 import org.eclipse.swt.layout.FillLayout;
 

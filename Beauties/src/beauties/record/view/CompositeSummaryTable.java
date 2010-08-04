@@ -18,12 +18,12 @@ import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyGridLayout;
 import beauties.record.RecordController;
 import beauties.record.model.SummaryTableItem;
 
-import util.view.MyGridData;
-import util.view.MyGridLayout;
 
 class CompositeSummaryTable extends Composite {
 

@@ -6,9 +6,9 @@ import org.eclipse.swt.widgets.Composite;
 import beauties.annual.AnnualController;
 import beauties.annual.model.AnnualViewType;
 import beauties.common.view.CompositePeriodBookTab;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyGridLayout;
 
-import util.view.MyGridData;
-import util.view.MyGridLayout;
 
 public class CompositeAnnualMain extends Composite {
 

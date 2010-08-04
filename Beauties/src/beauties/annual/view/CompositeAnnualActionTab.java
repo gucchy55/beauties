@@ -12,10 +12,10 @@ import org.eclipse.swt.widgets.Label;
 
 import beauties.annual.AnnualController;
 import beauties.annual.model.AnnualViewType;
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyRowLayout;
 
-import util.view.MyGridData;
-import util.view.MyRowLayout;
 
 class CompositeAnnualActionTab extends Composite {
 

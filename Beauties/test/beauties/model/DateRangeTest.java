@@ -4,9 +4,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import beauties.common.lib.Util;
 import beauties.model.DateRange;
 
-import util.Util;
 import junit.framework.TestCase;
 
 public class DateRangeTest extends TestCase {

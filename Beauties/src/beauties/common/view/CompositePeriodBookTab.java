@@ -12,9 +12,7 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import beauties.model.SystemData;
-import util.view.MyGridData;
-import util.view.MyGridLayout;
+import beauties.common.lib.SystemData;
 
 public class CompositePeriodBookTab extends Composite {
 

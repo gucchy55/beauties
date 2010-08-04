@@ -30,14 +30,14 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
+import beauties.common.lib.DbUtil;
+import beauties.common.lib.SystemData;
+import beauties.common.view.MyFillLayout;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyGridLayout;
+import beauties.common.view.MyRowLayout;
 import beauties.model.Book;
-import beauties.model.SystemData;
-import beauties.model.db.DbUtil;
 
-import util.view.MyFillLayout;
-import util.view.MyGridData;
-import util.view.MyGridLayout;
-import util.view.MyRowLayout;
 
 class PreferencePageBook extends PreferencePage {
 
@@ -54,8 +54,10 @@ class PreferencePageBook extends PreferencePage {
 	private Map<Button, Integer> mItemButtonMap;
 	private List<Book> mBookList;
 
-	protected PreferencePageBook() {
+	PreferencePageBook() {
 		setTitle("帳簿設定");
+		mBookList = DbUtil.getBookList();
+		mItemButtonMap = new HashMap<Button, Integer>();
 	}
 
 	protected Control createContents(Composite parent) {
@@ -66,11 +68,37 @@ class PreferencePageBook extends PreferencePage {
 				.getMyGridData();
 		mMainComposite.setLayoutData(wGridData);
 
+		createTopComposite(wGridData);
+
+		createTableComposite();
+
+		createAttributeComposite();
+
+		// 初期設定
+		mTableViewerBooks.getTable().setFocus();
+		updateAttributeButtons(mBookList.get(0).getId());
+
+		return mMainComposite;
+	}
+
+	private void createTopComposite(GridData wGridData) {
 		Composite wTopComposite = new Composite(mMainComposite, SWT.NONE);
 		wTopComposite.setLayout(new MyRowLayout().getMyRowLayout());
 		wGridData.horizontalSpan = 2;
 		wTopComposite.setLayoutData(wGridData);
 
+		createAddButton(wTopComposite);
+
+		createModifyButton(wTopComposite);
+
+		createDeleteButton(wTopComposite);
+
+		createTopButton(wTopComposite);
+
+		createDownButton(wTopComposite);
+	}
+
+	private void createAddButton(Composite wTopComposite) {
 		Button wBookAddButton = new Button(wTopComposite, SWT.NULL);
 		wBookAddButton.setText("追加");
 		wBookAddButton.addSelectionListener(new SelectionAdapter() {
@@ -85,7 +113,9 @@ class PreferencePageBook extends PreferencePage {
 
 			}
 		});
+	}
 
+	private void createModifyButton(Composite wTopComposite) {
 		Button wBookModifyButton = new Button(wTopComposite, SWT.NULL);
 		wBookModifyButton.setText("変更");
 		wBookModifyButton.addSelectionListener(new SelectionAdapter() {
@@ -101,10 +131,11 @@ class PreferencePageBook extends PreferencePage {
 					updateBookTableWithDb();
 					mTableViewerBooks.getTable().setSelection(wIndex);
 				}
-
 			}
 		});
+	}
 
+	private void createDeleteButton(Composite wTopComposite) {
 		Button wDeleteButton = new Button(wTopComposite, SWT.NULL);
 		wDeleteButton.setText("削除");
 		wDeleteButton.addSelectionListener(new SelectionAdapter() {
@@ -120,7 +151,9 @@ class PreferencePageBook extends PreferencePage {
 
 			}
 		});
+	}
 
+	private void createTopButton(Composite wTopComposite) {
 		Button wUpButton = new Button(wTopComposite, SWT.NULL);
 		wUpButton.setText("↑");
 		wUpButton.addSelectionListener(new SelectionAdapter() {
@@ -138,7 +171,9 @@ class PreferencePageBook extends PreferencePage {
 
 			}
 		});
+	}
 
+	private void createDownButton(Composite wTopComposite) {
 		Button wDownButton = new Button(wTopComposite, SWT.NULL);
 		wDownButton.setText("↓");
 		wDownButton.addSelectionListener(new SelectionAdapter() {
@@ -156,16 +191,21 @@ class PreferencePageBook extends PreferencePage {
 
 			}
 		});
+	}
 
+	private void createTableComposite() {
+		GridData wGridData;
 		// BookNameTable
-		mBookList = DbUtil.getBookList();
 		mTableComposite = new Composite(mMainComposite, SWT.BORDER);
 		mTableComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getMyFillLayout());
 		wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		mTableComposite.setLayoutData(wGridData);
 		initBookNameTable();
 		mTableViewerBooks.getTable().setSelection(0);
+	}
 
+	private void createAttributeComposite() {
+		GridData wGridData;
 		// 関連付け
 		mAttributeComposite = new Composite(mMainComposite, SWT.BORDER);
 		mAttributeComposite.setLayout(new MyGridLayout(2, true).getMyGridLayout());
@@ -173,12 +213,6 @@ class PreferencePageBook extends PreferencePage {
 		wGridData.widthHint = mRightHint;
 		mAttributeComposite.setLayoutData(wGridData);
 		initAttributes();
-
-		// 初期設定
-		mTableViewerBooks.getTable().setFocus();
-		updateAttributeButtons(mBookList.get(0).getId());
-
-		return mMainComposite;
 	}
 
 	private void initBookNameTable() {
@@ -213,6 +247,14 @@ class PreferencePageBook extends PreferencePage {
 	private void initAttributes() {
 		mBalanceLabel = new Label(mAttributeComposite, SWT.NONE);
 
+		createBalanceModifyButton();
+
+		createRelationLabel();
+
+		createCompositeItemButtons();
+	}
+
+	private void createBalanceModifyButton() {
 		Button wBalanceModifyButton = new Button(mAttributeComposite, SWT.NONE);
 		wBalanceModifyButton.setText("変更");
 		wBalanceModifyButton.addSelectionListener(new SelectionAdapter() {
@@ -221,7 +263,7 @@ class PreferencePageBook extends PreferencePage {
 				if (wBook == null)
 					return;
 				InputDialog dlg = new InputDialog(getShell(), "初期値変更", "初期値を入力してください", Integer
-						.toString((int) wBook.getBalance()), new IInputValidator() {
+						.toString(wBook.getBalance()), new IInputValidator() {
 					public String isValid(String newText) {
 						if (newText.matches("[0-9]+"))
 							return null; // Valid
@@ -238,23 +280,28 @@ class PreferencePageBook extends PreferencePage {
 				}
 			}
 		});
+	}
 
+	private void createRelationLabel() {
 		Label wLabel = new Label(mAttributeComposite, SWT.NONE);
 		wLabel.setText("関連付け");
 		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false)
 				.getMyGridData();
 		wGridData.horizontalSpan = 2;
 		wLabel.setLayoutData(wGridData);
+	}
 
+	private void createCompositeItemButtons() {
+		GridData wGridData;
 		Composite wCompositeItemButtons = new Composite(mAttributeComposite, SWT.BORDER);
 		wCompositeItemButtons.setLayout(new MyGridLayout(1, false).getMyGridLayout());
 		wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		wGridData.horizontalSpan = 2;
 		wCompositeItemButtons.setLayoutData(wGridData);
 
-		mItemButtonMap = new HashMap<Button, Integer>();
-		Map<Integer, String> wItemNameMap = DbUtil.getItemNameMap(SystemData.getAllBookInt(), true);
-		wItemNameMap.putAll(DbUtil.getItemNameMap(SystemData.getAllBookInt(), false));
+		Map<Integer, String> wItemNameMap = DbUtil.getItemNameMap();
+		// wItemNameMap.putAll(DbUtil.getItemNameMap(SystemData.getAllBookInt(),
+		// false));
 		for (Map.Entry<Integer, String> entry : wItemNameMap.entrySet()) {
 			Button wButton = new Button(wCompositeItemButtons, SWT.CHECK);
 			wButton.setText(entry.getValue());
@@ -266,9 +313,8 @@ class PreferencePageBook extends PreferencePage {
 					if (wBook == null)
 						return;
 					Button wButton = (Button) e.getSource();
-					int wBookId = wBook.getId();
-					int wItemId = mItemButtonMap.get(wButton);
-					DbUtil.updateItemRelation(wItemId, wBookId, wButton.getSelection());
+					DbUtil.updateItemRelation(mItemButtonMap.get(wButton), wBook.getId(), wButton
+							.getSelection());
 				}
 			});
 		}

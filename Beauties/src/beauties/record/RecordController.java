@@ -11,11 +11,11 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
-import util.Util;
+import beauties.common.lib.DbUtil;
+import beauties.common.lib.SystemData;
+import beauties.common.lib.Util;
 import beauties.common.view.IPeriodBookTabController;
 import beauties.model.DateRange;
-import beauties.model.SystemData;
-import beauties.model.db.DbUtil;
 import beauties.record.model.RecordTableItem;
 import beauties.record.model.SummaryTableItem;
 import beauties.record.view.CompositeEntry;

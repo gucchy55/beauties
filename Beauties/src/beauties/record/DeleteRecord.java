@@ -4,7 +4,7 @@ package beauties.record;
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.MessageDialog;
 
-import beauties.model.db.DbUtil;
+import beauties.common.lib.DbUtil;
 
 public class DeleteRecord extends Action {
 

@@ -22,10 +22,10 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Text;
 
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyGridLayout;
 
-import util.view.MyGridData;
-import util.view.MyGridLayout;
 
 public class CompositeMemoMain extends Composite {
 

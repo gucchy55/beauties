@@ -20,7 +20,9 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
+import beauties.common.lib.Util;
+import beauties.common.view.MyGridData;
 import beauties.record.DeleteRecord;
 import beauties.record.OpenDialogModifyMove;
 import beauties.record.OpenDialogModifyRecord;
@@ -29,8 +31,6 @@ import beauties.record.OpenDialogNewRecord;
 import beauties.record.RecordController;
 import beauties.record.model.RecordTableItem;
 
-import util.Util;
-import util.view.MyGridData;
 
 class RecordTableViewer extends TableViewer {
 

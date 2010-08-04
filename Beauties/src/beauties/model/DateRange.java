@@ -1,7 +1,8 @@
 package beauties.model;
 
 import java.util.Date;
-import util.Util;
+
+import beauties.common.lib.Util;
 
 public class DateRange {
 

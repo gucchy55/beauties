@@ -3,7 +3,7 @@ package beauties.config.model;
 import java.util.ArrayList;
 import java.util.List;
 
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
 
 
 public class ConfigItem {

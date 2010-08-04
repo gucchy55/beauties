@@ -1,4 +1,4 @@
-package beauties.model;
+package beauties.common.lib;
 
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;

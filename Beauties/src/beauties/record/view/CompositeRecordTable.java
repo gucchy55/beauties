@@ -12,12 +12,12 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyGridLayout;
 import beauties.record.RecordController;
 import beauties.record.model.RecordTableItem;
 
-import util.view.MyGridData;
-import util.view.MyGridLayout;
 
 class CompositeRecordTable extends Composite {
 

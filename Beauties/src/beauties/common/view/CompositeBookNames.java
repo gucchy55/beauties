@@ -9,10 +9,8 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
 
-import util.view.MyGridData;
-import util.view.MyRowLayout;
 
 class CompositeBookNames extends Composite {
 

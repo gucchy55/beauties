@@ -4,7 +4,7 @@ package beauties.record.model;
 import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.graphics.Color;
 
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
 
 
 public abstract class SummaryTableItem {

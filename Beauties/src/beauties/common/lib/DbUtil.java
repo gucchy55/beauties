@@ -1,4 +1,4 @@
-package beauties.model.db;
+package beauties.common.lib;
 
 import java.sql.ResultSet;
 import java.sql.SQLException;
@@ -22,7 +22,6 @@ import beauties.model.Book;
 import beauties.model.DateRange;
 import beauties.model.IncomeExpense;
 import beauties.model.IncomeExpenseSummary;
-import beauties.model.SystemData;
 import beauties.record.model.RecordTableItem;
 import beauties.record.model.RecordTableItemForMove;
 import beauties.record.model.SummaryTableItem;
@@ -379,9 +378,16 @@ public class DbUtil {
 		return wResultList.toArray(new String[0]);
 
 	}
+	
+	// For all books
+	public static Map<Integer, String> getItemNameMap() {
+		Map<Integer, String> wResultMap = getItemNameMap(true);
+		wResultMap.putAll(getItemNameMap(false));
+		return wResultMap;
+	}
 
-	// For all categories
-	public static Map<Integer, String> getItemNameMap(int pBookId, boolean pIncome) {
+	// For all books
+	private static Map<Integer, String> getItemNameMap(boolean pIncome) {
 		Map<Integer, String> wResultMap = new LinkedHashMap<Integer, String>();
 		int wRexp = mIncomeRexp;
 		if (!pIncome) {
@@ -394,9 +400,9 @@ public class DbUtil {
 		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "."
 				+ mItemIdCol + " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable
 				+ "." + mCategoryIdCol;
-		if (pBookId != SystemData.getAllBookInt()) {
-			wQuery += " and " + mBookItemTable + "." + mBookIdCol + " = " + pBookId;
-		}
+//		if (pBookId != SystemData.getAllBookInt()) {
+//			wQuery += " and " + mBookItemTable + "." + mBookIdCol + " = " + pBookId;
+//		}
 		wQuery += " and " + mCategoryTable + "." + mCategoryRexpCol + " = " + wRexp + " and "
 				+ mBookItemTable + "." + mDelFlgCol + " = b'0' " + " and " + mItemTable + "."
 				+ mDelFlgCol + " = b'0' ";

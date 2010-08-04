@@ -1,4 +1,4 @@
-package util;
+package beauties.common.lib;
 
 import java.util.ArrayList;
 import java.util.Calendar;

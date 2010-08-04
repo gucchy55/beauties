@@ -12,10 +12,11 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Spinner;
 
-import beauties.model.SystemData;
-import beauties.model.db.DbUtil;
+import beauties.common.lib.DbUtil;
+import beauties.common.lib.SystemData;
+import beauties.common.lib.Util;
+import beauties.common.view.MyGridLayout;
 
-import util.view.MyGridLayout;
 
 class PreferencePageSystem extends PreferencePage {
 
@@ -32,7 +33,18 @@ class PreferencePageSystem extends PreferencePage {
 		Composite wMainComposite = new Composite(parent, SWT.NONE);
 		wMainComposite.setLayout(new MyGridLayout(3, false).getMyGridLayout());
 
-		// 締め日
+		createCutoffSpinner(wMainComposite);
+
+		new Label(wMainComposite, SWT.NONE);
+
+		createFiscalStartSpinner(wMainComposite);
+
+		createGridLineCheckButton(wMainComposite);
+
+		return wMainComposite;
+	}
+
+	private void createCutoffSpinner(Composite wMainComposite) {
 		new Label(wMainComposite, SWT.NONE).setText("締め日: ");
 		mCutOffSpinner = new Spinner(wMainComposite, SWT.BORDER);
 		mCutOffSpinner.setValues(SystemData.getCutOff(), 1, 31, 0, 1, 10);
@@ -44,22 +56,17 @@ class PreferencePageSystem extends PreferencePage {
 			public void focusLost(FocusEvent event) {
 			}
 		});
-		new Label(wMainComposite, SWT.NONE);
+	}
 
-		// 年度開始月
+	private void createFiscalStartSpinner(Composite wMainComposite) {
 		new Label(wMainComposite, SWT.NONE).setText("年度期間: ");
 		mAnnualStartSpinner = new Spinner(wMainComposite, SWT.BORDER);
 		mAnnualStartSpinner.setValues(DbUtil.getFisCalMonth(), 1, 12, 0, 1, 10);
-		mAnnualStartSpinner.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-
-			public void focusLost(FocusEvent event) {
-			}
-		});
+		mAnnualStartSpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
 		new Label(wMainComposite, SWT.NONE).setText(" ～ 12月");
+	}
 
+	private void createGridLineCheckButton(Composite wMainComposite) {
 		// チェックボックス用GridData
 		GridData wGridData = new GridData(GridData.BEGINNING, GridData.BEGINNING, false, false);
 		wGridData.horizontalSpan = 3;
@@ -72,8 +79,6 @@ class PreferencePageSystem extends PreferencePage {
 		mLineGridCheckButton.setSelection(SystemData.showGridLine());
 		mLineGridCheckButton.setText("罫線を表示する");
 		mLineGridCheckButton.setLayoutData(wGridData);
-
-		return wMainComposite;
 	}
 
 	protected void performApply() {

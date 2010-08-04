@@ -22,13 +22,13 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 
-import beauties.model.SystemData;
-import beauties.model.db.DbUtil;
+import beauties.common.lib.DbUtil;
+import beauties.common.lib.SystemData;
+import beauties.common.lib.Util;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyGridLayout;
 import beauties.record.model.RecordTableItem;
 
-import util.Util;
-import util.view.MyGridData;
-import util.view.MyGridLayout;
 
 class CompositeRecord extends Composite {
 

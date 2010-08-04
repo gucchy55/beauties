@@ -3,7 +3,9 @@ package beauties.model;
 import java.util.Date;
 import java.util.List;
 
-import util.Util;
+import beauties.common.lib.SystemData;
+import beauties.common.lib.Util;
+
 
 public class AnnualDateRange {
 	private List<DateRange> mDateRangeList;

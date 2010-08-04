@@ -8,7 +8,9 @@ import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
-import beauties.model.SystemData;
+import beauties.common.lib.SystemData;
+import beauties.common.view.MyGridData;
+import beauties.common.view.MyRowLayout;
 import beauties.record.DeleteRecord;
 import beauties.record.OpenDialogModifyMove;
 import beauties.record.OpenDialogModifyRecord;
@@ -16,8 +18,6 @@ import beauties.record.OpenDialogNewMove;
 import beauties.record.OpenDialogNewRecord;
 import beauties.record.RecordController;
 
-import util.view.MyGridData;
-import util.view.MyRowLayout;
 
 class CompositeActionTab extends Composite {
 

@@ -1,4 +1,4 @@
-package beauties.model.db;
+package beauties.common.lib;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,7 +10,6 @@ import java.sql.Statement;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
-import beauties.model.SystemData;
 
 class DbAccess {
 
