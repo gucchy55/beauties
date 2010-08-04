@@ -91,7 +91,6 @@ class PreferencePageItem extends PreferencePage {
 		wCategoryAddButton.setText("分類追加");
 		wCategoryAddButton.addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				// MessageDialog.openConfirm(getShell(), "分類追加", "分類追加です");
 				if (new DialogNewItem(getShell(), true).open() == 0) {
 					updateTree();
 				}
@@ -304,12 +303,9 @@ class PreferencePageItem extends PreferencePage {
 
 	private void updateTree() {
 		mRootConfigItem = DbUtil.getRootConfigItem();
-//		mTreeViewerConfigItem.getTree().dispose();
-//		mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite, mRootConfigItem);
 		mTreeViewerConfigItem.setInput(mRootConfigItem);
 		mTreeViewerConfigItem.setExpandedElements(mRootConfigItem.getChildren());
 		mTreeViewerConfigItem.refresh();
-//		mTreeComposite.layout();
 		DbUtil.updateSortKeys(mRootConfigItem);
 		updateAttributeButtons(mTreeViewerConfigItem.getSelectedConfigItem());
 		mTreeOrderChanged = false;

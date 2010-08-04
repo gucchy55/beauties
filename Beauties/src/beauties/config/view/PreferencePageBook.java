@@ -307,8 +307,6 @@ class PreferencePageBook extends PreferencePage {
 		wCompositeItemButtons.setLayoutData(wGridData);
 
 		Map<Integer, String> wItemNameMap = DbUtil.getItemNameMap();
-		// wItemNameMap.putAll(DbUtil.getItemNameMap(SystemData.getAllBookInt(),
-		// false));
 		for (Map.Entry<Integer, String> entry : wItemNameMap.entrySet()) {
 			Button wButton = new Button(wCompositeItemButtons, SWT.CHECK);
 			wButton.setText(entry.getValue());
@@ -346,12 +344,8 @@ class PreferencePageBook extends PreferencePage {
 
 		try {
 			ISelection selection = mTableViewerBooks.getSelection();
-
-			// mTableViewerBooks.getTable().dispose();
-			// initBookNameTable();
 			mTableViewerBooks.setInput((Book[]) mBookList.toArray(new Book[0]));
 			mTableViewerBooks.refresh();
-			// mTableComposite.layout();
 			mTableViewerBooks.setSelection(selection);
 		} finally {
 			mTableViewerBooks.getTable().setRedraw(true);
