@@ -4,7 +4,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
@@ -280,34 +279,37 @@ class PreferencePageItem extends PreferencePage {
 		});
 	}
 
-	// private void updateTreeOrder() {
-	// mTreeViewerConfigItem.getTree().setRedraw(false);
-	//
-	// try {
-	// Object[] elements = mTreeViewerConfigItem.getExpandedElements();
-	// ISelection selection = mTreeViewerConfigItem.getSelection();
-	//
-	// mTreeViewerConfigItem.getTree().dispose();
-	// mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite,
-	// mRootConfigItem);
-	// mTreeComposite.layout();
-	//
-	// addSelectionListenerToTree();
-	//
-	// mTreeViewerConfigItem.setExpandedElements(elements);
-	// mTreeViewerConfigItem.setSelection(selection);
-	//
-	// } finally {
-	// mTreeViewerConfigItem.getTree().setRedraw(true);
-	// }
-	//
-	// }
+//	private void updateTreeOrder() {
+//		mTreeViewerConfigItem.getTree().setRedraw(false);
+//
+//		try {
+//			Object[] elements = mTreeViewerConfigItem.getExpandedElements();
+//			ISelection selection = mTreeViewerConfigItem.getSelection();
+//
+////			mTreeViewerConfigItem.getTree().dispose();
+////			mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite,
+////					mRootConfigItem);
+////			mTreeComposite.layout();
+//
+//			addSelectionListenerToTree();
+//
+//			mTreeViewerConfigItem.setExpandedElements(elements);
+//			mTreeViewerConfigItem.setSelection(selection);
+//
+//		} finally {
+//			mTreeViewerConfigItem.getTree().setRedraw(true);
+//		}
+//
+//	}
 
 	private void updateTree() {
 		mRootConfigItem = DbUtil.getRootConfigItem();
-		mTreeViewerConfigItem.getTree().dispose();
-		mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite, mRootConfigItem);
-		mTreeComposite.layout();
+//		mTreeViewerConfigItem.getTree().dispose();
+//		mTreeViewerConfigItem = new TreeViewerConfigItem(mTreeComposite, mRootConfigItem);
+		mTreeViewerConfigItem.setInput(mRootConfigItem);
+		mTreeViewerConfigItem.setExpandedElements(mRootConfigItem.getChildren());
+		mTreeViewerConfigItem.refresh();
+//		mTreeComposite.layout();
 		DbUtil.updateSortKeys(mRootConfigItem);
 		updateAttributeButtons(mTreeViewerConfigItem.getSelectedConfigItem());
 		mTreeOrderChanged = false;

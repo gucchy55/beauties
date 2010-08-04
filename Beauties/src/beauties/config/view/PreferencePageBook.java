@@ -38,7 +38,6 @@ import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
 import beauties.common.view.MyRowLayout;
 
-
 class PreferencePageBook extends PreferencePage {
 
 	private static final int mRightHint = 250;
@@ -110,6 +109,9 @@ class PreferencePageBook extends PreferencePage {
 				updateBookTableWithDb();
 				mTableViewerBooks.getTable().setSelection(
 						mTableViewerBooks.getTable().getItemCount() - 1);
+				if (getSelectedBook() == null)
+					return;
+				updateAttributeButtons(getSelectedBook().getId());
 
 			}
 		});
@@ -130,6 +132,7 @@ class PreferencePageBook extends PreferencePage {
 					int wIndex = mTableViewerBooks.getTable().getSelectionIndex();
 					updateBookTableWithDb();
 					mTableViewerBooks.getTable().setSelection(wIndex);
+					updateAttributeButtons(wBook.getId());
 				}
 			}
 		});
@@ -143,11 +146,15 @@ class PreferencePageBook extends PreferencePage {
 				Book wBook = getSelectedBook();
 				if (wBook == null)
 					return;
-				if (MessageDialog
-						.openConfirm(getShell(), "帳簿削除", wBook.getName() + " - 本当に削除しますか？")) {
-					DbUtil.removeBook(wBook.getId());
-					updateBookTableWithDb();
-				}
+				if (!MessageDialog
+						.openConfirm(getShell(), "帳簿削除", wBook.getName() + " - 本当に削除しますか？"))
+					return;
+				
+				DbUtil.removeBook(wBook.getId());
+				updateBookTableWithDb();
+				if (getSelectedBook() == null)
+					return;
+				updateAttributeButtons(getSelectedBook().getId());
 
 			}
 		});
@@ -340,11 +347,12 @@ class PreferencePageBook extends PreferencePage {
 		try {
 			ISelection selection = mTableViewerBooks.getSelection();
 
-			mTableViewerBooks.getTable().dispose();
-			initBookNameTable();
-			mTableComposite.layout();
+			// mTableViewerBooks.getTable().dispose();
+			// initBookNameTable();
+			mTableViewerBooks.setInput((Book[]) mBookList.toArray(new Book[0]));
+			mTableViewerBooks.refresh();
+			// mTableComposite.layout();
 			mTableViewerBooks.setSelection(selection);
-
 		} finally {
 			mTableViewerBooks.getTable().setRedraw(true);
 		}
