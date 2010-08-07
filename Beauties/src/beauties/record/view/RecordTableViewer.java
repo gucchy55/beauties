@@ -136,35 +136,59 @@ class RecordTableViewer extends TableViewer {
 
 			@Override
 			public void keyReleased(KeyEvent e) {
-				if (!mCTL.hasSelectedRecordTableItem())
+				// 新規追加関連
+				if (keyEventForNew(e))
 					return;
 
-				// Enterキーが押されたら変更ダイアログ
-				if (e.character == SWT.CR) {
-					if (mCTL.getSelectedRecordItem().isMoveItem())
-						new OpenDialogModifyMove(mCTL).run();
-					else
-						new OpenDialogModifyRecord(mCTL).run();
-				}
-
-				// DELキーが押されたら削除（確認ダイアログ）
-				if (e.character == SWT.DEL)
-					new DeleteRecord(mCTL).run();
+				// 変更関連
+				if (keyEventForModify(e))
+					return;
 			}
 
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.stateMask == SWT.CTRL) {
-					if (e.keyCode == 'i')
-						new OpenDialogNewRecord(mCTL).run();
-					if (e.keyCode == 'm')
-						new OpenDialogNewMove(mCTL).run();
-					if (e.keyCode == 'f')
-						mCTL.openSearchDialog();
-				}
+
 			}
 
 		};
+	}
+	
+	private boolean keyEventForNew(KeyEvent e) {
+		if (e.stateMask == SWT.CTRL && e.keyCode == 'i') {
+			new OpenDialogNewRecord(mCTL).run();
+			return true;
+		}
+		if (e.stateMask == SWT.CTRL && e.keyCode == 'm') {
+			new OpenDialogNewMove(mCTL).run();
+			return true;
+		}
+		if (e.stateMask == SWT.CTRL && e.keyCode == 'f') {
+			mCTL.openSearchDialog();
+			return true;
+		}
+		
+		return false;
+	}
+	
+	private boolean keyEventForModify(KeyEvent e) {
+		if (!mCTL.hasSelectedRecordTableItem())
+			return false;
+		// Enterキーが押されたら変更ダイアログ
+		if (e.character == SWT.CR) {
+			if (mCTL.getSelectedRecordItem().isMoveItem())
+				new OpenDialogModifyMove(mCTL).run();
+			else
+				new OpenDialogModifyRecord(mCTL).run();
+			return true;
+		}
+
+		// DELキーが押されたら削除（確認ダイアログ）
+		if (e.character == SWT.DEL) {
+			new DeleteRecord(mCTL).run();
+			return true;
+		}
+		
+		return false;
 	}
 
 	boolean hasSelectedItem() {
