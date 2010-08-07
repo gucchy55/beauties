@@ -164,4 +164,14 @@ class CompositeRecordTable extends Composite {
 	void updateForSearch() {
 		updateTable();
 	}
+	
+	void removeListers() {
+		mTableUp.removeListeners();
+		mTableBottom.removeListeners();
+	}
+	void addListeners() {
+		mTableUp.addListeners();
+		mTableBottom.addListeners();
+	}
+	
 }

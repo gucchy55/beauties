@@ -179,4 +179,12 @@ public class RecordController implements IPeriodBookTabController {
 				.getEndDate(), -1), SystemData.getCutOff());
 		updateTable();
 	}
+	
+	public void addRecordTableListeners() {
+		mCompositeEntry.addRecordTableListeners();
+	}
+	
+	public void removeRecordTableListeners() {
+		mCompositeEntry.removeRecordTableListeners();
+	}
 }

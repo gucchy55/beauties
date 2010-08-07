@@ -9,23 +9,24 @@ import beauties.record.view.dialog.DialogMove;
 
 public class OpenDialogModifyMove extends Action {
 
-	private RecordController mCtl;
+	private RecordController mCTL;
 
 	public OpenDialogModifyMove(RecordController pCtl) {
-		mCtl = pCtl;
+		mCTL = pCtl;
 	}
 
 	@Override
 	public void run() {
-		if (!mCtl.hasSelectedRecordTableItem())
+		if (!mCTL.hasSelectedRecordTableItem())
 			return;
-		mCtl.getShell().setImeInputMode(SWT.NONE);
-		DialogMove wDialogMove = new DialogMove(mCtl.getShell(), mCtl.getSelectedRecordItem());
-		int wRet = wDialogMove.open();
-
-		if (wRet == IDialogConstants.OK_ID) {
-			mCtl.updateTable();
-//			new UpdateEntry(mCtl).run();
-		}
+		
+		mCTL.removeRecordTableListeners();
+		
+		mCTL.getShell().setImeInputMode(SWT.NONE);
+		DialogMove wDialogMove = new DialogMove(mCTL.getShell(), mCTL.getSelectedRecordItem());
+		if (wDialogMove.open() == IDialogConstants.OK_ID)
+			mCTL.updateTable();
+		
+		mCTL.addRecordTableListeners();
 	}
 }

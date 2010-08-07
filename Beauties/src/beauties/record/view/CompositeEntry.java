@@ -65,4 +65,12 @@ public class CompositeEntry extends Composite {
 	public void updateRecordFilter(ViewerFilter pFilter) {
 		mCompositeRecordTable.updateRecordFilter(pFilter);
 	}
+	
+	public void removeRecordTableListeners() {
+		mCompositeRecordTable.removeListers();
+	}
+	public void addRecordTableListeners() {
+		mCompositeRecordTable.addListeners();
+	}
+	
 }

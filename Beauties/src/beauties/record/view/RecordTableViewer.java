@@ -31,7 +31,6 @@ import beauties.record.OpenDialogNewRecord;
 import beauties.record.RecordController;
 import beauties.record.model.RecordTableItem;
 
-
 class RecordTableViewer extends TableViewer {
 
 	private RecordController mCTL;
@@ -40,10 +39,15 @@ class RecordTableViewer extends TableViewer {
 	private TableColumn mBookCol;
 	private TableColumn mDateCol;
 
+	private KeyListener mKeyListener;
+	private IDoubleClickListener mDoubleClickListener;
+	
 	RecordTableViewer(Composite pComp, RecordController pCTL) {
 		super(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
 
 		mCTL = pCTL;
+		mKeyListener = getKeyListener();
+		mDoubleClickListener = getDoubleClickListener();
 
 		// テーブルの作成
 		Table wTable = this.getTable();
@@ -84,11 +88,12 @@ class RecordTableViewer extends TableViewer {
 		TableColumn wNoteCol = new TableColumn(wTable, SWT.LEFT);
 		wNoteCol.setText("備考");
 		wNoteCol.setWidth(250);
+
+		addListeners();
 	}
 
 	void setRecordTableItem(RecordTableItem[] pRecordTableItems) {
 
-		final Table wTable = this.getTable();
 		mRecordTableItems = pRecordTableItems;
 
 		this.setContentProvider(new TableContentProvider());
@@ -98,9 +103,16 @@ class RecordTableViewer extends TableViewer {
 		this.setInput(mRecordTableItems);
 		updateColumnWidths();
 
-		this.addDoubleClickListener(getDoubleClickListener());
+	}
 
-		wTable.addKeyListener(getKeyListener());
+	void addListeners() {
+		addDoubleClickListener(mDoubleClickListener);
+		this.getTable().addKeyListener(mKeyListener);
+	}
+	
+	void removeListeners() {
+		removeDoubleClickListener(mDoubleClickListener);
+		this.getTable().removeKeyListener(mKeyListener);
 	}
 
 	private IDoubleClickListener getDoubleClickListener() {
@@ -163,11 +175,11 @@ class RecordTableViewer extends TableViewer {
 		mBookCol.setWidth(mCTL.showBookColumn() ? 60 : 0);
 		mBookCol.setResizable(mCTL.showBookColumn());
 		mDateCol.setWidth(mCTL.showYear() ? 80 : 62);
-//		for (TableColumn wColumn : this.getTable().getColumns()) {
-//			if (!wColumn.getResizable())
-//				continue;
-//			wColumn.pack();
-//		}
+		// for (TableColumn wColumn : this.getTable().getColumns()) {
+		// if (!wColumn.getResizable())
+		// continue;
+		// wColumn.pack();
+		// }
 	}
 
 	void updateTableItem(RecordTableItem[] pRecordTableItems) {
