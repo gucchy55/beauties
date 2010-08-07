@@ -165,13 +165,13 @@ class CompositeRecordTable extends Composite {
 		updateTable();
 	}
 	
-	void removeListers() {
-		mTableUp.removeListeners();
-		mTableBottom.removeListeners();
-	}
-	void addListeners() {
-		mTableUp.addListeners();
-		mTableBottom.addListeners();
-	}
+//	void removeListers() {
+//		mTableUp.removeListeners();
+//		mTableBottom.removeListeners();
+//	}
+//	void addListeners() {
+//		mTableUp.addListeners();
+//		mTableBottom.addListeners();
+//	}
 	
 }

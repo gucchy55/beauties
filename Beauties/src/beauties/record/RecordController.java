@@ -180,11 +180,11 @@ public class RecordController implements IPeriodBookTabController {
 		updateTable();
 	}
 	
-	public void addRecordTableListeners() {
-		mCompositeEntry.addRecordTableListeners();
-	}
-	
-	public void removeRecordTableListeners() {
-		mCompositeEntry.removeRecordTableListeners();
-	}
+//	public void addRecordTableListeners() {
+//		mCompositeEntry.addRecordTableListeners();
+//	}
+//	
+//	public void removeRecordTableListeners() {
+//		mCompositeEntry.removeRecordTableListeners();
+//	}
 }

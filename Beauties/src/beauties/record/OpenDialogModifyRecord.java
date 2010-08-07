@@ -20,13 +20,13 @@ public class OpenDialogModifyRecord extends Action {
 		if (!mCTL.hasSelectedRecordTableItem())
 			return;
 		
-		mCTL.removeRecordTableListeners();
+//		mCTL.removeRecordTableListeners();
 		
 		mCTL.getShell().setImeInputMode(SWT.NONE);
 		DialogModifyRecord wDialogModifyRecord = new DialogModifyRecord(mCTL.getShell(), mCTL.getSelectedRecordItem());
 		if (wDialogModifyRecord.open() == IDialogConstants.OK_ID)
 			mCTL.updateTable();
 		
-		mCTL.addRecordTableListeners();
+//		mCTL.addRecordTableListeners();
 	}
 }

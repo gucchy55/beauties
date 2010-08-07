@@ -105,15 +105,15 @@ class RecordTableViewer extends TableViewer {
 
 	}
 
-	void addListeners() {
+	private void addListeners() {
 		addDoubleClickListener(mDoubleClickListener);
 		this.getTable().addKeyListener(mKeyListener);
 	}
 	
-	void removeListeners() {
-		removeDoubleClickListener(mDoubleClickListener);
-		this.getTable().removeKeyListener(mKeyListener);
-	}
+//	void removeListeners() {
+//		removeDoubleClickListener(mDoubleClickListener);
+//		this.getTable().removeKeyListener(mKeyListener);
+//	}
 
 	private IDoubleClickListener getDoubleClickListener() {
 		return new IDoubleClickListener() {
