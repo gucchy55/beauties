@@ -1,4 +1,4 @@
-package beauties.model;
+package beauties.common.model;
 
 import java.util.Calendar;
 import java.util.Date;

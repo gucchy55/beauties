@@ -1,4 +1,4 @@
-package util;
+package beauties.common.lib;
 
 import java.util.Calendar;
 import java.util.Date;
