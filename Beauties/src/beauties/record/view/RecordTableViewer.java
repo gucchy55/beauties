@@ -106,8 +106,8 @@ class RecordTableViewer extends TableViewer {
 	}
 
 	private void addListeners() {
-		addDoubleClickListener(mDoubleClickListener);
 		this.getTable().addKeyListener(mKeyListener);
+		addDoubleClickListener(mDoubleClickListener);
 	}
 	
 //	void removeListeners() {
@@ -158,7 +158,7 @@ class RecordTableViewer extends TableViewer {
 			new OpenDialogNewRecord(mCTL).run();
 			return true;
 		}
-		if (e.stateMask == SWT.CTRL && e.keyCode == 'm') {
+		if (e.stateMask == SWT.CTRL && e.keyCode == 'j') {
 			new OpenDialogNewMove(mCTL).run();
 			return true;
 		}
