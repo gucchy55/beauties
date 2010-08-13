@@ -634,6 +634,8 @@ public class DbUtil {
 
 	private static boolean groupShouldBeChanged(RecordTableItem pBeforeRecord,
 			RecordTableItem pAfterRecord) {
+		if (pBeforeRecord.getGroupId() == 0 && pAfterRecord.getFrequency() > 0)
+			return true;
 		return pAfterRecord.getYear() != pBeforeRecord.getYear()
 				|| pAfterRecord.getMonth() != pBeforeRecord.getMonth()
 				|| pAfterRecord.getBookId() != pBeforeRecord.getBookId()
@@ -666,6 +668,8 @@ public class DbUtil {
 
 			int wGroupId = groupShouldBeChanged(pBeforeRecord, pAfterRecord) ? getNewGroupId()
 					: pBeforeRecord.getGroupId();
+			if (pBeforeRecord.getGroupId() > 0 && pAfterRecord.getFrequency() == 0)
+				wGroupId = 0;
 
 			// // 年月, BookId, ItemIdが変更された場合は新規のGroupIdを使用
 			// if (pAfterRecord.getYear() != pBeforeRecord.getYear()
@@ -770,6 +774,8 @@ public class DbUtil {
 
 	private static boolean groupShouldBeChanged(RecordTableItemForMove pBeforeItem,
 			RecordTableItemForMove pAfterItem) {
+		if (pBeforeItem.getGroupId() == 0 && pAfterItem.getFrequency() > 0)
+			return true;
 		return pAfterItem.getYear() != pBeforeItem.getYear()
 				|| pAfterItem.getMonth() != pBeforeItem.getMonth()
 				|| pAfterItem.getFromBookId() != pBeforeItem.getFromBookId()
@@ -811,6 +817,8 @@ public class DbUtil {
 			// 元の日付を取得
 			int wGroupId = groupShouldBeChanged(pBeforeItem, pAfterItem) ? getNewGroupId()
 					: pBeforeItem.getGroupId();
+			if (pBeforeItem.getGroupId() > 0 && pBeforeItem.getFrequency() == 0)
+				wGroupId = 0;
 
 			// 新規のレコードを追加
 			for (int i = 0; i < pAfterItem.getFrequency() + 1; i++) {
