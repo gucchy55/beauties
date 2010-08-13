@@ -378,7 +378,7 @@ public class DbUtil {
 		return wResultList.toArray(new String[0]);
 
 	}
-	
+
 	// For all books
 	public static Map<Integer, String> getItemNameMap() {
 		Map<Integer, String> wResultMap = getItemNameMap(true);
@@ -400,9 +400,10 @@ public class DbUtil {
 		wQuery += " where " + mItemTable + "." + mItemIdCol + " = " + mBookItemTable + "."
 				+ mItemIdCol + " and " + mCategoryTable + "." + mCategoryIdCol + " = " + mItemTable
 				+ "." + mCategoryIdCol;
-//		if (pBookId != SystemData.getAllBookInt()) {
-//			wQuery += " and " + mBookItemTable + "." + mBookIdCol + " = " + pBookId;
-//		}
+		// if (pBookId != SystemData.getAllBookInt()) {
+		// wQuery += " and " + mBookItemTable + "." + mBookIdCol + " = " +
+		// pBookId;
+		// }
 		wQuery += " and " + mCategoryTable + "." + mCategoryRexpCol + " = " + wRexp + " and "
 				+ mBookItemTable + "." + mDelFlgCol + " = b'0' " + " and " + mItemTable + "."
 				+ mDelFlgCol + " = b'0' ";
@@ -666,10 +667,12 @@ public class DbUtil {
 			// 既存のレコードを削除
 			deleteRecord(pBeforeRecord);
 
-			int wGroupId = groupShouldBeChanged(pBeforeRecord, pAfterRecord) ? getNewGroupId()
-					: pBeforeRecord.getGroupId();
+			int wGroupId;
 			if (pBeforeRecord.getGroupId() > 0 && pAfterRecord.getFrequency() == 0)
 				wGroupId = 0;
+			else
+				wGroupId = groupShouldBeChanged(pBeforeRecord, pAfterRecord) ? getNewGroupId()
+							: pBeforeRecord.getGroupId();
 
 			// // 年月, BookId, ItemIdが変更された場合は新規のGroupIdを使用
 			// if (pAfterRecord.getYear() != pBeforeRecord.getYear()
@@ -815,10 +818,12 @@ public class DbUtil {
 			deleteGroupRecord(pBeforeItem.getDate(), pBeforeItem.getGroupId());
 
 			// 元の日付を取得
-			int wGroupId = groupShouldBeChanged(pBeforeItem, pAfterItem) ? getNewGroupId()
-					: pBeforeItem.getGroupId();
+			int wGroupId;
 			if (pBeforeItem.getGroupId() > 0 && pBeforeItem.getFrequency() == 0)
 				wGroupId = 0;
+			else
+				wGroupId = groupShouldBeChanged(pBeforeItem, pAfterItem) ? getNewGroupId()
+						: pBeforeItem.getGroupId();
 
 			// 新規のレコードを追加
 			for (int i = 0; i < pAfterItem.getFrequency() + 1; i++) {
@@ -1173,7 +1178,7 @@ public class DbUtil {
 		List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
 		List<SummaryTableItem> wListIncome = new ArrayList<SummaryTableItem>();
 		List<SummaryTableItem> wListExpense = new ArrayList<SummaryTableItem>();
-		
+
 		for (int i = 0; i < pAnnualDateRange.size(); i++) {
 			wList.add(SummaryTableItemFactory.createAppearedProfit("総収支", 0));
 			wListIncome.add(SummaryTableItemFactory.createAppearedIncome("総収入", 0));
@@ -1183,7 +1188,7 @@ public class DbUtil {
 		pSummaryTableItemListMap.put(1, wListIncome);
 		int wKey = mExpenseRexp * 1000000;
 		pSummaryTableItemListMap.put(wKey, wListExpense);
-		
+
 		return pSummaryTableItemListMap;
 	}
 
@@ -1265,7 +1270,8 @@ public class DbUtil {
 		try {
 			boolean hasResults = true;
 			if (!wResultSet.next()) {
-				wSummaryTableItemListMap = createSummaryTableItemsInCaseOfNoRecord(wSummaryTableItemListMap, pAnnualDateRange);
+				wSummaryTableItemListMap = createSummaryTableItemsInCaseOfNoRecord(
+						wSummaryTableItemListMap, pAnnualDateRange);
 				hasResults = false;
 			}
 
