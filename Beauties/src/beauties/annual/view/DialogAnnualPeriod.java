@@ -55,7 +55,7 @@ public class DialogAnnualPeriod extends Dialog {
 		wLabel.setText("月 〜 ");
 
 		createEndMonth(wComp);
-		
+
 		wLabel = new Label(wComp, SWT.NONE);
 		wLabel.setText("月");
 
@@ -72,14 +72,14 @@ public class DialogAnnualPeriod extends Dialog {
 		for (int i = 0; i < 12; i++) {
 			mStartMonthCombo.add(Integer.toString(i + 1));
 		}
-		
+
 		Calendar wCal = Calendar.getInstance();
 		wCal.setTime(Util.getMonthDateRange(mCTL.getAnnualDateRange().getStartDate(),
 				SystemData.getCutOff()).getEndDate());
 		mStartYearSpinner.setSelection(wCal.get(Calendar.YEAR));
 		mStartMonthCombo.select(wCal.get(Calendar.MONTH));
 	}
-	
+
 	private void createEndMonth(Composite pComp) {
 		mEndYearSpinner = new Spinner(pComp, SWT.BORDER);
 		mEndYearSpinner.setValues(0, 0, 9999, 0, 1, 10);
@@ -110,27 +110,25 @@ public class DialogAnnualPeriod extends Dialog {
 
 	@Override
 	protected void buttonPressed(int pButtonId) {
-		int wReturnCode = IDialogConstants.CANCEL_ID;
-		if (pButtonId == IDialogConstants.OK_ID) { // 0
-			Date wInputStartDate = new GregorianCalendar(mStartYearSpinner.getSelection(),
+		if (pButtonId != IDialogConstants.OK_ID) { // != 0
+			setReturnCode(pButtonId);
+			super.buttonPressed(pButtonId);
+			return;
+		}
+		Date wInputStartDate = new GregorianCalendar(mStartYearSpinner.getSelection(),
 					mStartMonthCombo.getSelectionIndex(), 1).getTime();
-			Date wInputEndDate = new GregorianCalendar(mEndYearSpinner.getSelection(),
+		Date wInputEndDate = new GregorianCalendar(mEndYearSpinner.getSelection(),
 					mEndMonthCombo.getSelectionIndex(), 1).getTime();
-			mDateRange = new DateRange(Util.getMonthDateRange(wInputStartDate,
+		mDateRange = new DateRange(Util.getMonthDateRange(wInputStartDate,
 					SystemData.getCutOff()).getStartDate(), Util.getMonthDateRange(wInputEndDate,
 					SystemData.getCutOff()).getEndDate());
-			if (mDateRange.getStartDate().after(mDateRange.getEndDate())) {
-				MessageDialog.openWarning(getShell(), "エラー", "不正な期間です");
-				setReturnCode(IDialogConstants.CANCEL_ID);
-				open();
-			} else {
-				wReturnCode = pButtonId;
-				setReturnCode(pButtonId);
-			}
-		} else { // 1
+		if (mDateRange.getStartDate().after(mDateRange.getEndDate())) {
+			MessageDialog.openWarning(getShell(), "エラー", "不正な期間です");
+			open();
+		} else {
 			setReturnCode(pButtonId);
+			super.buttonPressed(pButtonId);
 		}
-		super.buttonPressed(wReturnCode);
 	}
 
 	public DateRange getDateRange() {

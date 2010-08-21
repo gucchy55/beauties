@@ -18,7 +18,6 @@ import org.eclipse.swt.widgets.Shell;
 
 import beauties.common.model.DateRange;
 
-
 public class DialogPeriod extends Dialog {
 	private DateTime mDateTimeFrom;
 	private DateTime mDateTimeTo;
@@ -26,7 +25,7 @@ public class DialogPeriod extends Dialog {
 	private Date mEndDate;
 
 	private DateRange mDateRange;
-	
+
 	public DialogPeriod(Shell parentShell, DateRange pDateRange) {
 		super(parentShell);
 		mDateRange = pDateRange;
@@ -76,31 +75,30 @@ public class DialogPeriod extends Dialog {
 
 	@Override
 	protected void buttonPressed(int pButtonId) {
-		int wReturnCode = IDialogConstants.CANCEL_ID;
-		if (pButtonId == IDialogConstants.OK_ID) { // 0
-			mStartDate = (new GregorianCalendar(mDateTimeFrom.getYear(),
+		if (pButtonId != IDialogConstants.OK_ID) { // != 0
+			setReturnCode(pButtonId);
+			super.buttonPressed(pButtonId);
+			return;
+		}
+		mStartDate = (new GregorianCalendar(mDateTimeFrom.getYear(),
 					mDateTimeFrom.getMonth(), mDateTimeFrom.getDay()))
 					.getTime();
-			mEndDate = (new GregorianCalendar(mDateTimeTo.getYear(),
+		mEndDate = (new GregorianCalendar(mDateTimeTo.getYear(),
 					mDateTimeTo.getMonth(), mDateTimeTo.getDay()))
 					.getTime();
-			if (mStartDate.after(mEndDate)) {
-				MessageDialog.openWarning(getShell(), "エラー", "不正な期間です");
-				setReturnCode(IDialogConstants.CANCEL_ID);
-				open();
-			} else {
-				wReturnCode = pButtonId;
-				setReturnCode(pButtonId);
-			}
-		} else { // 1
+		if (mStartDate.after(mEndDate)) {
+			MessageDialog.openWarning(getShell(), "エラー", "不正な期間です");
+			open();
+		} else {
 			setReturnCode(pButtonId);
+			super.buttonPressed(pButtonId);
 		}
-		super.buttonPressed(wReturnCode);
 	}
 
 	public Date getStartDate() {
 		return mStartDate;
 	}
+
 	public Date getEndDate() {
 		return mEndDate;
 	}
