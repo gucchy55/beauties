@@ -99,7 +99,7 @@ class RecordTableViewer extends TableViewer {
 		this.setContentProvider(new TableContentProvider());
 		this.setInput(mRecordTableItems);
 
-		this.setLabelProvider(new TableLabelProvider(mCTL.showYear()));
+		this.setLabelProvider(new TableLabelProvider(mCTL));
 		this.setInput(mRecordTableItems);
 		updateColumnWidths();
 
@@ -230,10 +230,10 @@ class TableContentProvider implements IStructuredContentProvider {
 class TableLabelProvider implements ITableLabelProvider {
 	private static DateFormat mDateFormat = new SimpleDateFormat("MM/dd");
 	private static DateFormat mDateFormatLong = new SimpleDateFormat("yyyy/MM/dd");
-	private boolean showYear;
+	private RecordController mCTL;
 
-	public TableLabelProvider(boolean showYear) {
-		this.showYear = showYear;
+	public TableLabelProvider(RecordController pCTL) {
+		mCTL = pCTL;
 	}
 
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -246,7 +246,7 @@ class TableLabelProvider implements ITableLabelProvider {
 		case 0:
 			return wRecord.getBookName();
 		case 1:
-			if (this.showYear)
+			if (mCTL.showYear())
 				return mDateFormatLong.format(wRecord.getDate());
 			else
 				return mDateFormat.format(wRecord.getDate()) + "("
