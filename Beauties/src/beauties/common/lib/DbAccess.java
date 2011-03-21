@@ -18,6 +18,7 @@ class DbAccess {
 	private static String mUser;
 	private static String mPass;
 	private static String mUrl;
+	private static int mDbPort;
 	private Connection mCon = null;
 	private Statement mStmt = null;
 	private ResultSet mResultSet = null;
@@ -25,10 +26,11 @@ class DbAccess {
 
 	private DbAccess() {
 		mServer = SystemData.getDbHost();
+		mDbPort = SystemData.getDbPort();
 		mDb = SystemData.getDbName();
 		mUser = SystemData.getDbUser();
 		mPass = SystemData.getDbPass();
-		mUrl = "jdbc:mysql://" + mServer + "/" + mDb;
+		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb;
 		try {
 //			Class.forName("org.gjt.mm.mysql.Driver");
 			mCon = DriverManager.getConnection(mUrl, mUser, mPass);
