@@ -212,8 +212,8 @@ class RecordTableViewer extends TableViewer {
 	void updateTableItem(RecordTableItem[] pRecordTableItems) {
 		mRecordTableItems = pRecordTableItems;
 		this.setInput(mRecordTableItems);
-		this.refresh();
 		updateColumnWidths();
+		this.refresh();
 	}
 }
 
