@@ -41,9 +41,9 @@ class RecordTableViewer extends TableViewer {
 
 	private KeyListener mKeyListener;
 	private IDoubleClickListener mDoubleClickListener;
-	
+
 	RecordTableViewer(Composite pComp, RecordController pCTL) {
-		super(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
+		super(pComp, SWT.FULL_SELECTION | SWT.BORDER);
 
 		mCTL = pCTL;
 		mKeyListener = getKeyListener();
@@ -67,27 +67,29 @@ class RecordTableViewer extends TableViewer {
 
 		TableColumn wItemNameCol = new TableColumn(wTable, SWT.LEFT);
 		wItemNameCol.setText("項目");
-		wItemNameCol.setWidth(70);
+//		wItemNameCol.setWidth(70);
 
 		TableColumn wIncomeCol = new TableColumn(wTable, SWT.RIGHT);
 		wIncomeCol.setText("収入");
-		wIncomeCol.setWidth(60);
+//		wIncomeCol.setWidth(60);
 
 		TableColumn wExpenseCol = new TableColumn(wTable, SWT.RIGHT);
 		wExpenseCol.setText("支出");
-		wExpenseCol.setWidth(60);
+//		wExpenseCol.setWidth(60);
 
 		TableColumn wBalanceCol = new TableColumn(wTable, SWT.RIGHT);
 		wBalanceCol.setText("残高");
-		wBalanceCol.setWidth(80);
+//		wBalanceCol.setWidth(80);
 
 		TableColumn wFreqCol = new TableColumn(wTable, SWT.RIGHT);
 		wFreqCol.setText("残回数");
-		wFreqCol.setWidth(50);
+//		wFreqCol.setWidth(50);
 
 		TableColumn wNoteCol = new TableColumn(wTable, SWT.LEFT);
 		wNoteCol.setText("備考");
-		wNoteCol.setWidth(250);
+//		wNoteCol.setWidth(250);
+		
+		updateColumnWidths();
 
 		addListeners();
 	}
@@ -109,11 +111,11 @@ class RecordTableViewer extends TableViewer {
 		this.getTable().addKeyListener(mKeyListener);
 		addDoubleClickListener(mDoubleClickListener);
 	}
-	
-//	void removeListeners() {
-//		removeDoubleClickListener(mDoubleClickListener);
-//		this.getTable().removeKeyListener(mKeyListener);
-//	}
+
+	// void removeListeners() {
+	// removeDoubleClickListener(mDoubleClickListener);
+	// this.getTable().removeKeyListener(mKeyListener);
+	// }
 
 	private IDoubleClickListener getDoubleClickListener() {
 		return new IDoubleClickListener() {
@@ -152,7 +154,7 @@ class RecordTableViewer extends TableViewer {
 
 		};
 	}
-	
+
 	private boolean keyEventForNew(KeyEvent e) {
 		if (e.stateMask == SWT.CTRL && e.keyCode == 'i') {
 			new OpenDialogNewRecord(mCTL).run();
@@ -166,10 +168,10 @@ class RecordTableViewer extends TableViewer {
 			mCTL.openSearchDialog();
 			return true;
 		}
-		
+
 		return false;
 	}
-	
+
 	private boolean keyEventForModify(KeyEvent e) {
 		if (!mCTL.hasSelectedRecordTableItem())
 			return false;
@@ -187,7 +189,7 @@ class RecordTableViewer extends TableViewer {
 			new DeleteRecord(mCTL).run();
 			return true;
 		}
-		
+
 		return false;
 	}
 
@@ -196,14 +198,15 @@ class RecordTableViewer extends TableViewer {
 	}
 
 	void updateColumnWidths() {
+		for (TableColumn wColumn : this.getTable().getColumns()) {
+			if (!wColumn.getResizable())
+				continue;
+			wColumn.pack();
+		}
 		mBookCol.setWidth(mCTL.showBookColumn() ? 60 : 0);
 		mBookCol.setResizable(mCTL.showBookColumn());
 		mDateCol.setWidth(mCTL.showYear() ? 80 : 62);
-		// for (TableColumn wColumn : this.getTable().getColumns()) {
-		// if (!wColumn.getResizable())
-		// continue;
-		// wColumn.pack();
-		// }
+
 	}
 
 	void updateTableItem(RecordTableItem[] pRecordTableItems) {

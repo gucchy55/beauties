@@ -24,6 +24,8 @@ public class FileLoader {
 	private static final String mEntryHeightWeightDownKey = "heightWeightDown";
 	
 	private static final String mMemoDirKey = "memoDirName";
+	
+	private static final String mAutoDumpKey = "autoDump";
 
 	public FileLoader(String pFileName) {
 		mFileName = pFileName;
@@ -58,6 +60,9 @@ public class FileLoader {
 			
 			if (!"".equals(prop.getProperty(mMemoDirKey)))
 				SystemData.setPathMemoDir(prop.getProperty(mMemoDirKey));
+			
+			if (Integer.parseInt(prop.getProperty(mAutoDumpKey)) == 1)
+				SystemData.setAutoSave(true);
 			
 		} catch (java.io.IOException e) {
 			e.printStackTrace();

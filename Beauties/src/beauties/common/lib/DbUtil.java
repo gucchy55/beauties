@@ -380,14 +380,14 @@ public class DbUtil {
 	}
 
 	// For all books
-	public static Map<Integer, String> getItemNameMap() {
-		Map<Integer, String> wResultMap = getItemNameMap(true);
-		wResultMap.putAll(getItemNameMap(false));
-		return wResultMap;
-	}
+//	public static Map<Integer, String> getItemNameMap() {
+//		Map<Integer, String> wResultMap = getItemNameMap(true);
+//		wResultMap.putAll(getItemNameMap(false));
+//		return wResultMap;
+//	}
 
 	// For all books
-	private static Map<Integer, String> getItemNameMap(boolean pIncome) {
+	public static Map<Integer, String> getItemNameMap(boolean pIncome) {
 		Map<Integer, String> wResultMap = new LinkedHashMap<Integer, String>();
 		int wRexp = mIncomeRexp;
 		if (!pIncome) {

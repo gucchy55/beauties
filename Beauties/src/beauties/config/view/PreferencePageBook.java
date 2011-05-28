@@ -305,9 +305,21 @@ class PreferencePageBook extends PreferencePage {
 		wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		wGridData.horizontalSpan = 2;
 		wCompositeItemButtons.setLayoutData(wGridData);
+		
+		Label wIncomeLabel = new Label(wCompositeItemButtons, SWT.NONE);
+		wIncomeLabel.setText("収入");
+		createEachItemButtons(wCompositeItemButtons, DbUtil.getItemNameMap(true));
+		
+		new Label(wCompositeItemButtons, SWT.NONE);
+		Label wExpenseLabel = new Label(wCompositeItemButtons, SWT.NONE);
+		wExpenseLabel.setText("支出");
+		
+		createEachItemButtons(wCompositeItemButtons, DbUtil.getItemNameMap(false));
+	}
 
-		Map<Integer, String> wItemNameMap = DbUtil.getItemNameMap();
-		for (Map.Entry<Integer, String> entry : wItemNameMap.entrySet()) {
+	private void createEachItemButtons(Composite wCompositeItemButtons,
+			Map<Integer, String> wIncomeItemNameMap) {
+		for (Map.Entry<Integer, String> entry : wIncomeItemNameMap.entrySet()) {
 			Button wButton = new Button(wCompositeItemButtons, SWT.CHECK);
 			wButton.setText(entry.getValue());
 			mItemButtonMap.put(wButton, entry.getKey());
