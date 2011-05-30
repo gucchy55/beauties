@@ -11,6 +11,7 @@ import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
+
 import beauties.common.lib.SystemData;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
@@ -35,22 +36,8 @@ class CompositeRecordTable extends Composite {
 	void updateTable() {
 		mTableUp.updateTableItem(mCTL.getRecordItemsUp());
 		mTableBottom.updateTableItem(mCTL.getRecordItemsBottom());
-		
-		updateColumnWidths();
-		
 	}
 
-	private void updateColumnWidths() {
-		for (int i=0; i < mTableUp.getTable().getColumnCount(); i++) {
-			int wWidthUp = mTableUp.getTable().getColumns()[i].getWidth();
-			int wWidthBottom = mTableBottom.getTable().getColumns()[i].getWidth();
-			if (wWidthUp == wWidthBottom) continue;
-			int wLarger = wWidthUp > wWidthBottom ? wWidthUp : wWidthBottom;
-			mTableUp.getTable().getColumns()[i].setWidth(wLarger);
-			mTableBottom.getTable().getColumns()[i].setWidth(wLarger);	
-		}
-	}
-	
 	private void create() {
 		initLayout();
 
@@ -63,8 +50,6 @@ class CompositeRecordTable extends Composite {
 		createTableButtom(wBottomComp);
 
 		mSashForm.setWeights(SystemData.getRecordTableWeights());
-		
-		updateColumnWidths();
 
 		addFocusListenerToTableUp();
 		addFocusListenerToTableBottom();
