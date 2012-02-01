@@ -23,6 +23,18 @@ public class FileLoader {
 	private static final String mEntryHeightWeightUpKey = "heightWeightUp";
 	private static final String mEntryHeightWeightDownKey = "heightWeightDown";
 	
+	private static final String mEntryWidthBookKey ="widthBook";
+	private static final String mEntryWidthDateYearKey = "widthDateYear";
+	private static final String mEntryWidthDateKey = "widthDate";
+	private static final String mEntryWidthItemKey = "widthItem";
+	private static final String mEntryWidthIncomeKey = "widthIncome";
+	private static final String mEntryWidthExpenseKey = "widthExpense";
+	private static final String mEntryWidthBalanceKey = "widthBalance";
+	private static final String mEntryWidthFreqKey = "widthFreq";
+	private static final String mEntryWidthNoteKey = "widthNote";
+	
+	private static final String mAnnualWidthKey = "widthAnnual";
+	
 	private static final String mMemoDirKey = "memoDirName";
 	
 	private static final String mAutoDumpKey = "autoDump";
@@ -57,6 +69,18 @@ public class FileLoader {
 					Integer.parseInt(prop.getProperty(mEntryHeightWeightUpKey)),
 					Integer.parseInt(prop.getProperty(mEntryHeightWeightDownKey))
 			});
+			
+			SystemData.setRecordWidthBook(Integer.parseInt(prop.getProperty(mEntryWidthBookKey)));
+			SystemData.setRecordWidthDateYear(Integer.parseInt(prop.getProperty(mEntryWidthDateYearKey)));
+			SystemData.setRecordWidthDate(Integer.parseInt(prop.getProperty(mEntryWidthDateKey)));
+			SystemData.setRecordWidthItem(Integer.parseInt(prop.getProperty(mEntryWidthItemKey)));
+			SystemData.setRecordWidthIncome(Integer.parseInt(prop.getProperty(mEntryWidthIncomeKey)));
+			SystemData.setRecordWidthExpense(Integer.parseInt(prop.getProperty(mEntryWidthExpenseKey)));
+			SystemData.setRecordWidthBalance(Integer.parseInt(prop.getProperty(mEntryWidthBalanceKey)));
+			SystemData.setRecordWidthFreq(Integer.parseInt(prop.getProperty(mEntryWidthFreqKey)));
+			SystemData.setRecordWidthNote(Integer.parseInt(prop.getProperty(mEntryWidthNoteKey)));
+			
+			SystemData.setAnnualWidth(Integer.parseInt(prop.getProperty(mAnnualWidthKey)));
 			
 			if (!"".equals(prop.getProperty(mMemoDirKey)))
 				SystemData.setPathMemoDir(prop.getProperty(mMemoDirKey));

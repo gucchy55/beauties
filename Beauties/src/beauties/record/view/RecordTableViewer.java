@@ -67,27 +67,27 @@ class RecordTableViewer extends TableViewer {
 
 		TableColumn wItemNameCol = new TableColumn(wTable, SWT.LEFT);
 		wItemNameCol.setText("項目");
-		wItemNameCol.setWidth(70);
+		wItemNameCol.setWidth(SystemData.getRecordWidthItem());
 
 		TableColumn wIncomeCol = new TableColumn(wTable, SWT.RIGHT);
 		wIncomeCol.setText("収入");
-		wIncomeCol.setWidth(60);
+		wIncomeCol.setWidth(SystemData.getRecordWidthIncome());
 
 		TableColumn wExpenseCol = new TableColumn(wTable, SWT.RIGHT);
 		wExpenseCol.setText("支出");
-		wExpenseCol.setWidth(60);
+		wExpenseCol.setWidth(SystemData.getRecordWidthExpense());
 
 		TableColumn wBalanceCol = new TableColumn(wTable, SWT.RIGHT);
 		wBalanceCol.setText("残高");
-		wBalanceCol.setWidth(80);
+		wBalanceCol.setWidth(SystemData.getRecordWidthBalance());
 
 		TableColumn wFreqCol = new TableColumn(wTable, SWT.RIGHT);
 		wFreqCol.setText("残回数");
-		wFreqCol.setWidth(50);
+		wFreqCol.setWidth(SystemData.getRecordWidthFreq());
 
 		TableColumn wNoteCol = new TableColumn(wTable, SWT.LEFT);
 		wNoteCol.setText("備考");
-		wNoteCol.setWidth(250);
+		wNoteCol.setWidth(SystemData.getRecordWidthNote());
 
 		addListeners();
 	}
@@ -196,9 +196,9 @@ class RecordTableViewer extends TableViewer {
 	}
 
 	void updateColumnWidths() {
-		mBookCol.setWidth(mCTL.showBookColumn() ? 60 : 0);
+		mBookCol.setWidth(mCTL.showBookColumn() ? SystemData.getRecordWidthBook() : 0);
 		mBookCol.setResizable(mCTL.showBookColumn());
-		mDateCol.setWidth(mCTL.showYear() ? 80 : 62);
+		mDateCol.setWidth(mCTL.showYear() ? SystemData.getRecordWidthDateYear() : SystemData.getRecordWidthDate());
 		// for (TableColumn wColumn : this.getTable().getColumns()) {
 		// if (!wColumn.getResizable())
 		// continue;

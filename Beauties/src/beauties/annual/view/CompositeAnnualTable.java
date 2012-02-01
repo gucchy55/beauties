@@ -33,7 +33,7 @@ import beauties.record.model.SummaryTableItem;
 
 class CompositeAnnualTable extends Composite {
 
-	private static final int mColumnWidth = 75;
+	private static final int mColumnWidth = SystemData.getAnnualWidth();
 
 	private TableViewer mRowHeaderTableViewer;
 	private TableViewer mMainTableViewer;
@@ -122,7 +122,7 @@ class CompositeAnnualTable extends Composite {
 
 		MyGridData wRowHeaderGridData = new MyGridData(GridData.BEGINNING, GridData.BEGINNING,
 				false, true);
-		wRowHeaderGridData.getMyGridData().widthHint = 60;
+		wRowHeaderGridData.getMyGridData().widthHint = mColumnWidth;
 		wRowHeaderTable.setLayoutData(wRowHeaderGridData.getMyGridData());
 
 		TableColumn wHeaderCol = new TableColumn(wRowHeaderTable, SWT.LEFT);
