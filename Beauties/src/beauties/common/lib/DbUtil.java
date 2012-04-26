@@ -818,11 +818,11 @@ public class DbUtil {
 			deleteGroupRecord(pBeforeItem.getDate(), pBeforeItem.getGroupId());
 
 			// 元の日付を取得
-			int wGroupId;
-			if (pBeforeItem.getGroupId() > 0 && pBeforeItem.getFrequency() == 0)
-				wGroupId = 0;
-			else
-				wGroupId = groupShouldBeChanged(pBeforeItem, pAfterItem) ? getNewGroupId()
+//			int wGroupId;
+//			if (pBeforeItem.getGroupId() > 0 && pBeforeItem.getFrequency() == 0)
+//				wGroupId = 0;
+//			else
+				int wGroupId = groupShouldBeChanged(pBeforeItem, pAfterItem) ? getNewGroupId()
 						: pBeforeItem.getGroupId();
 
 			// 新規のレコードを追加

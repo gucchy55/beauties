@@ -51,6 +51,7 @@ class DbAccess {
 		try {
 			mStmt = mCon.createStatement();
 			mStmt.executeUpdate(pQuery);
+//			System.out.println(pQuery);
 			if(!SystemData.getDbUpdated())
 				SystemData.setDbUpdated(true);
 		} catch (SQLException e) {
