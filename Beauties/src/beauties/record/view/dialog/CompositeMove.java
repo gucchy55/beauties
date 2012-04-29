@@ -8,8 +8,6 @@ import java.util.Map;
 
 
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
@@ -20,7 +18,6 @@ import org.eclipse.swt.widgets.Spinner;
 
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
-import beauties.common.lib.Util;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
 import beauties.record.model.RecordTableItem;
@@ -105,15 +102,15 @@ class CompositeMove extends Composite {
 		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
 		GridData wGridData = new GridData(GridData.FILL_HORIZONTAL);
 		mNoteCombo.setLayoutData(wGridData);
-		mNoteCombo.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NATIVE);
-			}
-
-			public void focusLost(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-		});
+//		mNoteCombo.addFocusListener(new FocusListener() {
+//			public void focusGained(FocusEvent event) {
+//				getShell().setImeInputMode(SWT.NATIVE);
+//			}
+//
+//			public void focusLost(FocusEvent event) {
+//				getShell().setImeInputMode(SWT.NONE);
+//			}
+//		});
 	}
 
 	private void createValueSpinners() {
@@ -130,7 +127,7 @@ class CompositeMove extends Composite {
 
 		mValueSpinner = new Spinner(wValuesRowComp, SWT.BORDER);
 		mValueSpinner.setValues(0, 0, Integer.MAX_VALUE, 0, 100, 10);
-		mValueSpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
+//		mValueSpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
 
 		Label wSpaceLabel = new Label(wValuesRowComp, SWT.NONE);
 		wSpaceLabel.setText("    ");
@@ -139,7 +136,7 @@ class CompositeMove extends Composite {
 		wFrequencyLabel.setText("回数");
 
 		mFrequencySpinner = new Spinner(wValuesRowComp, SWT.BORDER);
-		mFrequencySpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
+//		mFrequencySpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
 	}
 
 	private void setBookCombos() {
@@ -178,7 +175,7 @@ class CompositeMove extends Composite {
 		Label wDateLabel = new Label(this, SWT.NONE);
 		wDateLabel.setText("日付");
 		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
-		mDateTime.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
+//		mDateTime.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
 	}
 
 	private void initWidgets() {

@@ -7,9 +7,9 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.Locale;
 
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
-import org.eclipse.swt.widgets.Shell;
+//import org.eclipse.swt.events.FocusEvent;
+//import org.eclipse.swt.events.FocusListener;
+//import org.eclipse.swt.widgets.Shell;
 
 import beauties.common.model.AnnualDateRange;
 import beauties.common.model.DateRange;
@@ -135,16 +135,16 @@ public class Util {
 		return new DateRange(wFirstDate.getTime(), wEndDate);
 	}
 	
-	public static FocusListener getFocusListenerToDisableIme(final Shell pShell, final int pMode) {
-		return new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				pShell.setImeInputMode(pMode);
-			}
-
-			public void focusLost(FocusEvent event) {
-			}
-		};
-	}
+//	public static FocusListener getFocusListenerToDisableIme(final Shell pShell, final int pMode) {
+//		return new FocusListener() {
+//			public void focusGained(FocusEvent event) {
+//				pShell.setImeInputMode(pMode);
+//			}
+//
+//			public void focusLost(FocusEvent event) {
+//			}
+//		};
+//	}
 
 //	public static IContentProposal[] createProposals(final String pContent,
 //			final int pPosition, String[] pCandidates, int pMaxCount) {

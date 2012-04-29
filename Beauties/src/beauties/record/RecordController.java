@@ -7,7 +7,6 @@ import java.util.Date;
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
@@ -124,7 +123,7 @@ public class RecordController implements IPeriodBookTabController {
 	}
 
 	public boolean openSearchDialog() {
-		this.getShell().setImeInputMode(SWT.NATIVE);
+//		this.getShell().setImeInputMode(SWT.NATIVE);
 		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
 		if (wInputDialog.open() != Dialog.OK)
 			return false;
@@ -157,7 +156,7 @@ public class RecordController implements IPeriodBookTabController {
 
 	@Override
 	public void openDialogPeriod() {
-		getShell().setImeInputMode(SWT.NONE);
+//		getShell().setImeInputMode(SWT.NONE);
 		DialogPeriod wDialogPeriod = new DialogPeriod(getShell(), mDateRange);
 		if (wDialogPeriod.open() == IDialogConstants.OK_ID) { // Updated
 			mDateRange = new DateRange(wDialogPeriod.getStartDate(), wDialogPeriod.getEndDate());

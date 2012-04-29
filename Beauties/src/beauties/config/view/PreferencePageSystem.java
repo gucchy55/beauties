@@ -3,8 +3,6 @@ package beauties.config.view;
 
 import org.eclipse.jface.preference.PreferencePage;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.FocusEvent;
-import org.eclipse.swt.events.FocusListener;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
@@ -14,7 +12,6 @@ import org.eclipse.swt.widgets.Spinner;
 
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
-import beauties.common.lib.Util;
 import beauties.common.view.MyGridLayout;
 
 
@@ -48,21 +45,21 @@ class PreferencePageSystem extends PreferencePage {
 		new Label(wMainComposite, SWT.NONE).setText("締め日: ");
 		mCutOffSpinner = new Spinner(wMainComposite, SWT.BORDER);
 		mCutOffSpinner.setValues(SystemData.getCutOff(), 1, 31, 0, 1, 10);
-		mCutOffSpinner.addFocusListener(new FocusListener() {
-			public void focusGained(FocusEvent event) {
-				getShell().setImeInputMode(SWT.NONE);
-			}
-
-			public void focusLost(FocusEvent event) {
-			}
-		});
+//		mCutOffSpinner.addFocusListener(new FocusListener() {
+//			public void focusGained(FocusEvent event) {
+//				getShell().setImeInputMode(SWT.NONE);
+//			}
+//
+//			public void focusLost(FocusEvent event) {
+//			}
+//		});
 	}
 
 	private void createFiscalStartSpinner(Composite wMainComposite) {
 		new Label(wMainComposite, SWT.NONE).setText("年度期間: ");
 		mAnnualStartSpinner = new Spinner(wMainComposite, SWT.BORDER);
 		mAnnualStartSpinner.setValues(DbUtil.getFisCalMonth(), 1, 12, 0, 1, 10);
-		mAnnualStartSpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
+//		mAnnualStartSpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
 		new Label(wMainComposite, SWT.NONE).setText(" ～ 12月");
 	}
 

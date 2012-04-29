@@ -7,7 +7,6 @@ import java.util.Date;
 import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.SWT;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
@@ -179,7 +178,7 @@ public class AnnualController implements IPeriodBookTabController {
 	}
 
 	public void openDialogPeriod() {
-		getShell().setImeInputMode(SWT.NONE);
+//		getShell().setImeInputMode(SWT.NONE);
 		DialogAnnualPeriod wDialogAnnualPeriod = new DialogAnnualPeriod(this);
 		if (wDialogAnnualPeriod.open() == IDialogConstants.OK_ID) { // Updated
 			setDateRange(wDialogAnnualPeriod.getDateRange());

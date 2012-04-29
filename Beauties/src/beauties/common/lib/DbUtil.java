@@ -674,15 +674,6 @@ public class DbUtil {
 				wGroupId = groupShouldBeChanged(pBeforeRecord, pAfterRecord) ? getNewGroupId()
 							: pBeforeRecord.getGroupId();
 
-			// // 年月, BookId, ItemIdが変更された場合は新規のGroupIdを使用
-			// if (pAfterRecord.getYear() != pBeforeRecord.getYear()
-			// || pAfterRecord.getMonth() != pBeforeRecord.getMonth()
-			// || pAfterRecord.getBookId() != pBeforeRecord.getBookId()
-			// || pAfterRecord.getItemId() != pBeforeRecord.getItemId())
-			// wGroupId = getNewGroupId();
-			// else
-			// wGroupId = pBeforeRecord.getGroupId();
-
 			// 新規のレコードを追加
 			Calendar wCalBase = Calendar.getInstance();
 			wCalBase.setTime(pAfterRecord.getDate());
@@ -777,8 +768,8 @@ public class DbUtil {
 
 	private static boolean groupShouldBeChanged(RecordTableItemForMove pBeforeItem,
 			RecordTableItemForMove pAfterItem) {
-		if (pBeforeItem.getGroupId() == 0 && pAfterItem.getFrequency() > 0)
-			return true;
+//		if (pBeforeItem.getGroupId() == 0 && pAfterItem.getFrequency() > 0)
+//			return true;
 		return pAfterItem.getYear() != pBeforeItem.getYear()
 				|| pAfterItem.getMonth() != pBeforeItem.getMonth()
 				|| pAfterItem.getFromBookId() != pBeforeItem.getFromBookId()
@@ -787,6 +778,10 @@ public class DbUtil {
 
 	public static void updateMoveRecord(RecordTableItemForMove pBeforeItem,
 			RecordTableItemForMove pAfterItem) {
+		if (pBeforeItem.getGroupId() == 0) {
+			MessageDialog.openError(Display.getCurrent().getShells()[0], "Error", "GroupIdが0です");
+			return;
+		}
 
 		String wNote = getNoteStringWithEscape(pAfterItem.getNote());
 
@@ -817,12 +812,7 @@ public class DbUtil {
 			// 既存のレコードを削除
 			deleteGroupRecord(pBeforeItem.getDate(), pBeforeItem.getGroupId());
 
-			// 元の日付を取得
-//			int wGroupId;
-//			if (pBeforeItem.getGroupId() > 0 && pBeforeItem.getFrequency() == 0)
-//				wGroupId = 0;
-//			else
-				int wGroupId = groupShouldBeChanged(pBeforeItem, pAfterItem) ? getNewGroupId()
+			int wGroupId = groupShouldBeChanged(pBeforeItem, pAfterItem) ? getNewGroupId()
 						: pBeforeItem.getGroupId();
 
 			// 新規のレコードを追加
@@ -884,6 +874,10 @@ public class DbUtil {
 
 	// 複数レコード（同一GroupId,対象日付以降）削除
 	private static void deleteGroupRecord(Date pDate, int pGroupId) {
+		if (pGroupId == 0) {
+			MessageDialog.openError(Display.getCurrent().getShells()[0], "Error", "GroupIdが0です");
+			return;
+		}
 		String wQuery = "delete from " + mActTable + " where " + mGroupIdCol + " = " + pGroupId
 				+ " and " + mActDtCol + " >= " + getDateStrings(pDate);
 		// System.out.println(wQuery);

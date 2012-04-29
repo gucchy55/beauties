@@ -2,7 +2,6 @@ package beauties.record;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.SWT;
 
 import beauties.record.view.dialog.DialogMove;
 
@@ -18,7 +17,7 @@ public class OpenDialogNewMove extends Action {
 
 	@Override
 	public void run() {
-		mCtl.getShell().setImeInputMode(SWT.NONE);
+//		mCtl.getShell().setImeInputMode(SWT.NONE);
 		DialogMove wDialogMove = new DialogMove(mCtl.getShell(), mCtl.getBookId());
 		int wRet = wDialogMove.open();
 		if (wRet == IDialogConstants.OK_ID) {

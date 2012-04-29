@@ -2,7 +2,6 @@ package beauties.record;
 
 import org.eclipse.jface.action.Action;
 import org.eclipse.jface.dialogs.IDialogConstants;
-import org.eclipse.swt.SWT;
 
 import beauties.record.view.dialog.DialogMove;
 
@@ -22,7 +21,7 @@ public class OpenDialogModifyMove extends Action {
 		
 //		mCTL.removeRecordTableListeners();
 		
-		mCTL.getShell().setImeInputMode(SWT.NONE);
+//		mCTL.getShell().setImeInputMode(SWT.NONE);
 		DialogMove wDialogMove = new DialogMove(mCTL.getShell(), mCTL.getSelectedRecordItem());
 		if (wDialogMove.open() == IDialogConstants.OK_ID)
 			mCTL.updateTable();
