@@ -45,7 +45,11 @@ public class DialogMove extends Dialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("現金移動");
+		String wLabel = "現金移動";
+		if (mRecordTableItem != null) {
+			wLabel += " - GID:" + mRecordTableItem.getGroupId();
+		}
+		newShell.setText(wLabel);
 	}
 
 	@Override

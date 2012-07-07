@@ -34,7 +34,11 @@ public class DialogModifyRecord extends Dialog {
 	@Override
 	protected void configureShell(Shell newShell) {
 		super.configureShell(newShell);
-		newShell.setText("変更");
+		String wLabel = "変更 - ID:" + mRecordTableItem.getId();
+		if (mRecordTableItem.getGroupId() > 0) {
+			wLabel += ", GID:" + mRecordTableItem.getGroupId();
+		}
+		newShell.setText(wLabel);
 	}
 
 	@Override
