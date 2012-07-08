@@ -82,7 +82,7 @@ public class FileLoader {
 			
 			SystemData.setAnnualWidth(Integer.parseInt(prop.getProperty(mAnnualWidthKey)));
 			
-			if (prop.getProperty(mMemoDirKey) != null)
+			if (prop.getProperty(mMemoDirKey) != null && !"".equals(prop.getProperty(mMemoDirKey)))
 				SystemData.setPathMemoDir(prop.getProperty(mMemoDirKey));
 			
 			if (Integer.parseInt(prop.getProperty(mAutoDumpKey)) == 1)
