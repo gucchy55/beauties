@@ -7,7 +7,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
-
+import java.util.HashMap;
+import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -26,12 +27,11 @@ import beauties.common.lib.SystemData;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
 
-
 public class CompositeMemoMain extends Composite {
 
-	private File[] mFiles;
 	private CTabFolder mCTabFolder;
-	private boolean[] mModified;
+	private Map<CTabItem, Boolean> mModifiedMap;
+	private Map<CTabItem, File> mCTabItemFileMap;
 
 	public CompositeMemoMain(Composite parent) {
 		super(parent, SWT.NONE);
@@ -44,19 +44,28 @@ public class CompositeMemoMain extends Composite {
 		mCTabFolder.setSimple(false);
 		mCTabFolder.setLayoutData(wGridData);
 
-		mFiles = new File(SystemData.getPathMemoDir()).listFiles();
-		mModified = new boolean[mFiles.length];
-		for (int i = 0; i < mFiles.length; i++)
-			mModified[i] = false;
-		for (File wFile : mFiles) {
+		File[] wFiles = new File(SystemData.getPathMemoDir()).listFiles();
+		if (wFiles == null) {
+			return;
+		}
+		mModifiedMap = new HashMap<CTabItem, Boolean>();
+		mCTabItemFileMap = new HashMap<CTabItem, File>();
+		for (File wFile : wFiles) {
+			if (wFile.isDirectory()) {
+				continue;
+			}
 			CTabItem wItem = new CTabItem(mCTabFolder, SWT.NONE);
 			wItem.setText(wFile.getName());
 			Text wText = new Text(mCTabFolder, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
 			wText.setText(getFileContent(wFile));
 			addListeners(wText);
 			wItem.setControl(wText);
+			mModifiedMap.put(wItem, false);
+			mCTabItemFileMap.put(wItem, wFile);
 		}
-		mCTabFolder.setSelection(0);
+		if (mCTabFolder.getItemCount() > 0) {
+			mCTabFolder.setSelection(0);
+		}
 	}
 
 	private String getFileContent(File pFile) {
@@ -76,7 +85,7 @@ public class CompositeMemoMain extends Composite {
 	}
 
 	private void writeToFile(String pString) {
-		File wFile = mFiles[mCTabFolder.getSelectionIndex()];
+		File wFile = mCTabItemFileMap.get(mCTabFolder.getSelection());
 		try {
 			FileOutputStream os = new FileOutputStream(wFile);
 			OutputStreamWriter out = new OutputStreamWriter(os, "UTF8");
@@ -94,10 +103,11 @@ public class CompositeMemoMain extends Composite {
 		pText.addKeyListener(new KeyListener() {
 			public void keyPressed(KeyEvent e) {
 				if (e.stateMask == SWT.CTRL && e.keyCode == 's'
-						&& mModified[mCTabFolder.getSelectionIndex()]) {
+						&& mModifiedMap.get(mCTabFolder.getSelection())) {
 					writeToFile(((Text) e.getSource()).getText());
-					mCTabFolder.getSelection().setText(mFiles[mCTabFolder.getSelectionIndex()].getName());
-					mModified[mCTabFolder.getSelectionIndex()] = false;
+					mCTabFolder.getSelection().setText(
+							mCTabItemFileMap.get(mCTabFolder.getSelection()).getName());
+					mModifiedMap.put(mCTabFolder.getSelection(), false);
 				}
 				if (e.stateMask == SWT.CTRL && e.keyCode == 'a')
 					((Text) e.getSource()).selectAll();
@@ -108,10 +118,10 @@ public class CompositeMemoMain extends Composite {
 		});
 		pText.addModifyListener(new ModifyListener() {
 			public void modifyText(ModifyEvent arg0) {
-				if (mModified[mCTabFolder.getSelectionIndex()])
+				if (mModifiedMap.get(mCTabFolder.getSelection()))
 					return;
 				mCTabFolder.getSelection().setText(mCTabFolder.getSelection().getText() + "*");
-				mModified[mCTabFolder.getSelectionIndex()] = true;
+				mModifiedMap.put(mCTabFolder.getSelection(), true);
 			}
 		});
 	}
