@@ -1,5 +1,8 @@
 package beauties.common.lib;
 
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
 
@@ -7,6 +10,8 @@ import org.eclipse.swt.graphics.Rectangle;
 public class FileLoader {
 
 	private static String mFileName;
+	
+	private static final String mWindowTitleKey = "windowTitle";
 
 	private static final String mDbHostKey = "dbHost";
 	private static final String mDbPortKey = "dbPort";
@@ -44,7 +49,11 @@ public class FileLoader {
 
 		try {
 			java.util.Properties prop = new java.util.Properties();
-			prop.load(new java.io.FileInputStream(mFileName));
+			prop.load(new InputStreamReader(new FileInputStream(mFileName), "UTF-8"));
+			
+			if (prop.getProperty(mWindowTitleKey) != null) {
+				SystemData.setWindowTitle(prop.getProperty(mWindowTitleKey));
+			}
 			
 			SystemData.setDbHost(prop.getProperty(mDbHostKey));
 			SystemData.setDbPort(Integer.parseInt(prop.getProperty(mDbPortKey)));

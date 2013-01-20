@@ -31,7 +31,6 @@ import beauties.record.view.CompositeEntry;
 
 public class BeautiesMain extends ApplicationWindow {
 
-	private static final String mWindowTitle = "家計簿";
 
 	private Composite mMainComposite;
 	private Composite mLeftComposite;
@@ -51,8 +50,7 @@ public class BeautiesMain extends ApplicationWindow {
 
 	protected void configureShell(final Shell pShell) {
 		super.configureShell(pShell);
-		pShell.setText(mWindowTitle);
-		// pShell.setBounds(SystemData.getWindowRectangle());
+		pShell.setText(SystemData.getWindowTitle());
 		pShell.setSize(SystemData.getWindowPoint());
 		pShell.setMaximized(SystemData.isWindowMaximized());
 
