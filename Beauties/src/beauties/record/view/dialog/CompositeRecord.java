@@ -254,8 +254,10 @@ class CompositeRecord extends Composite {
 		mDateTime.setDay(wCal.get(Calendar.DAY_OF_MONTH));
 
 		mItemId = mRecordTableItem.getItemId();
-		if (!mItemIdList.contains(mItemId)) 
+		if (!mItemIdList.contains(mItemId)) {
 			mItemIdList.add(mItemId);
+			mItemCombo.add(SystemData.getItemName(mItemId));
+		}
 
 		mItemCombo.select(mItemIdList.indexOf(mItemId));
 
