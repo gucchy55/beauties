@@ -106,23 +106,28 @@ class CompositeSummaryTable extends Composite {
 }
 
 class SummaryTableContentProvider implements IStructuredContentProvider {
+	@Override
 	public Object[] getElements(Object inputElement) {
 		SummaryTableItem[] wSummaryTableItems = (SummaryTableItem[]) inputElement;
 		return wSummaryTableItems;
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 }
 
 class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
+	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
 
+	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		SummaryTableItem wItem = (SummaryTableItem) element;
 		switch (columnIndex) {
@@ -134,16 +139,20 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		return null;
 	}
 
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
 	}
 
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 	}
 

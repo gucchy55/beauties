@@ -47,6 +47,7 @@ class PreferencePageItem extends PreferencePage {
 		mBookButtonMap = new LinkedHashMap<Button, Integer>();
 	}
 
+	@Override
 	protected Control createContents(Composite parent) {
 		mMainComposite = new Composite(parent, SWT.NONE);
 
@@ -90,6 +91,7 @@ class PreferencePageItem extends PreferencePage {
 		Button wCategoryAddButton = new Button(wTopComposite, SWT.NULL);
 		wCategoryAddButton.setText("分類追加");
 		wCategoryAddButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (new DialogNewItem(getShell(), true).open() == 0) {
 					updateTree();
@@ -102,6 +104,7 @@ class PreferencePageItem extends PreferencePage {
 		Button wItemAddButton = new Button(wTopComposite, SWT.NULL);
 		wItemAddButton.setText("項目追加");
 		wItemAddButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				if (new DialogNewItem(getShell(), false).open() == 0) {
 					updateTree();
@@ -114,6 +117,7 @@ class PreferencePageItem extends PreferencePage {
 		Button wModifyButton = new Button(wTopComposite, SWT.NULL);
 		wModifyButton.setText("変更");
 		wModifyButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				if (wConfigItem.isSpecial())
@@ -129,6 +133,7 @@ class PreferencePageItem extends PreferencePage {
 		Button wDeleteButton = new Button(wTopComposite, SWT.NULL);
 		wDeleteButton.setText("削除");
 		wDeleteButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wConfigItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				if (wConfigItem.isSpecial())
@@ -146,6 +151,7 @@ class PreferencePageItem extends PreferencePage {
 		Button wUpButton = new Button(wTopComposite, SWT.NULL);
 		wUpButton.setText("↑");
 		wUpButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				wSelectedItem.moveUp();
@@ -159,6 +165,7 @@ class PreferencePageItem extends PreferencePage {
 		Button wDownButton = new Button(wTopComposite, SWT.NULL);
 		wDownButton.setText("↓");
 		wDownButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				wSelectedItem.moveDown();
@@ -213,6 +220,7 @@ class PreferencePageItem extends PreferencePage {
 			mBookButtonMap.put(wButton, entry.getKey());
 
 			wButton.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 					Button wButton = (Button) e.getSource();
@@ -228,6 +236,7 @@ class PreferencePageItem extends PreferencePage {
 		mSpecialIncomeExpenseButton.setText("特別収支");
 		mSpecialIncomeExpenseButton.setVisible(false);
 		mSpecialIncomeExpenseButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				if (wSelectedItem.isCategory()) {
@@ -243,6 +252,7 @@ class PreferencePageItem extends PreferencePage {
 		mTempIncomeExpenseButton.setText("立替収支");
 		mTempIncomeExpenseButton.setVisible(false);
 		mTempIncomeExpenseButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				if (wSelectedItem.isCategory()) {
@@ -253,6 +263,7 @@ class PreferencePageItem extends PreferencePage {
 		});
 	}
 
+	@Override
 	protected void performApply() {
 		if (mTreeOrderChanged) {
 			DbUtil.updateSortKeys(mRootConfigItem);
@@ -263,6 +274,7 @@ class PreferencePageItem extends PreferencePage {
 		}
 	}
 
+	@Override
 	public boolean performOk() {
 		performApply();
 		return true;

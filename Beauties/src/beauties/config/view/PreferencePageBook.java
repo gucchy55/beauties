@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -18,6 +17,7 @@ import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -59,6 +59,7 @@ class PreferencePageBook extends PreferencePage {
 		mItemButtonMap = new HashMap<Button, Integer>();
 	}
 
+	@Override
 	protected Control createContents(Composite parent) {
 		mMainComposite = new Composite(parent, SWT.NONE);
 
@@ -101,9 +102,10 @@ class PreferencePageBook extends PreferencePage {
 		Button wBookAddButton = new Button(wTopComposite, SWT.NULL);
 		wBookAddButton.setText("追加");
 		wBookAddButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				InputDialog wInputDialog = new InputDialog(getShell(), "帳簿追加", "新しい帳簿名", "", null);
-				if (wInputDialog.open() != Dialog.OK)
+				if (wInputDialog.open() != Window.OK)
 					return;
 				DbUtil.addNewBook(wInputDialog.getValue());
 				updateBookTableWithDb();
@@ -121,13 +123,14 @@ class PreferencePageBook extends PreferencePage {
 		Button wBookModifyButton = new Button(wTopComposite, SWT.NULL);
 		wBookModifyButton.setText("変更");
 		wBookModifyButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
 				if (wBook == null)
 					return;
 				InputDialog wInputDialog = new InputDialog(getShell(), "帳簿名変更", "",
 						wBook.getName(), null);
-				if (wInputDialog.open() == Dialog.OK) {
+				if (wInputDialog.open() == Window.OK) {
 					DbUtil.updateBook(wBook.getId(), wInputDialog.getValue(), wBook.getBalance());
 					int wIndex = mTableViewerBooks.getTable().getSelectionIndex();
 					updateBookTableWithDb();
@@ -142,6 +145,7 @@ class PreferencePageBook extends PreferencePage {
 		Button wDeleteButton = new Button(wTopComposite, SWT.NULL);
 		wDeleteButton.setText("削除");
 		wDeleteButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
 				if (wBook == null)
@@ -164,6 +168,7 @@ class PreferencePageBook extends PreferencePage {
 		Button wUpButton = new Button(wTopComposite, SWT.NULL);
 		wUpButton.setText("↑");
 		wUpButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
 				if (wBook == null)
@@ -184,6 +189,7 @@ class PreferencePageBook extends PreferencePage {
 		Button wDownButton = new Button(wTopComposite, SWT.NULL);
 		wDownButton.setText("↓");
 		wDownButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
 				if (wBook == null)
@@ -233,7 +239,7 @@ class PreferencePageBook extends PreferencePage {
 		wBookNameCol.pack();
 
 		mTableViewerBooks.setContentProvider(new TableContentProvider());
-		mTableViewerBooks.setInput((Book[]) mBookList.toArray(new Book[0]));
+		mTableViewerBooks.setInput(mBookList.toArray(new Book[0]));
 
 		mTableViewerBooks.setLabelProvider(new TableLabelProvider());
 		addSelectionListenerToBookTable();
@@ -265,12 +271,14 @@ class PreferencePageBook extends PreferencePage {
 		Button wBalanceModifyButton = new Button(mAttributeComposite, SWT.NONE);
 		wBalanceModifyButton.setText("変更");
 		wBalanceModifyButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Book wBook = getSelectedBook();
 				if (wBook == null)
 					return;
 				InputDialog dlg = new InputDialog(getShell(), "初期値変更", "初期値を入力してください", Integer
 						.toString(wBook.getBalance()), new IInputValidator() {
+					@Override
 					public String isValid(String newText) {
 						if (newText.matches("[0-9]+"))
 							return null; // Valid
@@ -280,7 +288,7 @@ class PreferencePageBook extends PreferencePage {
 
 					}
 				});
-				if (dlg.open() == Dialog.OK) {
+				if (dlg.open() == Window.OK) {
 					wBook.setBalance(Integer.parseInt(dlg.getValue()));
 					DbUtil.updateBalance(wBook);
 					updateBalanceLabel();
@@ -325,6 +333,7 @@ class PreferencePageBook extends PreferencePage {
 			mItemButtonMap.put(wButton, entry.getKey());
 
 			wButton.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					Book wBook = getSelectedBook();
 					if (wBook == null)
@@ -337,6 +346,7 @@ class PreferencePageBook extends PreferencePage {
 		}
 	}
 
+	@Override
 	protected void performApply() {
 		if (mOrderChanged) {
 			updateBookSortKeys();
@@ -346,6 +356,7 @@ class PreferencePageBook extends PreferencePage {
 		}
 	}
 
+	@Override
 	public boolean performOk() {
 		performApply();
 		return true;
@@ -356,7 +367,7 @@ class PreferencePageBook extends PreferencePage {
 
 		try {
 			ISelection selection = mTableViewerBooks.getSelection();
-			mTableViewerBooks.setInput((Book[]) mBookList.toArray(new Book[0]));
+			mTableViewerBooks.setInput(mBookList.toArray(new Book[0]));
 			mTableViewerBooks.refresh();
 			mTableViewerBooks.setSelection(selection);
 		} finally {
@@ -396,23 +407,28 @@ class PreferencePageBook extends PreferencePage {
 }
 
 class TableContentProvider implements IStructuredContentProvider {
+	@Override
 	public Object[] getElements(Object inputElement) {
 		Book[] wBooks = (Book[]) inputElement;
 		return wBooks;
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 }
 
 class TableLabelProvider implements ITableLabelProvider {
+	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
 
+	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		Book wBook = (Book) element;
 
@@ -422,16 +438,20 @@ class TableLabelProvider implements ITableLabelProvider {
 		return null;
 	}
 
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
 	}
 
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 	}
 

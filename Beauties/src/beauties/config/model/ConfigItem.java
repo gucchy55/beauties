@@ -53,7 +53,7 @@ public class ConfigItem {
 	}
 
 	public ConfigItem[] getChildren() {
-		return (ConfigItem[]) mItemList.toArray(new ConfigItem[0]);
+		return mItemList.toArray(new ConfigItem[0]);
 	}
 
 	private void setParent(ConfigItem pParent) {
@@ -69,6 +69,7 @@ public class ConfigItem {
 		return mParent;
 	}
 
+	@Override
 	public String toString() {
 		return mId + "_" + mName;
 	}

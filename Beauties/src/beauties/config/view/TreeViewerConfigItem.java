@@ -42,6 +42,7 @@ public class TreeViewerConfigItem extends TreeViewer {
 
 class TreeContentProvider implements ITreeContentProvider {
 
+	@Override
 	public Object[] getChildren(Object element) {
 		ConfigItem wItem = (ConfigItem) element;
 		if (wItem.hasItem()) {
@@ -50,6 +51,7 @@ class TreeContentProvider implements ITreeContentProvider {
 		return new Object[0];
 	}
 
+	@Override
 	public Object getParent(Object element) {
 		ConfigItem wItem = (ConfigItem) element;
 		if (wItem.hasParent()) {
@@ -58,24 +60,29 @@ class TreeContentProvider implements ITreeContentProvider {
 		return null;
 	}
 
+	@Override
 	public boolean hasChildren(Object element) {
 		ConfigItem wItem = (ConfigItem) element;
 		return wItem.hasItem();
 	}
 
+	@Override
 	public Object[] getElements(Object inputElement) {
 		return getChildren(inputElement);
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 
 }
 
 class TreeLabelProvider extends LabelProvider {
+	@Override
 	public String getText(Object element) {
 		ConfigItem wItem = (ConfigItem) element;
 		return wItem.getName();

@@ -203,7 +203,7 @@ class CompositeMove extends Composite {
 		mBookFromCombo.select(mBookIdList.indexOf(mExpenseRecord.getBookId()));
 		mBookToCombo.select(mBookIdList.indexOf(mIncomeRecord.getBookId()));
 
-		mValueSpinner.setSelection((int) mIncomeRecord.getIncome());
+		mValueSpinner.setSelection(mIncomeRecord.getIncome());
 		mFrequencySpinner.setSelection(mIncomeRecord.getFrequency());
 
 		if (!"".equals(mIncomeRecord.getNote()))

@@ -9,6 +9,7 @@ public enum RightType {
 	private final String mName;
 	private RightType(String pName) { this.mName = pName; }
 	
+	@Override
 	public String toString() {
 		return mName;
 	}

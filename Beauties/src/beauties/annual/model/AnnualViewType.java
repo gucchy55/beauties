@@ -9,6 +9,7 @@ public enum AnnualViewType {
 	private final String mName;
 	private AnnualViewType(String pName) { this.mName = pName; }
 	
+	@Override
 	public String toString() {
 		return mName;
 	}

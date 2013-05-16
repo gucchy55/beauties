@@ -4,9 +4,9 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
+import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Shell;
 
@@ -49,6 +49,7 @@ public class RecordController implements IPeriodBookTabController {
 		mSummaryTableItems = DbUtil.getSummaryTableItems(mBookId, mDateRange);
 	}
 
+	@Override
 	public void updateTable() {
 		updateTableItems();
 		mCompositeEntry.updateView();
@@ -61,6 +62,7 @@ public class RecordController implements IPeriodBookTabController {
 		mSummaryTableItems = null;
 	}
 
+	@Override
 	public int getBookId() {
 		return mBookId;
 	}
@@ -85,6 +87,7 @@ public class RecordController implements IPeriodBookTabController {
 		return mSummaryTableItems;
 	}
 
+	@Override
 	public void setBookId(int pBookId) {
 		this.mBookId = pBookId;
 	}
@@ -125,7 +128,7 @@ public class RecordController implements IPeriodBookTabController {
 	public boolean openSearchDialog() {
 //		this.getShell().setImeInputMode(SWT.NATIVE);
 		InputDialog wInputDialog = new InputDialog(getShell(), "検索", "キーワードを入力", "", null);
-		if (wInputDialog.open() != Dialog.OK)
+		if (wInputDialog.open() != Window.OK)
 			return false;
 		this.updateItemsForSearch(wInputDialog.getValue());
 		this.setSearchResult(true);
@@ -143,6 +146,7 @@ public class RecordController implements IPeriodBookTabController {
 
 	}
 
+	@Override
 	public Composite getComposite() {
 		return mCompositeEntry;
 	}

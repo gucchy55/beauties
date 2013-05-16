@@ -16,6 +16,8 @@ import org.eclipse.core.runtime.Assert;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
 
+import java.sql.PreparedStatement;
+
 import beauties.common.model.AnnualDateRange;
 import beauties.common.model.Book;
 import beauties.common.model.DateRange;
@@ -33,9 +35,9 @@ public class DbUtil {
 	private final static String mSystemTable = "system";
 	private final static String mSystemValueCol = "NUM_VALUE";
 	private final static String mSystemIDCol = "SID";
-	private final static String mCutOff = "'CUTOFF_DT'";
-	private final static String mFiscalMonth = "'FISCAL_MH'";
-	private final static String mShowGridLine = "'SHOW_GRIDLINES'";
+	private final static String mCutOff = "CUTOFF_DT";
+	private final static String mFiscalMonth = "FISCAL_MH";
+	private final static String mShowGridLine = "SHOW_GRIDLINES";
 
 	// Categoryテーブル関連
 	private final static String mCategoryTable = "cbm_category";
@@ -104,120 +106,86 @@ public class DbUtil {
 	private DbUtil() {
 
 	}
-
-	public static int getCutOff() {
-		int wCutOff = SystemData.getUndefinedInt();
-		StringBuilder wQueryBuilder = new StringBuilder();
-		wQueryBuilder.append("select ").append(mSystemValueCol).append(" from ")
-				.append(mSystemTable).append(" where ").append(mSystemIDCol).append(" = ")
-				.append(mCutOff);
-		ResultSet wResultSet = mDbAccess.executeQuery(wQueryBuilder.toString());
+	
+	private static int getSystemValue(String pWhereVal) {
+		int wResult = SystemData.getUndefinedInt();
+		
+		// select NUM_VALUE from system where SID = ?
+		String wQuery = "select " + mSystemValueCol + " from " + mSystemTable + " where " + mSystemIDCol +" = ?";
+		PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQuery);
+		
 		try {
+			wStatement.setString(1, pWhereVal);
+			ResultSet wResultSet = mDbAccess.executeQuery(wStatement);
 			wResultSet.next();
-			wCutOff = wResultSet.getInt(mSystemValueCol);
+			wResult = wResultSet.getInt(mSystemValueCol);
 			wResultSet.close();
-
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
 		}
-		return wCutOff;
+		return wResult;
+		
+	}
+	
+	private static void updateSystemValue(String pWhereVal, int pVal) {
+		StringBuilder wQueryBuilder = new StringBuilder();
+		
+		// update system set NUM_VALUE = ? where SID = ?
+		wQueryBuilder.append("update ").append(mSystemTable).append(" set ")
+				.append(mSystemValueCol)
+				.append(" = ? where ").append(mSystemIDCol).append(" = ? ");
+		PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString());
+		try {
+			wStatement.setInt(1, pVal);
+			wStatement.setString(2, pWhereVal);
+			mDbAccess.executeUpdate(wStatement);
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		}
+	}
+	
+	public static int getCutOff() {
+		return getSystemValue(mCutOff);
 	}
 
 	public static void updateCutOff(int pCutOff) {
-		StringBuilder wQueryBuilder = new StringBuilder();
-		wQueryBuilder.append("update ").append(mSystemTable).append(" set ")
-				.append(mSystemValueCol)
-				.append(" = ").append(pCutOff).append(" where ").append(mSystemIDCol).append(" = ")
-				.append(mCutOff);
-		// String wQuery = "update " + mSystemTable + " set " + mSystemValueCol
-		// + " = " + pCutOff
-		// + " where " + mSystemIDCol + " = " + mCutOff;
-		mDbAccess.executeUpdate(wQueryBuilder.toString());
+		updateSystemValue(mCutOff, pCutOff);
 	}
 
 	public static int getFisCalMonth() {
-		int wFiscalMonth = SystemData.getUndefinedInt();
-		StringBuilder wQueryBuilder = new StringBuilder();
-		wQueryBuilder.append("select ").append(mSystemValueCol).append(" from ")
-				.append(mSystemTable).append(" where ").append(mSystemIDCol).append(" = ")
-				.append(mFiscalMonth);
-		ResultSet wResultSet = mDbAccess.executeQuery(wQueryBuilder.toString());
-		// ResultSet wResultSet = mDbAccess.executeQuery("select " +
-		// mSystemValueCol + " from "
-		// + mSystemTable + " where " + mSystemIDCol + " = " + mFiscalMonth);
-
-		try {
-			wResultSet.next();
-			wFiscalMonth = wResultSet.getInt(mSystemValueCol);
-			wResultSet.close();
-
-		} catch (SQLException e) {
-			resultSetHandlingError(e);
-		}
-
-		return wFiscalMonth;
+		return getSystemValue(mFiscalMonth);
 	}
 
 	public static void updateFisCalMonth(int pFiscalMonth) {
-		StringBuilder wQueryBuilder = new StringBuilder();
-		wQueryBuilder.append("update ").append(mSystemTable).append(" set ")
-				.append(mSystemValueCol)
-				.append(" = ").append(pFiscalMonth).append(" where ").append(mSystemIDCol)
-				.append(" = ")
-				.append(mFiscalMonth);
-		// String wQuery = "update " + mSystemTable + " set " + mSystemValueCol
-		// + " = " + pFiscalMonth
-		// + " where " + mSystemIDCol + " = " + mFiscalMonth;
-		mDbAccess.executeUpdate(wQueryBuilder.toString());
+		updateSystemValue(mFiscalMonth, pFiscalMonth);
 	}
 
 	public static boolean showGridLine() {
-		int wShowGridLine = 0;
-		StringBuilder wQueryBuilder = new StringBuilder();
-		wQueryBuilder.append("select ").append(mSystemValueCol).append(" from ")
-				.append(mSystemTable).append(" where ").append(mSystemIDCol).append(" = ")
-				.append(mShowGridLine);
-		// ResultSet wResultSet = mDbAccess.executeQuery("select " +
-		// mSystemValueCol + " from "
-		// + mSystemTable + " where " + mSystemIDCol + " = " + mShowGridLine);
-		ResultSet wResultSet = mDbAccess.executeQuery(wQueryBuilder.toString());
-
-		try {
-			wResultSet.next();
-			wShowGridLine = wResultSet.getInt(mSystemValueCol);
-			wResultSet.close();
-		} catch (SQLException e) {
-			resultSetHandlingError(e);
-		}
-		return (wShowGridLine == 1);
+		return getSystemValue(mShowGridLine) == 1;
 	}
 
 	public static void updateShowGridLine(boolean pShowGridLine) {
-		StringBuilder wQueryBuilder = new StringBuilder();
-		wQueryBuilder.append("update ").append(mSystemTable).append(" set ")
-				.append(mSystemValueCol)
-				.append(" = ").append(pShowGridLine ? 1 : 0).append(" where ").append(mSystemIDCol)
-				.append(" = ").append(mShowGridLine);
-		// String wQuery = "update " + mSystemTable + " set " + mSystemValueCol
-		// + " = "
-		// + (pShowGridLine ? 1 : 0) + " where " + mSystemIDCol + " = " +
-		// mShowGridLine;
-		mDbAccess.executeUpdate(wQueryBuilder.toString());
+		updateSystemValue(mShowGridLine, pShowGridLine ? 1 : 0);
 	}
 
 	public static int getCategoryIdByItemId(int pItemId) {
 		StringBuilder wQueryBuilder = new StringBuilder();
+		
+		// select CATEGORY_ID from cbm_item where ITEM_ID = ?
+//		wQueryBuilder.append("select ").append(mCategoryIdCol).append(" from ")
+//				.append(mItemTable).append(" where ").append(mItemIdCol).append(" = ")
+//				.append(pItemId);
+//		ResultSet wResultSet = mDbAccess.executeQuery(wQueryBuilder.toString());
+		
 		wQueryBuilder.append("select ").append(mCategoryIdCol).append(" from ")
-				.append(mItemTable).append(" where ").append(mItemIdCol).append(" = ")
-				.append(pItemId);
-		// ResultSet wResultSet = mDbAccess.executeQuery("select " +
-		// mCategoryIdCol + " from "
-		// + mItemTable + " where " + mItemIdCol + " = " + pItemId);
-		ResultSet wResultSet = mDbAccess.executeQuery(wQueryBuilder.toString());
+				.append(mItemTable).append(" where ").append(mItemIdCol).append(" = ? ");
+		PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString());
 
-		int wCategoryId = -1;
+		int wCategoryId = SystemData.getUndefinedInt();
 
 		try {
+			wStatement.setInt(1, pItemId);
+			ResultSet wResultSet = mDbAccess.executeQuery(wStatement);
 			wResultSet.next();
 			wCategoryId = wResultSet.getInt(mCategoryIdCol);
 			wResultSet.close();
@@ -363,8 +331,8 @@ public class DbUtil {
 		}
 
 		RecordTableItem[][] wRet = new RecordTableItem[2][];
-		wRet[0] = (RecordTableItem[]) wRecordTableItemListUp.toArray(new RecordTableItem[0]);
-		wRet[1] = (RecordTableItem[]) wRecordTableItemListBottom.toArray(new RecordTableItem[0]);
+		wRet[0] = wRecordTableItemListUp.toArray(new RecordTableItem[0]);
+		wRet[1] = wRecordTableItemListBottom.toArray(new RecordTableItem[0]);
 
 		return wRet;
 
@@ -1454,7 +1422,7 @@ public class DbUtil {
 		for (Map.Entry<Integer, List<SummaryTableItem>> entry : wSummaryTableMap.entrySet())
 			wSummaryTableItemList.addAll(entry.getValue());
 
-		return (SummaryTableItem[]) wSummaryTableItemList.toArray(new SummaryTableItem[0]);
+		return wSummaryTableItemList.toArray(new SummaryTableItem[0]);
 	}
 
 	private static String getQueryStringForAnnualSummaryTableItems(int pBookId,
@@ -1661,7 +1629,7 @@ public class DbUtil {
 				List<SummaryTableItem> wColList = wEntry.getValue();
 				wRowList.add(wColList.get(i));
 			}
-			wReturnList.add((SummaryTableItem[]) wRowList.toArray(new SummaryTableItem[0]));
+			wReturnList.add(wRowList.toArray(new SummaryTableItem[0]));
 		}
 		return wReturnList;
 	}
@@ -1867,7 +1835,7 @@ public class DbUtil {
 		List<SummaryTableItem[]> wReturnList = new ArrayList<SummaryTableItem[]>(
 				wSummaryTableItemList.size());
 		for (List<SummaryTableItem> wList : wSummaryTableItemList) {
-			wReturnList.add((SummaryTableItem[]) wList.toArray(new SummaryTableItem[0]));
+			wReturnList.add(wList.toArray(new SummaryTableItem[0]));
 		}
 		return wReturnList;
 	}
@@ -2306,7 +2274,7 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		} finally {
 		}
-		return (RecordTableItem[]) wList.toArray(new RecordTableItem[0]);
+		return wList.toArray(new RecordTableItem[0]);
 	}
 
 	// 立替残高（借入残高）

@@ -48,6 +48,7 @@ public class BeautiesMain extends ApplicationWindow {
 		super(null);
 	}
 
+	@Override
 	protected void configureShell(final Shell pShell) {
 		super.configureShell(pShell);
 		pShell.setText(SystemData.getWindowTitle());
@@ -59,6 +60,7 @@ public class BeautiesMain extends ApplicationWindow {
 		pShell.setImage(mIcon);
 
 		setExceptionHandler(new IExceptionHandler() {
+			@Override
 			public void handleException(Throwable e) {
 				StringBuffer wStack = new StringBuffer();
 				for (int i = 0; i < ((e.getStackTrace().length > 10) ? 10
@@ -71,6 +73,7 @@ public class BeautiesMain extends ApplicationWindow {
 		});
 	}
 
+	@Override
 	public boolean close() {
 		// イメージの破棄
 		if (!mIcon.isDisposed())
@@ -116,6 +119,7 @@ public class BeautiesMain extends ApplicationWindow {
 
 	private SelectionAdapter createSelectionAdapter(final RightType wType) {
 		return new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Button wButton = (Button) e.getSource();
 				if (mRightType.equals(wType)) {

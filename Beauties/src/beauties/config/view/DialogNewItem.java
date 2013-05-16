@@ -63,6 +63,7 @@ class DialogNewItem extends Dialog {
 		newShell.setText(isCategory ? "分類追加" : "項目追加");
 	}
 
+	@Override
 	protected void buttonPressed(int pButtonId) {
 		if (pButtonId == IDialogConstants.OK_ID) { // 0
 			if (mConfigItem == null) {
@@ -135,6 +136,7 @@ class CompositeNewItem extends Composite {
 			mIncomeExpenseCombo.select(1);
 		}
 		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				modifyIncomeExpense();
 			}

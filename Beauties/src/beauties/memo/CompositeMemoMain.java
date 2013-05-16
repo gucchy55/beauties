@@ -101,6 +101,7 @@ public class CompositeMemoMain extends Composite {
 
 	private void addListeners(Text pText) {
 		pText.addKeyListener(new KeyListener() {
+			@Override
 			public void keyPressed(KeyEvent e) {
 				if (e.stateMask == SWT.CTRL && e.keyCode == 's'
 						&& mModifiedMap.get(mCTabFolder.getSelection())) {
@@ -113,10 +114,12 @@ public class CompositeMemoMain extends Composite {
 					((Text) e.getSource()).selectAll();
 			}
 
+			@Override
 			public void keyReleased(KeyEvent arg0) {
 			}
 		});
 		pText.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent arg0) {
 				if (mModifiedMap.get(mCTabFolder.getSelection()))
 					return;

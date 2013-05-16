@@ -76,11 +76,13 @@ public class AnnualController implements IPeriodBookTabController {
 
 	}
 
+	@Override
 	public void updateTable() {
 		updateTableItems();
 		mCompositeAnnualMain.updateTable();
 	}
 
+	@Override
 	public int getBookId() {
 		return mBookId;
 	}
@@ -89,6 +91,7 @@ public class AnnualController implements IPeriodBookTabController {
 		return mAnnualDateRange;
 	}
 
+	@Override
 	public void setBookId(int pBookId) {
 		this.mBookId = pBookId;
 	}
@@ -128,6 +131,7 @@ public class AnnualController implements IPeriodBookTabController {
 		return mAnnualViewType;
 	}
 
+	@Override
 	public void setPrevPeriod() {
 		Date wStartDate = Util.getMonthDateRange(
 				Util.getAdjusentMonth(mAnnualDateRange.getStartDate(), -mMonthCount),
@@ -141,6 +145,7 @@ public class AnnualController implements IPeriodBookTabController {
 		updateTable();
 	}
 
+	@Override
 	public void setNextPeriod() {
 		Date wStartDate = Util.getMonthDateRange(
 				Util.getAdjusentMonth(mAnnualDateRange.getStartDate(), mMonthCount),
@@ -173,10 +178,12 @@ public class AnnualController implements IPeriodBookTabController {
 		mCompositeAnnualMain.copyToClipboard();
 	}
 
+	@Override
 	public Composite getComposite() {
 		return mCompositeAnnualMain;
 	}
 
+	@Override
 	public void openDialogPeriod() {
 //		getShell().setImeInputMode(SWT.NONE);
 		DialogAnnualPeriod wDialogAnnualPeriod = new DialogAnnualPeriod(this);
@@ -187,6 +194,7 @@ public class AnnualController implements IPeriodBookTabController {
 		// new OpenDialogAnnualPeriod(this).run();
 	}
 
+	@Override
 	public String getPeriodLabelText() {
 		if (getFiscalPeriod())
 			return mDF_yyyy.format(Util.getMonthDateRange(

@@ -2,6 +2,7 @@ package beauties.common.lib;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -31,9 +32,10 @@ class DbAccess {
 		mUser = SystemData.getDbUser();
 		mPass = SystemData.getDbPass();
 		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb;
-		try {
+		try(Connection mCon = DriverManager.getConnection(mUrl, mUser, mPass)) {
+			this.mCon = mCon;
 //			Class.forName("org.gjt.mm.mysql.Driver");
-			mCon = DriverManager.getConnection(mUrl, mUser, mPass);
+//			mCon = DriverManager.getConnection(mUrl, mUser, mPass);
 		} catch (SQLException e) {
 			sqlConnectionError(e);
 		} catch (Exception e) {
@@ -61,6 +63,18 @@ class DbAccess {
 
 	}
 
+	void executeUpdate(PreparedStatement pPreparedStatement) {
+		try {
+			pPreparedStatement.executeUpdate();
+			if(!SystemData.getDbUpdated())
+				SystemData.setDbUpdated(true);
+		} catch (SQLException e) {
+			sqlStatementError(e);
+		} catch (Exception e) {
+		}
+
+	}
+	
 	ResultSet executeQuery(String pQuery) {
 
 		try {
@@ -75,6 +89,32 @@ class DbAccess {
 
 		return mResultSet;
 
+	}
+	
+	ResultSet executeQuery(PreparedStatement pPreparedStatement) {
+
+		try {
+			mResultSet = pPreparedStatement.executeQuery();
+
+		} catch (SQLException e) {
+			sqlStatementError(e);
+		} catch (Exception e) {
+		}
+
+		return mResultSet;
+
+	}
+	
+	PreparedStatement getPreparedStatement(String pQuery) {
+		try {
+			return mCon.prepareStatement(pQuery);
+		} catch (SQLException e) {
+			sqlStatementError(e);
+		} catch (Exception e) {
+			
+		}
+		
+		return null;
 	}
 
 	private void sqlConnectionError(SQLException e) {

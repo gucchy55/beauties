@@ -69,9 +69,11 @@ class CompositeRecordTable extends Composite {
 
 	private void addFocusListenerToTableBottom() {
 		mTableBottom.getTable().addFocusListener(new FocusListener() {
+			@Override
 			public void focusLost(FocusEvent arg0) {
 			}
 
+			@Override
 			public void focusGained(FocusEvent arg0) {
 				mTableUp.getTable().deselectAll();
 			}
@@ -80,9 +82,11 @@ class CompositeRecordTable extends Composite {
 
 	private void addFocusListenerToTableUp() {
 		mTableUp.getTable().addFocusListener(new FocusListener() {
+			@Override
 			public void focusLost(FocusEvent arg0) {
 			}
 
+			@Override
 			public void focusGained(FocusEvent arg0) {
 				mTableBottom.getTable().deselectAll();
 			}

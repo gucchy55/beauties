@@ -44,6 +44,7 @@ class CompositeAnnualActionTab extends Composite {
 		Button wCopyButton = new Button(this, SWT.PUSH);
 		wCopyButton.setText("Copy");
 		wCopyButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				mCTL.copyToClipboard();
 			}

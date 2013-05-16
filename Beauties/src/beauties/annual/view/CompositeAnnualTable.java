@@ -62,12 +62,14 @@ class CompositeAnnualTable extends Composite {
 
 	private void createListeners() {
 		mSelectionAdapterForRowHeader = new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				mMainTableViewer.getTable().setSelection(
 						mRowHeaderTableViewer.getTable().getSelectionIndices());
 			}
 		};
 		mSelectionAdapterForMainTable = new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				mRowHeaderTableViewer.getTable().setSelection(
 						mMainTableViewer.getTable().getSelectionIndices());
@@ -107,7 +109,7 @@ class CompositeAnnualTable extends Composite {
 		}
 
 		mMainTableViewer.setContentProvider(new SummaryTableContentProvider());
-		mMainTableViewer.setInput((SummaryTableItem[][]) mCTL.getSummaryTableItems()
+		mMainTableViewer.setInput(mCTL.getSummaryTableItems()
 				.toArray(new SummaryTableItem[0][]));
 
 		mMainTableViewer.setLabelProvider(new SummaryTableLabelProvider());
@@ -180,41 +182,50 @@ class CompositeAnnualTable extends Composite {
 }
 
 class HeaderTableContentProvider implements IStructuredContentProvider {
+	@Override
 	@SuppressWarnings("unchecked")
 	public Object[] getElements(Object inputElement) {
 		List<String> wRowHeaders = (List<String>) inputElement;
-		return (String[]) wRowHeaders.toArray(new String[0]);
+		return wRowHeaders.toArray(new String[0]);
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 }
 
 class HeaderTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
+	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
 
+	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		String wRowHeader = (String) element;
 		return wRowHeader;
 
 	}
 
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
 	}
 
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 	}
 
@@ -231,23 +242,28 @@ class HeaderTableLabelProvider implements ITableLabelProvider, ITableColorProvid
 }
 
 class SummaryTableContentProvider implements IStructuredContentProvider {
+	@Override
 	public Object[] getElements(Object inputElement) {
 		SummaryTableItem[][] wSummaryTableItems = (SummaryTableItem[][]) inputElement;
 		return wSummaryTableItems;
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 }
 
 class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
+	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
 
+	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		SummaryTableItem[] wItem = (SummaryTableItem[]) element;
 		if (wItem[columnIndex].getValue() == SystemData.getUndefinedInt()) {
@@ -257,16 +273,20 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		}
 	}
 
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
 	}
 
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 	}
 

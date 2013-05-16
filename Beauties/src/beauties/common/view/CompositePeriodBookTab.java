@@ -75,6 +75,7 @@ public class CompositePeriodBookTab extends Composite {
 				.getMyGridData();
 		mPeriodLabel.setLayoutData(wGridDataLabel);
 		mPeriodLabel.addMouseListener(new MouseAdapter() {
+			@Override
 			public void mouseDoubleClick(MouseEvent arg0) {
 				mCTL.openDialogPeriod();
 			}
@@ -103,6 +104,7 @@ public class CompositePeriodBookTab extends Composite {
 			final int wBookId = entry.getKey();
 			Button wButton = entry.getValue();
 			wButton.addSelectionListener(new SelectionAdapter() {
+				@Override
 				public void widgetSelected(SelectionEvent e) {
 					if (mCTL.getBookId() == wBookId) {
 						((Button) e.getSource()).setSelection(true);

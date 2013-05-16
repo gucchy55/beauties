@@ -117,6 +117,7 @@ class RecordTableViewer extends TableViewer {
 
 	private IDoubleClickListener getDoubleClickListener() {
 		return new IDoubleClickListener() {
+			@Override
 			public void doubleClick(DoubleClickEvent event) {
 				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
 				RecordTableItem wRecord = (RecordTableItem) sel.getFirstElement();
@@ -215,14 +216,17 @@ class RecordTableViewer extends TableViewer {
 }
 
 class TableContentProvider implements IStructuredContentProvider {
+	@Override
 	public Object[] getElements(Object inputElement) {
 		RecordTableItem[] wRecordTableItems = (RecordTableItem[]) inputElement;
 		return wRecordTableItems;
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
 	}
 }
@@ -236,10 +240,12 @@ class TableLabelProvider implements ITableLabelProvider {
 		mCTL = pCTL;
 	}
 
+	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
 	}
 
+	@Override
 	public String getColumnText(Object element, int columnIndex) {
 		RecordTableItem wRecord = (RecordTableItem) element;
 		switch (columnIndex) {
@@ -267,16 +273,20 @@ class TableLabelProvider implements ITableLabelProvider {
 		return null;
 	}
 
+	@Override
 	public void addListener(ILabelProviderListener listener) {
 	}
 
+	@Override
 	public void dispose() {
 	}
 
+	@Override
 	public boolean isLabelProperty(Object element, String property) {
 		return false;
 	}
 
+	@Override
 	public void removeListener(ILabelProviderListener listener) {
 	}
 

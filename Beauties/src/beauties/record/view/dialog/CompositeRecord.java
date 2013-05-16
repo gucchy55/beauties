@@ -175,6 +175,7 @@ class CompositeRecord extends Composite {
 			mIncomeExpenseCombo.select(1);
 		}
 		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				modifyIncomeExpense();
 			}
@@ -218,6 +219,7 @@ class CompositeRecord extends Composite {
 		mBookCombo.select(mBookIdList.indexOf(mBookId));
 
 		mBookCombo.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				modifyBookId();
 			}
@@ -262,9 +264,9 @@ class CompositeRecord extends Composite {
 		mItemCombo.select(mItemIdList.indexOf(mItemId));
 
 		if (mIncome)
-			mValueSpinner.setSelection((int) mRecordTableItem.getIncome());
+			mValueSpinner.setSelection(mRecordTableItem.getIncome());
 		else
-			mValueSpinner.setSelection((int) mRecordTableItem.getExpense());
+			mValueSpinner.setSelection(mRecordTableItem.getExpense());
 
 		mFrequencySpinner.setSelection(mRecordTableItem.getFrequency());
 
@@ -322,6 +324,7 @@ class CompositeRecord extends Composite {
 
 		mCategoryCombo.pack();
 		mCategoryCombo.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				modifyCategoryId();
 			}
@@ -350,6 +353,7 @@ class CompositeRecord extends Composite {
 		mItemCombo.setVisibleItemCount(10);
 
 		mItemCombo.addModifyListener(new ModifyListener() {
+			@Override
 			public void modifyText(ModifyEvent e) {
 				modifyItemId();
 			}

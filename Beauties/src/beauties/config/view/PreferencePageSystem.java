@@ -78,6 +78,7 @@ class PreferencePageSystem extends PreferencePage {
 		mLineGridCheckButton.setLayoutData(wGridData);
 	}
 
+	@Override
 	protected void performApply() {
 		if (!this.isControlCreated())
 			return;
@@ -86,6 +87,7 @@ class PreferencePageSystem extends PreferencePage {
 		DbUtil.updateShowGridLine(mLineGridCheckButton.getSelection());
 	}
 
+	@Override
 	public boolean performOk() {
 		performApply();
 		return true;

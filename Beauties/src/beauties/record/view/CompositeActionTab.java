@@ -46,6 +46,7 @@ class CompositeActionTab extends Composite {
 		mSearchButton = new Button(this, SWT.TOGGLE);
 		mSearchButton.setText("検索");
 		mSearchButton.addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Button wButton = (Button)e.getSource();
 				wButton.setBackground(wButton.getSelection() ? SystemData.getColorYellow() : null);
