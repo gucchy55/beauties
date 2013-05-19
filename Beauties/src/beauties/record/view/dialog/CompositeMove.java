@@ -102,15 +102,6 @@ class CompositeMove extends Composite {
 		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
 		GridData wGridData = new GridData(GridData.FILL_HORIZONTAL);
 		mNoteCombo.setLayoutData(wGridData);
-//		mNoteCombo.addFocusListener(new FocusListener() {
-//			public void focusGained(FocusEvent event) {
-//				getShell().setImeInputMode(SWT.NATIVE);
-//			}
-//
-//			public void focusLost(FocusEvent event) {
-//				getShell().setImeInputMode(SWT.NONE);
-//			}
-//		});
 	}
 
 	private void createValueSpinners() {
@@ -179,18 +170,7 @@ class CompositeMove extends Composite {
 	}
 
 	private void initWidgets() {
-
 		updateNoteCombo();
-
-//		IControlContentAdapter wContentAdapter = new ComboContentAdapter();
-//		IContentProposalProvider wContentProvider = new IContentProposalProvider() {
-//			public IContentProposal[] getProposals(String contents, int position) {
-//				return Util.createProposals(contents, position, mNoteCombo
-//						.getItems(), mNoteCandidateCount);
-//			}
-//		};
-//		new ContentProposalAdapter(mNoteCombo, wContentAdapter, wContentProvider, null,
-//				null);
 	}
 
 	private void setWidgets() {
@@ -215,7 +195,7 @@ class CompositeMove extends Composite {
 
 	private void updateNoteCombo() {
 		String wNote = mNoteCombo.getText();
-		mNoteItems = DbUtil.getNotes(mMoveIncomeItemId);
+		mNoteItems = DbUtil.getNotes(mMoveIncomeItemId, SystemData.getNoteLimit());
 		mNoteCombo.setItems(mNoteItems);
 		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);

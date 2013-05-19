@@ -32,10 +32,9 @@ class DbAccess {
 		mUser = SystemData.getDbUser();
 		mPass = SystemData.getDbPass();
 		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb;
-		try(Connection mCon = DriverManager.getConnection(mUrl, mUser, mPass)) {
-			this.mCon = mCon;
+		try {
 //			Class.forName("org.gjt.mm.mysql.Driver");
-//			mCon = DriverManager.getConnection(mUrl, mUser, mPass);
+			mCon = DriverManager.getConnection(mUrl, mUser, mPass);
 		} catch (SQLException e) {
 			sqlConnectionError(e);
 		} catch (Exception e) {
@@ -49,6 +48,7 @@ class DbAccess {
 	    return mInstance;
 	  }
 
+	@Deprecated
 	void executeUpdate(String pQuery) {
 		try {
 			mStmt = mCon.createStatement();
@@ -75,6 +75,7 @@ class DbAccess {
 
 	}
 	
+	@Deprecated
 	ResultSet executeQuery(String pQuery) {
 
 		try {
@@ -134,6 +135,15 @@ class DbAccess {
 		MessageDialog.openWarning(Display.getCurrent().getShells()[0], "SQL Statement Error", e.toString() + "\n\n"
 				+ wStack);
 		System.err.println("ResultSet Handling Error: " + e.toString());
+	}
+	
+	public void closeConnection() {
+		try {
+			mCon.close();
+		} catch (SQLException e) {
+			sqlStatementError(e);
+		} catch (Exception e) {
+		}
 	}
 
 }

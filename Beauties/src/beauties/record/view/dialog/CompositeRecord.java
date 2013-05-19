@@ -70,6 +70,7 @@ class CompositeRecord extends Composite {
 		mIncome = false;
 		initLayout();
 		initWidgets();
+		setListeners();
 		mDateTime.setFocus();
 	}
 
@@ -82,6 +83,7 @@ class CompositeRecord extends Composite {
 		initLayout();
 		initWidgets();
 		setWidgets();
+		setListeners();
 	}
 
 	private void initLayout() {
@@ -113,15 +115,6 @@ class CompositeRecord extends Composite {
 		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
 		GridData wGridData = new GridData(GridData.FILL_HORIZONTAL);
 		mNoteCombo.setLayoutData(wGridData);
-//		mNoteCombo.addFocusListener(new FocusListener() {
-//			public void focusGained(FocusEvent event) {
-//				getShell().setImeInputMode(SWT.NATIVE);
-//			}
-//
-//			public void focusLost(FocusEvent event) {
-//				getShell().setImeInputMode(SWT.NONE);
-//			}
-//		});
 	}
 
 	private void initValueSpinners() {
@@ -174,12 +167,12 @@ class CompositeRecord extends Composite {
 		} else {
 			mIncomeExpenseCombo.select(1);
 		}
-		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				modifyIncomeExpense();
-			}
-		});
+//		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
+//			@Override
+//			public void modifyText(ModifyEvent e) {
+//				modifyIncomeExpense();
+//			}
+//		});
 	}
 
 	private void initDateTime() {
@@ -187,14 +180,6 @@ class CompositeRecord extends Composite {
 		Label wDateLabel = new Label(this, SWT.NONE);
 		wDateLabel.setText("日付");
 		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
-//		mDateTime.addFocusListener(new FocusListener() {
-//			public void focusGained(FocusEvent event) {
-//				getShell().setImeInputMode(SWT.NONE);
-//			}
-//
-//			public void focusLost(FocusEvent event) {
-//			}
-//		});
 	}
 
 	private void initBookCombo() {
@@ -218,34 +203,34 @@ class CompositeRecord extends Composite {
 
 		mBookCombo.select(mBookIdList.indexOf(mBookId));
 
+//		mBookCombo.addModifyListener(new ModifyListener() {
+//			@Override
+//			public void modifyText(ModifyEvent e) {
+//				modifyBookId();
+//			}
+//		});
+	}
+
+	private void initWidgets() {
+		updateCategoryCombo();
+		updateItemCombo();
+		updateNoteCombo();
+	}
+	
+	private void setListeners() {
 		mBookCombo.addModifyListener(new ModifyListener() {
 			@Override
 			public void modifyText(ModifyEvent e) {
 				modifyBookId();
 			}
 		});
-	}
-
-	private void initWidgets() {
-
-		updateCategoryCombo();
-
-		updateItemCombo();
-
-		updateNoteCombo();
-
-		// IControlContentAdapter wContentAdapter = new ComboContentAdapter();
-		// IContentProposalProvider wContentProvider = new
-		// IContentProposalProvider() {
-		// public IContentProposal[] getProposals(String contents, int position)
-		// {
-		// return Util.createProposals(contents, position, mNoteCombo
-		// .getItems(), mNoteCandidateCount);
-		// }
-		// };
-		// new ContentProposalAdapter(mNoteCombo, wContentAdapter,
-		// wContentProvider, null,
-		// null);
+		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
+			@Override
+			public void modifyText(ModifyEvent e) {
+				modifyIncomeExpense();
+			}
+		});
+		
 	}
 
 	private void setWidgets() {
@@ -279,21 +264,21 @@ class CompositeRecord extends Composite {
 	private void modifyBookId() {
 		mBookId = mBookIdList.get(mBookCombo.getSelectionIndex());
 		updateCategoryCombo();
-		updateItemCombo();
-		updateNoteCombo();
+//		updateItemCombo();
+//		updateNoteCombo();
 	}
 
 	private void modifyIncomeExpense() {
 		mIncome = mIncomeExpenseCombo.getSelectionIndex() == 0;
 		updateCategoryCombo();
-		updateItemCombo();
-		updateNoteCombo();
+//		updateItemCombo();
+//		updateNoteCombo();
 	}
 
 	private void modifyCategoryId() {
 		mCategoryId = mCategoryIdList.get(mCategoryCombo.getSelectionIndex());
 		updateItemCombo();
-		updateNoteCombo();
+//		updateNoteCombo();
 	}
 
 	private void modifyItemId() {
@@ -362,7 +347,7 @@ class CompositeRecord extends Composite {
 
 	private void updateNoteCombo() {
 		String wNote = mNoteCombo.getText();
-		mNoteItems = DbUtil.getNotes(mItemId);
+		mNoteItems = DbUtil.getNotes(mItemId, SystemData.getNoteLimit());
 		mNoteCombo.setItems(mNoteItems);
 		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
@@ -371,15 +356,16 @@ class CompositeRecord extends Composite {
 	}
 
 	public void updateForNextInput() {
-		updateCategoryCombo();
-		updateItemCombo();
+//		updateCategoryCombo();
+//		updateItemCombo();
 
-		mNoteCombo.setItem(0, "");
+//		mNoteCombo.setItem(0, "");
 		mNoteCombo.select(0);
-		updateNoteCombo();
+//		updateNoteCombo();
 
 		mValueSpinner.setSelection(0);
 		mFrequencySpinner.setSelection(0);
+		mCategoryCombo.select(0);
 		mItemCombo.setFocus();
 	}
 

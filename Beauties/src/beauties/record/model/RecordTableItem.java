@@ -213,9 +213,9 @@ public final class RecordTableItem {
 			return new RecordTableItem(this);
 		}
 		
-		public boolean isMoveRecord() {
-			return DbUtil.isMoveRecord(this.mActId);
-		}
+//		public boolean isMoveRecord() {
+//			return DbUtil.isMoveRecord(this.mActId);
+//		}
 	}
 	
 }

@@ -178,7 +178,7 @@ public class BeautiesMain extends ApplicationWindow {
 		wWindow.setBlockOnOpen(true); // ウィンドウが閉じられるまでopen()メソッドをブロック
 		wWindow.open(); // 表示
 		Display.getCurrent().dispose();
-		SystemData.dumpDb();
+		SystemData.closeProcess();
 	}
 
 }
