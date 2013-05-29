@@ -83,6 +83,11 @@ public class AnnualController implements IPeriodBookTabController {
 	}
 
 	@Override
+	public void changeBook() {
+		updateTable();
+	}
+	
+	@Override
 	public int getBookId() {
 		return mBookId;
 	}

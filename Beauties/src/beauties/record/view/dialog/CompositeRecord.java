@@ -9,15 +9,14 @@ import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
-import org.eclipse.swt.events.ModifyEvent;
-import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.events.SelectionAdapter;
+import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DateTime;
 import org.eclipse.swt.widgets.Label;
-import org.eclipse.swt.widgets.Listener;
 import org.eclipse.swt.widgets.Spinner;
 
 import beauties.common.lib.DbUtil;
@@ -56,7 +55,7 @@ class CompositeRecord extends Composite {
 	private Spinner mFrequencySpinner;
 	private Combo mNoteCombo;
 	private String[] mNoteItems;
-
+	
 	private static final int mVisibleComboItemCount = 10;
 
 	public CompositeRecord(Composite pParent, int pBookId) {
@@ -90,7 +89,7 @@ class CompositeRecord extends Composite {
 		GridLayout wGridLayout = new GridLayout(2, false);
 		wGridLayout.verticalSpacing = 10;
 		this.setLayout(wGridLayout);
-
+		
 		initBookCombo();
 
 		initDateTime();
@@ -218,16 +217,36 @@ class CompositeRecord extends Composite {
 	}
 	
 	private void setListeners() {
-		mBookCombo.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
+//		mBookCombo.addModifyListener(new ModifyListener() {
+//			@Override
+//			public void modifyText(ModifyEvent e) {
+//				modifyBookId();
+//			}
+//		});
+//		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
+//			@Override
+//			public void modifyText(ModifyEvent e) {
+//				modifyIncomeExpense();
+//			}
+//		});
+		mBookCombo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
 				modifyBookId();
 			}
 		});
-		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
+		mIncomeExpenseCombo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
 				modifyIncomeExpense();
+			}
+		});
+		mCategoryCombo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				modifyCategoryId();
+			}
+		});
+		mItemCombo.addSelectionListener(new SelectionAdapter() {
+			public void widgetSelected(SelectionEvent e) {
+				modifyItemId();
 			}
 		});
 		
@@ -264,21 +283,21 @@ class CompositeRecord extends Composite {
 	private void modifyBookId() {
 		mBookId = mBookIdList.get(mBookCombo.getSelectionIndex());
 		updateCategoryCombo();
-//		updateItemCombo();
-//		updateNoteCombo();
+		updateItemCombo();
+		updateNoteCombo();
 	}
 
 	private void modifyIncomeExpense() {
 		mIncome = mIncomeExpenseCombo.getSelectionIndex() == 0;
 		updateCategoryCombo();
-//		updateItemCombo();
-//		updateNoteCombo();
+		updateItemCombo();
+		updateNoteCombo();
 	}
 
 	private void modifyCategoryId() {
 		mCategoryId = mCategoryIdList.get(mCategoryCombo.getSelectionIndex());
 		updateItemCombo();
-//		updateNoteCombo();
+		updateNoteCombo();
 	}
 
 	private void modifyItemId() {
@@ -287,8 +306,10 @@ class CompositeRecord extends Composite {
 	}
 
 	private void updateCategoryCombo() {
-		for (Listener l : mCategoryCombo.getListeners(SWT.Modify))
-			mCategoryCombo.removeListener(SWT.Modify, l);
+//		System.out.println("updateCategoryCombo");
+//		for (Listener l : mCategoryCombo.getListeners(SWT.Modify))
+//			mCategoryCombo.removeListener(SWT.Modify, l);
+//		mCategoryCombo.removeSelectionListener(mCategorySelectionAdapter);
 
 		mCategoryCombo.removeAll();
 		mCategoryIdList.clear();
@@ -308,18 +329,21 @@ class CompositeRecord extends Composite {
 		mCategoryId = mCategoryIdList.get(0);
 
 		mCategoryCombo.pack();
-		mCategoryCombo.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				modifyCategoryId();
-			}
-		});
+//		mCategoryCombo.addSelectionListener(mCategorySelectionAdapter);
+//		mCategoryCombo.addModifyListener(new ModifyListener() {
+//			@Override
+//			public void modifyText(ModifyEvent e) {
+//				modifyCategoryId();
+//			}
+//		});
 
 	}
 
 	private void updateItemCombo() {
-		for (Listener l : mItemCombo.getListeners(SWT.Modify))
-			mItemCombo.removeListener(SWT.Modify, l);
+//		System.out.println("updateItemCombo");
+//		for (Listener l : mItemCombo.getListeners(SWT.Modify))
+//			mItemCombo.removeListener(SWT.Modify, l);
+//		mItemCombo.removeSelectionListener(mItemSelectionAdapter);
 
 		if (mCategoryId == mCategoryAllId)
 			mItemIdList = DbUtil.getItemIdList(mBookId, mIncome);
@@ -337,15 +361,17 @@ class CompositeRecord extends Composite {
 		mItemCombo.pack();
 		mItemCombo.setVisibleItemCount(10);
 
-		mItemCombo.addModifyListener(new ModifyListener() {
-			@Override
-			public void modifyText(ModifyEvent e) {
-				modifyItemId();
-			}
-		});
+//		mItemCombo.addSelectionListener(mItemSelectionAdapter);
+//		mItemCombo.addModifyListener(new ModifyListener() {
+//			@Override
+//			public void modifyText(ModifyEvent e) {
+//				modifyItemId();
+//			}
+//		});
 	}
 
 	private void updateNoteCombo() {
+//		System.out.println("updateNoteCombo");
 		String wNote = mNoteCombo.getText();
 		mNoteItems = DbUtil.getNotes(mItemId, SystemData.getNoteLimit());
 		mNoteCombo.setItems(mNoteItems);
@@ -360,12 +386,30 @@ class CompositeRecord extends Composite {
 //		updateItemCombo();
 
 //		mNoteCombo.setItem(0, "");
-		mNoteCombo.select(0);
+//		updateNoteCombo();
+//		mNoteCombo.select(0);
 //		updateNoteCombo();
 
 		mValueSpinner.setSelection(0);
 		mFrequencySpinner.setSelection(0);
-		mCategoryCombo.select(0);
+		if (mCategoryCombo.getSelectionIndex() != 0) {
+			mCategoryCombo.select(0);
+			modifyCategoryId();
+		} else {
+			mItemCombo.select(0);
+			modifyItemId();
+//			updateNoteCombo();
+		}
+//		updateNoteCombo();
+		mNoteCombo.setItem(0, "");
+		mNoteCombo.select(0);
+//		mCategoryCombo.select(0);
+//		if (mItemCombo.getSelectionIndex() == 0) {
+//			updateNoteCombo();
+//		} else {
+//			mItemCombo.select(0);
+//		}
+		
 		mItemCombo.setFocus();
 	}
 

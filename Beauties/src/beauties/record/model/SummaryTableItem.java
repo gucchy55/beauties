@@ -5,15 +5,30 @@ import org.eclipse.jface.viewers.ViewerFilter;
 import org.eclipse.swt.graphics.Color;
 
 import beauties.common.lib.SystemData;
+import beauties.common.model.Category;
+import beauties.common.model.Item;
 
 
 public abstract class SummaryTableItem {
 	private final String mName;
 	private final int mValue;
+	private Category mCategory;
+	private Item mItem;
 
 	SummaryTableItem(String pName, int pValue) {
 		mName = pName;
 		mValue = pValue;
+	}
+	
+	SummaryTableItem(Category pCategory, int pValue) {
+		mName = pCategory.getName();
+		mValue = pValue;
+		mCategory = pCategory;
+	}
+	SummaryTableItem(Item pItem, int pValue) {
+		mName = "  " + pItem.getName();
+		mValue = pValue;
+		mItem = pItem;
 	}
 	
 	abstract public Color getEntryColor();
@@ -25,6 +40,21 @@ public abstract class SummaryTableItem {
 	}
 	public int getValue() {
 		return mValue;
+	}
+	public boolean isCategory() {
+		return mCategory != null;
+	}
+	public boolean isItem() {
+		return mItem != null;
+	}
+	public Category getCategory() {
+		if (mItem != null) {
+			return mItem.getCategory();
+		}
+		return mCategory;
+	}
+	public Item getItem() {
+		return mItem;
 	}
 }
 
@@ -69,7 +99,7 @@ class SummaryTableItemAppearedIncome extends SummaryTableItem {
 	SummaryTableItemAppearedIncome(String pName, int pValue) {
 		super(pName, pValue);
 	}
-
+	
 	@Override
 	public Color getEntryColor() {
 		return SystemData.getColorGreen();
@@ -88,7 +118,7 @@ class SummaryTableItemAppearedExpense extends SummaryTableItem {
 	SummaryTableItemAppearedExpense(String pName, int pValue) {
 		super(pName, pValue);
 	}
-
+	
 	@Override
 	public Color getEntryColor() {
 		return SystemData.getColorGreen();
@@ -108,6 +138,11 @@ class SummaryTableItemCategory extends SummaryTableItem {
 	SummaryTableItemCategory(String pName, int pValue, int pCategoryId) {
 		super(pName, pValue);
 		mCategoryId = pCategoryId;
+	}
+	
+	SummaryTableItemCategory(Category pCategory, int pValue) {
+		super(pCategory, pValue);
+		mCategoryId = pCategory.getId();
 	}
 
 	@Override
@@ -129,6 +164,10 @@ class SummaryTableItemNormalItem extends SummaryTableItem {
 	SummaryTableItemNormalItem(String pName, int pValue, int pItemId) {
 		super("  " + pName, pValue);
 		mItemId = pItemId;
+	}
+	public SummaryTableItemNormalItem(Item pItem, int pValue) {
+		super(pItem, pValue);
+		mItemId = pItem.getId();
 	}
 
 	@Override

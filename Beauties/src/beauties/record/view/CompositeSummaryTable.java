@@ -1,14 +1,13 @@
 package beauties.record.view;
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
@@ -41,7 +40,7 @@ class CompositeSummaryTable extends Composite {
 		initLayout();
 		mSummaryTableViewer = createSummaryTable();
 
-		mSummaryTableViewer.setContentProvider(new SummaryTableContentProvider());
+		mSummaryTableViewer.setContentProvider(ArrayContentProvider.getInstance());
 		mSummaryTableViewer.setInput(mCTL.getSummaryTableItems());
 		mSummaryTableViewer.setLabelProvider(new SummaryTableLabelProvider());
 		mSummaryTableViewer.getTable().setSelection(0);
@@ -105,21 +104,21 @@ class CompositeSummaryTable extends Composite {
 	}
 }
 
-class SummaryTableContentProvider implements IStructuredContentProvider {
-	@Override
-	public Object[] getElements(Object inputElement) {
-		SummaryTableItem[] wSummaryTableItems = (SummaryTableItem[]) inputElement;
-		return wSummaryTableItems;
-	}
-
-	@Override
-	public void dispose() {
-	}
-
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-	}
-}
+//class SummaryTableContentProvider implements IStructuredContentProvider {
+//	@Override
+//	public Object[] getElements(Object inputElement) {
+//		SummaryTableItem[] wSummaryTableItems = (SummaryTableItem[]) inputElement;
+//		return wSummaryTableItems;
+//	}
+//
+//	@Override
+//	public void dispose() {
+//	}
+//
+//	@Override
+//	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+//	}
+//}
 
 class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
 	@Override

@@ -1,5 +1,8 @@
 package beauties.record.model;
 
+import beauties.common.model.Category;
+import beauties.common.model.Item;
+
 
 public class SummaryTableItemFactory {
 
@@ -14,11 +17,18 @@ public class SummaryTableItemFactory {
 	public static SummaryTableItem createAppearedIncome(String pName, int pValue) {
 		return new SummaryTableItemAppearedIncome(pName, pValue);
 	}
-
+	
 	public static SummaryTableItem createAppearedExpense(String pName, int pValue) {
 		return new SummaryTableItemAppearedExpense(pName, pValue);
 	}
 	
+	public static SummaryTableItem createCategory(Category pCategory, int pValue) {
+		return new SummaryTableItemCategory(pCategory, pValue);
+	}
+	
+	public static SummaryTableItem createItem(Item pItem, int pValue) {
+		return new SummaryTableItemNormalItem(pItem, pValue);
+	}
 	public static SummaryTableItem createCategory(String pName, int pValue, int pCategoryId) {
 		return new SummaryTableItemCategory(pName, pValue, pCategoryId);
 	}

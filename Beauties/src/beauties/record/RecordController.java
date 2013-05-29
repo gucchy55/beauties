@@ -3,6 +3,7 @@ package beauties.record;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -17,6 +18,7 @@ import beauties.common.model.DateRange;
 import beauties.common.view.IPeriodBookTabController;
 import beauties.record.model.RecordTableItem;
 import beauties.record.model.SummaryTableItem;
+import beauties.record.model.SummaryTableItemCollection;
 import beauties.record.view.CompositeEntry;
 import beauties.record.view.dialog.DialogPeriod;
 
@@ -31,7 +33,7 @@ public class RecordController implements IPeriodBookTabController {
 
 	private RecordTableItem[] mRecordItemsUp;
 	private RecordTableItem[] mRecordItemsBottom;
-	private SummaryTableItem[] mSummaryTableItems;
+	private SummaryTableItemCollection mSummaryTableItems;
 
 	private static final DateFormat mDF_yyyymm = new SimpleDateFormat("yyyy/MM");
 
@@ -49,9 +51,22 @@ public class RecordController implements IPeriodBookTabController {
 		mSummaryTableItems = DbUtil.getSummaryTableItems(mBookId, mDateRange);
 	}
 
+	private void updateTableItemsForBookChange() {
+		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBookId);
+		mRecordItemsUp = wRecordTableItemAll[0];
+		mRecordItemsBottom = wRecordTableItemAll[1];
+		mSummaryTableItems.setItemsNormal(DbUtil.getSummaryTableItemsNormal(mBookId, mDateRange));
+	}
+	
 	@Override
 	public void updateTable() {
 		updateTableItems();
+		mCompositeEntry.updateView();
+	}
+	
+	@Override
+	public void changeBook() {
+		updateTableItemsForBookChange();
 		mCompositeEntry.updateView();
 	}
 
@@ -83,8 +98,8 @@ public class RecordController implements IPeriodBookTabController {
 		return mRecordItemsBottom;
 	}
 
-	public SummaryTableItem[] getSummaryTableItems() {
-		return mSummaryTableItems;
+	public List<SummaryTableItem> getSummaryTableItems() {
+		return mSummaryTableItems.getList();
 	}
 
 	@Override

@@ -33,7 +33,6 @@ class DbAccess {
 		mPass = SystemData.getDbPass();
 		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb;
 		try {
-//			Class.forName("org.gjt.mm.mysql.Driver");
 			mCon = DriverManager.getConnection(mUrl, mUser, mPass);
 		} catch (SQLException e) {
 			sqlConnectionError(e);

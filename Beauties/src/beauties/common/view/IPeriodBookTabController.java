@@ -18,5 +18,7 @@ public interface IPeriodBookTabController {
 	
 	public void updateTable();
 	
+	public void changeBook();
+	
 	public Composite getComposite();
 }
