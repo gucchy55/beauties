@@ -55,6 +55,10 @@ public class ConfigItem {
 	public ConfigItem[] getChildren() {
 		return mItemList.toArray(new ConfigItem[0]);
 	}
+	
+	public List<ConfigItem> getChildrenAsList() {
+		return mItemList;
+	}
 
 	private void setParent(ConfigItem pParent) {
 		hasParent = true;
