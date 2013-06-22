@@ -1,8 +1,7 @@
-package beauties.common.model;
+package beauties.record.model;
 
 import java.util.Collection;
 
-import beauties.record.model.RecordTableItem;
 
 public class RecordTableItemCollection {
 	private Collection<RecordTableItem> mItemsPast;

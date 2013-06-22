@@ -2,8 +2,8 @@ package beauties.record;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
-import java.util.List;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.InputDialog;
@@ -18,6 +18,7 @@ import beauties.common.model.Book;
 import beauties.common.model.DateRange;
 import beauties.common.view.IPeriodBookTabController;
 import beauties.record.model.RecordTableItem;
+import beauties.record.model.RecordTableItemCollection;
 import beauties.record.model.SummaryTableItem;
 import beauties.record.model.SummaryTableItemCollection;
 import beauties.record.view.CompositeEntry;
@@ -32,8 +33,9 @@ public class RecordController implements IPeriodBookTabController {
 
 	private CompositeEntry mCompositeEntry;
 
-	private RecordTableItem[] mRecordItemsUp;
-	private RecordTableItem[] mRecordItemsBottom;
+	private RecordTableItemCollection mRecordTableItems;
+//	private RecordTableItem[] mRecordItemsUp;
+//	private RecordTableItem[] mRecordItemsBottom;
 	private SummaryTableItemCollection mSummaryTableItems;
 
 	private static final DateFormat mDF_yyyymm = new SimpleDateFormat("yyyy/MM");
@@ -46,16 +48,18 @@ public class RecordController implements IPeriodBookTabController {
 	}
 
 	private void updateTableItems() {
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBook);
-		mRecordItemsUp = wRecordTableItemAll[0];
-		mRecordItemsBottom = wRecordTableItemAll[1];
+		mRecordTableItems = DbUtil.getRecordTableItems(mDateRange, mBook);
+//		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBook);
+//		mRecordItemsUp = wRecordTableItemAll[0];
+//		mRecordItemsBottom = wRecordTableItemAll[1];
 		mSummaryTableItems = DbUtil.getSummaryTableItems(mBook, mDateRange);
 	}
 
 	private void updateTableItemsForBookChange() {
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBook);
-		mRecordItemsUp = wRecordTableItemAll[0];
-		mRecordItemsBottom = wRecordTableItemAll[1];
+		mRecordTableItems = DbUtil.getRecordTableItems(mDateRange, mBook);
+//		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBook);
+//		mRecordItemsUp = wRecordTableItemAll[0];
+//		mRecordItemsBottom = wRecordTableItemAll[1];
 		mSummaryTableItems.setItemsNormal(DbUtil.getSummaryTableItemsNormal(mBook, mDateRange));
 	}
 	
@@ -72,9 +76,10 @@ public class RecordController implements IPeriodBookTabController {
 	}
 
 	public void updateItemsForSearch(String pQuery) {
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getSearchedRecordTableItemList(pQuery);
-		mRecordItemsUp = wRecordTableItemAll[0];
-		mRecordItemsBottom = wRecordTableItemAll[1];
+//		RecordTableItem[][] wRecordTableItemAll = DbUtil.getSearchedRecordTableItemList(pQuery);
+		mRecordTableItems  = DbUtil.getSearchedRecordTableItemList(pQuery);
+//		mRecordItemsUp = wRecordTableItemAll[0];
+//		mRecordItemsBottom = wRecordTableItemAll[1];
 		mSummaryTableItems = null;
 	}
 
@@ -90,15 +95,15 @@ public class RecordController implements IPeriodBookTabController {
 		return mSearchResult;
 	}
 
-	public RecordTableItem[] getRecordItemsUp() {
-		return mRecordItemsUp;
+	public Collection<RecordTableItem> getRecordItemsUp() {
+		return mRecordTableItems.getItemsPast();
 	}
 
-	public RecordTableItem[] getRecordItemsBottom() {
-		return mRecordItemsBottom;
+	public Collection<RecordTableItem> getRecordItemsBottom() {
+		return mRecordTableItems.getItemsFuture();
 	}
 
-	public List<SummaryTableItem> getSummaryTableItems() {
+	public Collection<SummaryTableItem> getSummaryTableItems() {
 		return mSummaryTableItems.getList();
 	}
 

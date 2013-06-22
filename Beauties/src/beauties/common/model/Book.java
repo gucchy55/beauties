@@ -1,16 +1,21 @@
 package beauties.common.model;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
 
 public class Book implements IComboItem {
 	private int mBalance = 0;
 	private int mId;
 	private String mName;
+	private static Book mAllBook;
 	
 	private static Map<Integer, Book> mBookMap = new HashMap<>();
+	private static Collection<Book> mBooks = new ArrayList<>();
 	
 	private Book(int pId, String pName) {
 		mId = pId;
@@ -37,6 +42,23 @@ public class Book implements IComboItem {
 	public int getBalance() {
 		return mBalance;
 	}
+	
+	public static Collection<Book> getBooks(boolean pAllBook) {
+		if (!pAllBook) {
+			return getBooks();
+		}
+		Collection<Book> wBooks = new ArrayList<>();
+		wBooks.add(getAllBook());
+		wBooks.addAll(getBooks());
+		return wBooks;
+	}
+	
+	private static Collection<Book> getBooks() {
+		if (mBooks.isEmpty()) {
+			mBooks = DbUtil.getBooks();
+		}
+		return mBooks;
+	}
 
 	public static Book getBook(int pId) {
 		return mBookMap.get(pId);
@@ -49,13 +71,18 @@ public class Book implements IComboItem {
 	}
 	
 	public static Book getAllBook() {
-		if (getBook(SystemData.getAllBookInt()) == null) {
-			generateBook(SystemData.getAllBookInt(), "全て");
+//		if (getBook(SystemData.getAllBookInt()) == null) {
+		if (mAllBook == null) {
+			mAllBook = new Book(SystemData.getAllBookInt(), "全て");
+			mBookMap.put(mAllBook.getId(), mAllBook);
+//			generateBook(SystemData.getAllBookInt(), "全て");
 		}
-		return getBook(SystemData.getAllBookInt());
+		return mAllBook;
+//		return getBook(SystemData.getAllBookInt());
 	}
 	
 	public static void clear() {
+		mBooks.clear();
 		mBookMap.clear();
 	}
 	

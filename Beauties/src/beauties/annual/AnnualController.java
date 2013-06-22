@@ -24,7 +24,7 @@ import beauties.common.view.IPeriodBookTabController;
 import beauties.record.model.SummaryTableItem;
 
 public class AnnualController implements IPeriodBookTabController {
-	private Book mBook = Book.getBook(SystemData.getAllBookInt());
+	private Book mBook = Book.getAllBook();
 	private AnnualDateRange mAnnualDateRange;
 	private boolean mFiscalPeriod = false;
 	private AnnualViewType mAnnualViewType = AnnualViewType.Category;

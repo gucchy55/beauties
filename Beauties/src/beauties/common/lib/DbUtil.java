@@ -7,6 +7,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.LinkedHashMap;
@@ -30,6 +31,7 @@ import beauties.common.model.IncomeExpenseType;
 import beauties.common.model.Item;
 import beauties.config.model.ConfigItem;
 import beauties.record.model.RecordTableItem;
+import beauties.record.model.RecordTableItemCollection;
 import beauties.record.model.RecordTableItemForMove;
 import beauties.record.model.SummaryItemsCommon;
 import beauties.record.model.SummaryTableItem;
@@ -88,7 +90,7 @@ public class DbUtil {
 	private final static String mNoteIdCol = "NOTE_ID";
 	private final static String mNoteNameCol = "NOTE_NAME";
 
-	private final static int mAllBookId = SystemData.getAllBookInt();
+//	private final static int mAllBookId = SystemData.getAllBookInt();
 	private final static String mCategorySpecialFlgCol = "SPECIAL_FLG";
 	private final static String mCategoryTempFlgCol = "TEMP_FLG";
 
@@ -179,81 +181,7 @@ public class DbUtil {
 		updateSystemValue(mShowGridLine, pShowGridLine ? 1 : 0);
 	}
 
-	public static int getCategoryIdByItemId(int pItemId) {
-		StringBuilder wQueryBuilder = new StringBuilder();
-		
-		// select CATEGORY_ID from cbm_item where ITEM_ID = ?
-		wQueryBuilder.append("select ").append(mCategoryIdCol).append(" from ")
-				.append(mItemTable).append(" where ").append(mItemIdCol).append(" = ? ");
-		int wCategoryId = SystemData.getUndefinedInt();
-		try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
-			wStatement.setInt(1, pItemId);
-			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
-				wResultSet.next();
-				wCategoryId = wResultSet.getInt(mCategoryIdCol);
-			} catch (SQLException e) {
-				resultSetHandlingError(e);
-			}
-		} catch (SQLException e) {
-			resultSetHandlingError(e);
-		}
-
-		return wCategoryId;
-	}
-
-	@Deprecated
-	public static String getItemNameById(int pItemId) {
-		StringBuilder wQueryBuilder = new StringBuilder();
-		
-		// select ITEM_NAME from cbm_item where ITEM_ID = ?
-		wQueryBuilder.append("select ").append(mItemNameCol).append(" from ")
-				.append(mItemTable).append(" where ").append(mItemIdCol).append(" = ?");
-
-		String wItemName = "";
-
-		try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
-			wStatement.setInt(1, pItemId);
-			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
-				wResultSet.next();
-				wItemName = wResultSet.getString(mItemNameCol);
-			} catch (SQLException e) {
-				resultSetHandlingError(e);
-			}
-		} catch (SQLException e) {
-			resultSetHandlingError(e);
-		}
-
-		return wItemName;
-
-	}
-
-	@Deprecated
-	public static String getCategoryNameById(int pCategoryId) {
-		StringBuilder wQueryBuilder = new StringBuilder();
-		
-		// select CATEGORY_NAME from cbm_category where CATEGORY_ID = ?
-		wQueryBuilder.append("select ").append(mCategoryNameCol).append(" from ")
-				.append(mCategoryTable).append(" where ").append(mCategoryIdCol).append(" = ?");
-
-		String wName = "";
-
-		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
-			wStatement.setInt(1, pCategoryId);
-			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
-				wResultSet.next();
-				wName = wResultSet.getString(mCategoryNameCol);
-			} catch (SQLException e) {
-				resultSetHandlingError(e);
-			}
-		} catch (SQLException e) {
-			resultSetHandlingError(e);
-		}
-
-		return wName;
-
-	}
-
-	public static RecordTableItem[][] getRecordTableItems(DateRange pDateRange, Book pBook) {
+	public static RecordTableItemCollection getRecordTableItems(DateRange pDateRange, Book pBook) {
 		List<RecordTableItem> wRecordTableItemListUp = new ArrayList<RecordTableItem>();
 		List<RecordTableItem> wRecordTableItemListBottom = new ArrayList<RecordTableItem>();
 
@@ -333,12 +261,14 @@ public class DbUtil {
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
 		}
-
-		RecordTableItem[][] wRet = new RecordTableItem[2][];
-		wRet[0] = wRecordTableItemListUp.toArray(new RecordTableItem[0]);
-		wRet[1] = wRecordTableItemListBottom.toArray(new RecordTableItem[0]);
-
-		return wRet;
+		
+		return new RecordTableItemCollection(wRecordTableItemListUp, wRecordTableItemListBottom);
+//
+//		RecordTableItem[][] wRet = new RecordTableItem[2][];
+//		wRet[0] = wRecordTableItemListUp.toArray(new RecordTableItem[0]);
+//		wRet[1] = wRecordTableItemListBottom.toArray(new RecordTableItem[0]);
+//
+//		return wRet;
 
 	}
 
@@ -346,10 +276,6 @@ public class DbUtil {
 			throws SQLException {
 		Book wBook = Book.getBook(wResultSet.getInt(mBookIdCol));
 		Category wCategory = getCategory(wResultSet);
-//		int wItemId = wResultSet.getInt(mItemIdCol);
-//		if (Item.getItem(wItemId) == null) {
-//			Item.generateItem(wItemId, wResultSet.getString(mItemNameCol), wCategory);
-//		}
 		Item wItem = getItem(wResultSet, wCategory);
 		RecordTableItem wRecord = new RecordTableItem.Builder(
 				wBook, wItem,
@@ -367,10 +293,6 @@ public class DbUtil {
 			throws SQLException {
 		Book wBook = Book.getBook(wResultSet.getInt(mBookIdCol));
 		Category wCategory = getCategory(wResultSet);
-//		int wItemId = wResultSet.getInt(mItemIdCol);
-//		if (Item.getItem(wItemId) == null) {
-//			Item.generateItem(wItemId, wResultSet.getString(mItemNameCol), wCategory);
-//		}
 		Item wItem = getItem(wResultSet, wCategory);
 		RecordTableItem wRecord = new RecordTableItem.Builder(
 				wBook, wItem,
@@ -385,6 +307,7 @@ public class DbUtil {
 	}
 
 	public static Collection<Book> getBooks() {
+		Book.clear();
 		Collection<Book> wBooks = new ArrayList<>();
 
 		// select BOOK_ID, BOOK_NAME from cbm_book where DEL_FLG = b? order by SORT_KEY
@@ -398,9 +321,9 @@ public class DbUtil {
 			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
 				while (wResultSet.next()) {
 					int wBookId = wResultSet.getInt(mBookIdCol);
-					String wBookName = wResultSet.getString(mBookNameCol);
+//					String wBookName = wResultSet.getString(mBookNameCol);
 					if (Book.getBook(wBookId) == null) {
-						Book.generateBook(wBookId, wBookName);
+						Book.generateBook(wBookId, wResultSet.getString(mBookNameCol));
 					}
 					wBooks.add(Book.getBook(wBookId));
 				}
@@ -506,8 +429,8 @@ public class DbUtil {
 		return wResultMap;
 	}
 
-	public static List<Item> getItemList(Book pBook, IncomeExpenseType pIncomeExpenseType) {
-		List<Item> wResultList = new ArrayList<>();
+	public static Collection<Item> getItems(Book pBook, IncomeExpenseType pIncomeExpenseType) {
+		Collection<Item> wResultList = new ArrayList<>();
 		
 		// select cbm_item.ITEM_ID from cbm_item, cbr_book, cbm_category
 		// where cbm_item.ITEM_ID = cbr_book.ITEM_ID
@@ -560,8 +483,8 @@ public class DbUtil {
 		return wResultList;
 	}
 
-	public static List<Item> getItemList(Book pBook, Category pCategory) {
-		List<Item> wResultList = new ArrayList<>();
+	public static Collection<Item> getItems(Book pBook, Category pCategory) {
+		Collection<Item> wResultList = new ArrayList<>();
 
 		// select cbm_item.ITEM_ID from cbm_item, cbr_book, cbm_category
 		// where cbm_item.ITEM_ID = cbr_book.ITEM_ID
@@ -614,8 +537,8 @@ public class DbUtil {
 		return wResultList;
 	}
 
-	public static List<Category> getCategoryList(Book pBook, IncomeExpenseType pIncomeExpenseType) {
-		List<Category> wResultList = new ArrayList<>();
+	public static Collection<Category> getCategories(Book pBook, IncomeExpenseType pIncomeExpenseType) {
+		Collection<Category> wResultList = new ArrayList<>();
 		// select count(cbm_item.ITEM_NAME), cbm_category.CATEGORY_ID
 		// from cbm_item, cbr_book, cbm_category
 		// where cbm_item.ITEM_ID = cbr_book.ITEM_ID
@@ -669,8 +592,8 @@ public class DbUtil {
 	}
 
 	// 設定時に使用
-	public static List<Category> getAllCategorys(IncomeExpenseType pType) {
-		List<Category> wResultList = new LinkedList<>();
+	public static Collection<Category> getAllCategorys(IncomeExpenseType pType) {
+		Collection<Category> wResultList = new LinkedList<>();
 		// select CATEGORY_ID, CATEGORY_NAME from cbm_category
 		// where REXP_DIV = ?	// 1 (int)
 		//	and DEL_FLG = b'0' and SORT_KEY > 0 order by SORT_KEY
@@ -699,29 +622,29 @@ public class DbUtil {
 		return wResultList;
 	}
 
-	@Deprecated
-	public static boolean isIncomeCategory(int pCategoryId) {
-		// select REXP_DIV from cbm_category
-		// where CATEGORY_ID = ?	// 1 (int)
-		StringBuilder wQueryBuilder = new StringBuilder()
-				.append("select ").append(mCategoryRexpCol).append(" from ").append(mCategoryTable)
-				.append(" where ").append(mCategoryIdCol).append(" = ?");
-		
-		try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
-			wStatement.setInt(1, pCategoryId);
-			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
-				wResultSet.next();
-				return wResultSet.getInt(mCategoryRexpCol) == mIncomeRexp;
-			} catch (SQLException e) {
-				resultSetHandlingError(e);
-			}
-		} catch (SQLException e) {
-			resultSetHandlingError(e);
-		}
-
-		return false;
-
-	}
+//	@Deprecated
+//	public static boolean isIncomeCategory(int pCategoryId) {
+//		// select REXP_DIV from cbm_category
+//		// where CATEGORY_ID = ?	// 1 (int)
+//		StringBuilder wQueryBuilder = new StringBuilder()
+//				.append("select ").append(mCategoryRexpCol).append(" from ").append(mCategoryTable)
+//				.append(" where ").append(mCategoryIdCol).append(" = ?");
+//		
+//		try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
+//			wStatement.setInt(1, pCategoryId);
+//			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
+//				wResultSet.next();
+//				return wResultSet.getInt(mCategoryRexpCol) == mIncomeRexp;
+//			} catch (SQLException e) {
+//				resultSetHandlingError(e);
+//			}
+//		} catch (SQLException e) {
+//			resultSetHandlingError(e);
+//		}
+//
+//		return false;
+//
+//	}
 
 	public static void insertNewRecord(RecordTableItem pRecord) {
 		if (pRecord.getFrequency() == 0) {
@@ -806,8 +729,8 @@ public class DbUtil {
 			return true;
 		return pAfterRecord.getYear() != pBeforeRecord.getYear()
 				|| pAfterRecord.getMonth() != pBeforeRecord.getMonth()
-				|| pAfterRecord.getBook() != pBeforeRecord.getBook()
-				|| pAfterRecord.getItem() != pBeforeRecord.getItem();
+				|| !pAfterRecord.getBook().equals(pBeforeRecord.getBook())
+				|| !pAfterRecord.getItem().equals(pBeforeRecord.getItem());
 	}
 
 	public static void updateRecord(RecordTableItem pBeforeRecord, RecordTableItem pAfterRecord) {
@@ -950,7 +873,7 @@ public class DbUtil {
 
 			try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
 				int j=1;
-				wStatement.setInt(j++, pMoveItem.getFromBookId());
+				wStatement.setInt(j++, pMoveItem.getFromBook().getId());
 				wStatement.setInt(j++, getMoveExpenseItemId());
 				wStatement.setInt(j++, 0);
 				wStatement.setInt(j++, pMoveItem.getValue());
@@ -959,7 +882,7 @@ public class DbUtil {
 				wStatement.setString(j++, pMoveItem.getNote());
 				wStatement.setInt(j++, wFrequency);
 				
-				wStatement.setInt(j++, pMoveItem.getToBookId());
+				wStatement.setInt(j++, pMoveItem.getToBook().getId());
 				wStatement.setInt(j++, getMoveIncomeItemId());
 				wStatement.setInt(j++, pMoveItem.getValue());
 				wStatement.setInt(j++, 0);
@@ -988,7 +911,7 @@ public class DbUtil {
 		String wDate = mDateFormat.format(pMoveItem.getDate());
 		try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
 			int i=1;
-			wStatement.setInt(i++, pMoveItem.getFromBookId());
+			wStatement.setInt(i++, pMoveItem.getFromBook().getId());
 			wStatement.setInt(i++, getMoveExpenseItemId());
 			wStatement.setInt(i++, 0);
 			wStatement.setInt(i++, pMoveItem.getValue());
@@ -996,7 +919,7 @@ public class DbUtil {
 			wStatement.setString(i++, wDate);
 			wStatement.setString(i++, pMoveItem.getNote());
 			
-			wStatement.setInt(i++, pMoveItem.getToBookId());
+			wStatement.setInt(i++, pMoveItem.getToBook().getId());
 			wStatement.setInt(i++, getMoveIncomeItemId());
 			wStatement.setInt(i++, pMoveItem.getValue());
 			wStatement.setInt(i++, 0);
@@ -1014,8 +937,8 @@ public class DbUtil {
 		// return true;
 		return pAfterItem.getYear() != pBeforeItem.getYear()
 				|| pAfterItem.getMonth() != pBeforeItem.getMonth()
-				|| pAfterItem.getFromBookId() != pBeforeItem.getFromBookId()
-				|| pAfterItem.getToBookId() != pBeforeItem.getToBookId();
+				|| !pAfterItem.getFromBook().equals(pBeforeItem.getFromBook())
+				|| !pAfterItem.getToBook().equals(pBeforeItem.getToBook());
 	}
 
 	public static void updateMoveRecord(RecordTableItemForMove pBeforeItem,
@@ -1068,7 +991,7 @@ public class DbUtil {
 
 			try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
 				int j=1;
-				wStatement.setInt(j++, pAfterItem.getFromBookId());
+				wStatement.setInt(j++, pAfterItem.getFromBook().getId());
 				wStatement.setInt(j++, getMoveExpenseItemId());
 				wStatement.setString(j++, wDate);
 				wStatement.setInt(j++, 0);
@@ -1077,7 +1000,7 @@ public class DbUtil {
 				wStatement.setInt(j++, wFrequency);
 				wStatement.setString(j++, pNote);
 
-				wStatement.setInt(j++, pAfterItem.getToBookId());
+				wStatement.setInt(j++, pAfterItem.getToBook().getId());
 				wStatement.setInt(j++, getMoveIncomeItemId());
 				wStatement.setString(j++, wDate);
 				wStatement.setInt(j++, pAfterItem.getValue());
@@ -1113,7 +1036,7 @@ public class DbUtil {
 					try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
 						// From
 						int i=1;
-						wStatement.setInt(i++, pAfterItem.getFromBookId());
+						wStatement.setInt(i++, pAfterItem.getFromBook().getId());
 						wStatement.setInt(i++, getMoveExpenseItemId());
 						wStatement.setString(i++, wDate);
 						wStatement.setInt(i++, 0);
@@ -1124,7 +1047,7 @@ public class DbUtil {
 						
 						// To
 						i=1;
-						wStatement.setInt(i++, pAfterItem.getToBookId());
+						wStatement.setInt(i++, pAfterItem.getToBook().getId());
 						wStatement.setInt(i++, getMoveIncomeItemId());
 						wStatement.setString(i++, wDate);
 						wStatement.setInt(i++, pAfterItem.getValue());
@@ -1178,11 +1101,11 @@ public class DbUtil {
 		}
 	}
 
-	public static int getMoveIncomeItemId() {
+	private static int getMoveIncomeItemId() {
 		return mIncomeRexp;
 	}
 
-	public static int getMoveExpenseItemId() {
+	private static int getMoveExpenseItemId() {
 		return mExpenseRexp;
 	}
 
@@ -1592,8 +1515,8 @@ public class DbUtil {
 			ResultSet pResultSet, Map<Integer, List<SummaryTableItem>> pSummaryTableItemListMap,
 			boolean pItem, int pId) {
 
-		String wNameKey = pItem ? (mItemTable + "." + mItemNameCol)
-				: (mCategoryTable + "." + mCategoryNameCol);
+//		String wNameKey = pItem ? (mItemTable + "." + mItemNameCol)
+//				: (mCategoryTable + "." + mCategoryNameCol);
 		List<SummaryTableItem> wList = new ArrayList<SummaryTableItem>();
 
 		int wKey = 0;
@@ -1608,13 +1531,18 @@ public class DbUtil {
 					wIncome = wIncome / (i - 1);
 					wExpense = wExpense / (i - 1);
 				}
-				if (pItem)
-					wList.add(SummaryTableItemFactory.createItem(pResultSet.getString(wNameKey),
-							(wRexpDiv == mIncomeRexp) ? wIncome : wExpense, pId));
-				else
-					wList.add(SummaryTableItemFactory.createCategory(
-							pResultSet.getString(wNameKey), (wRexpDiv == mIncomeRexp) ? wIncome
-									: wExpense, pId));
+				if (pItem) {
+					wList.add(SummaryTableItemFactory.createItem(getItem(pResultSet, getCategory(pResultSet)),
+							(wRexpDiv == mIncomeRexp) ? wIncome : wExpense));
+//					wList.add(SummaryTableItemFactory.createItem(pResultSet.getString(wNameKey),
+//							(wRexpDiv == mIncomeRexp) ? wIncome : wExpense, Item.getItem(pId)));
+				} else {
+					wList.add(SummaryTableItemFactory.createCategory(getCategory(pResultSet),
+							wRexpDiv == mIncomeRexp ? wIncome : wExpense));
+//					wList.add(SummaryTableItemFactory.createCategory(
+//							pResultSet.getString(wNameKey), (wRexpDiv == mIncomeRexp) ? wIncome
+//									: wExpense, Category.getCategory(pId)));
+				}
 			}
 
 			wKey = wRexpDiv * 1000000 + wCategorySortKey * 1000
@@ -1852,7 +1780,7 @@ public class DbUtil {
 		for (int i = 0; i < pAnnualDateRange.size(); i++)
 			wSummaryTableItemList.add(new ArrayList<SummaryTableItem>());
 
-		int wAppearedBalance = getInitialBalance(Book.getBook(mAllBookId));
+		int wAppearedBalance = getInitialBalance(Book.getAllBook());
 		int wActualBalance = 0;
 		int wTempBalance = 0;
 		
@@ -2136,8 +2064,8 @@ public class DbUtil {
 		}
 	}
 
-	public static List<Book> getRelatedBookList(ConfigItem pConfigItem) {
-		List<Book> wList = new ArrayList<>();
+	public static Collection<Book> getRelatedBooks(ConfigItem pConfigItem) {
+		Collection<Book> wList = new ArrayList<>();
 		// select BOOK_ID from cbr_book where ITEM_ID = ?
 		String wQuery = new StringBuilder("select ").append(mBookIdCol).append(" from ")
 				.append(mBookItemTable).append(" where ").append(mItemIdCol).append(" = ?")
@@ -2158,8 +2086,8 @@ public class DbUtil {
 		return wList;
 	}
 
-	public static List<Item> getRelatedItems(Book pBook) {
-		List<Item> wList = new ArrayList<>();
+	public static Collection<Item> getRelatedItems(Book pBook) {
+		Collection<Item> wList = new ArrayList<>();
 		// select ITEM_ID from cbr_book where BOOK_ID = ?
 		String wQuery = new StringBuilder("select ").append(mItemIdCol).append(" from ")
 				.append(mBookItemTable).append(" where ").append(mBookIdCol).append(" = ?")
@@ -2203,8 +2131,8 @@ public class DbUtil {
 		}
 	}
 
-	public static List<Category> getSpecialCategorys() {
-		List<Category> wList = new ArrayList<>();
+	public static Collection<Category> getSpecialCategories() {
+		Collection<Category> wList = new ArrayList<>();
 		// select CATEGORY_ID from cbm_category where SPECIAL_FLG = b'1' and DEL_FLG = b'0'
 		String wQuery = new StringBuilder("select ").append(mCategoryIdCol)
 				.append(", ").append(mCategoryNameCol).append(", ").append(mCategoryRexpCol)
@@ -2226,8 +2154,8 @@ public class DbUtil {
 
 	}
 
-	public static List<Category> getTempCategoryList() {
-		List<Category> wList = new ArrayList<>();
+	public static Collection<Category> getTempCategories() {
+		Collection<Category> wList = new ArrayList<>();
 
 		String wQuery = new StringBuilder("select ").append(mCategoryIdCol).append(",")
 				.append(mCategoryNameCol).append(",").append(mCategoryRexpCol)
@@ -2302,7 +2230,7 @@ public class DbUtil {
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQuery)) {
 			wStatement.setString(1, isSelected ? "1" : "0");
 			wStatement.setInt(2, pCategory.getId());
-			System.out.println(wStatement);
+//			System.out.println(wStatement);
 			mDbAccess.executeUpdate(wStatement);
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
@@ -2331,35 +2259,35 @@ public class DbUtil {
 //		return wResult;
 //	}
 
-	public static List<Book> getBookList() {
-		List<Book> wBookList = new ArrayList<>();
-		// select BOOK_ID, BOOK_NAME, BALANCE from cbm_book where DEL_FLG = b'0'
-		// order by SORT_KEY
-		String wQuery = new StringBuilder("select ").append(mBookIdCol).append(", ")
-				.append(mBookNameCol).append(", ").append(mBookBalanceCol).append(" from ")
-				.append(mBookTable).append(" where ").append(mDelFlgCol).append(" = b'0' ")
-				.append(" order by ").append(mSortKeyCol).toString();
-
-		try (ResultSet wResultSet = mDbAccess.executeQuery(mDbAccess.getPreparedStatement(wQuery))) {
-			while (wResultSet.next()) {
-				int wBookId = wResultSet.getInt(mBookIdCol);
-				String wBookName = wResultSet.getString(mBookNameCol);
-				if (Book.getBook(wBookId) == null) {
-					Book.generateBook(wBookId, wBookName);
-				}
-				Book wBook = Book.getBook(wBookId);
-//				Book wBook = new Book(wResultSet.getInt(mBookIdCol), wResultSet
-//						.getString(mBookNameCol));
-				if (wResultSet.getInt(mBookBalanceCol) > 0) {
-					wBook.setBalance(wResultSet.getInt(mBookBalanceCol));
-				}
-				wBookList.add(wBook);
-			}
-		} catch (SQLException e) {
-			resultSetHandlingError(e);
-		}
-		return wBookList;
-	}
+//	public static List<Book> getBookList() {
+//		List<Book> wBookList = new ArrayList<>();
+//		// select BOOK_ID, BOOK_NAME, BALANCE from cbm_book where DEL_FLG = b'0'
+//		// order by SORT_KEY
+//		String wQuery = new StringBuilder("select ").append(mBookIdCol).append(", ")
+//				.append(mBookNameCol).append(", ").append(mBookBalanceCol).append(" from ")
+//				.append(mBookTable).append(" where ").append(mDelFlgCol).append(" = b'0' ")
+//				.append(" order by ").append(mSortKeyCol).toString();
+//
+//		try (ResultSet wResultSet = mDbAccess.executeQuery(mDbAccess.getPreparedStatement(wQuery))) {
+//			while (wResultSet.next()) {
+//				int wBookId = wResultSet.getInt(mBookIdCol);
+//				String wBookName = wResultSet.getString(mBookNameCol);
+//				if (Book.getBook(wBookId) == null) {
+//					Book.generateBook(wBookId, wBookName);
+//				}
+//				Book wBook = Book.getBook(wBookId);
+////				Book wBook = new Book(wResultSet.getInt(mBookIdCol), wResultSet
+////						.getString(mBookNameCol));
+//				if (wResultSet.getInt(mBookBalanceCol) > 0) {
+//					wBook.setBalance(wResultSet.getInt(mBookBalanceCol));
+//				}
+//				wBookList.add(wBook);
+//			}
+//		} catch (SQLException e) {
+//			resultSetHandlingError(e);
+//		}
+//		return wBookList;
+//	}
 
 	public static void addNewBook(String pBookName) {
 		// insert into cbm_book (BOOK_NAME) values (?)
@@ -2373,7 +2301,7 @@ public class DbUtil {
 		}
 	}
 
-	public static void updateBook(int pBookId, String pBookName, int pBalance) {
+	public static void updateBook(Book pBook, String pBookName, int pBalance) {
 		// update cbm_book set BOOK_NAME = ?, BALANCE = ? where BOOK_ID = ?
 		String wQuery = new StringBuilder("update ").append(mBookTable).append(" set ")
 				.append(mBookNameCol).append(" = ?, ").append(mBookBalanceCol).append(" = ?")
@@ -2381,20 +2309,20 @@ public class DbUtil {
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQuery)) {
 			wStatement.setString(1, pBookName);
 			wStatement.setInt(2, pBalance);
-			wStatement.setInt(3, pBookId);
+			wStatement.setInt(3, pBook.getId());
 			mDbAccess.executeUpdate(wStatement);
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
 		}
 	}
 
-	public static void removeBook(int pBookId) {
+	public static void removeBook(Book pBook) {
 		// update cbm_book set DEL_FLG = b'1' where BOOK_ID = ?
 		String wQuery = new StringBuilder("update ").append(mBookTable).append(" set ")
 				.append(mDelFlgCol).append(" = b'1' ").append(" where ").append(mBookIdCol)
 				.append(" = ?").toString();
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQuery)) {
-			wStatement.setInt(1, pBookId);
+			wStatement.setInt(1, pBook.getId());
 			mDbAccess.executeUpdate(wStatement);
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
@@ -2432,8 +2360,11 @@ public class DbUtil {
 		}
 	}
 
-	public static RecordTableItem[][] getSearchedRecordTableItemList(String pQueryString) {
-		RecordTableItem[][] result = new RecordTableItem[2][];
+	public static RecordTableItemCollection getSearchedRecordTableItemList(String pQueryString) {
+		Collection<RecordTableItem> wRecordsPast = Collections.emptyList();
+		Collection<RecordTableItem> wRecordsFuture = Collections.emptyList();
+//		RecordTableItem[][] result = new RecordTableItem[2][];
+		
 		Date wDate = new Date();
 		pQueryString = pQueryString.replaceAll("%","\\\\%").replaceAll("_","\\\\_").replaceAll("\\\\","\\\\\\\\");
 		String wFrom = " from " + mItemTable + " inner join " + mActTable 
@@ -2464,24 +2395,27 @@ public class DbUtil {
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBase + wQueryPeriodBefore + wQueryOrder)) {
 			wStatement.setString(1, "%" + pQueryString + "%");
 			wStatement.setString(2, mDateFormat.format(wDate));
-			System.out.println(wStatement);
-			result[0] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wStatement));
+//			System.out.println(wStatement);
+//			result[0] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wStatement));
+			wRecordsPast = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wStatement));
+
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
 		}
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBase + wQueryPeriodAfter + wQueryOrder)) {
 			wStatement.setString(1, "%" + pQueryString + "%");
 			wStatement.setString(2, mDateFormat.format(wDate));
-			result[1] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wStatement));
+//			result[1] = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wStatement));
+			wRecordsFuture = getRecordTableItemFromResultSet(mDbAccess.executeQuery(wStatement));
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
 		}
 
-		return result;
+		return new RecordTableItemCollection(wRecordsPast, wRecordsFuture);
 	}
 
-	private static RecordTableItem[] getRecordTableItemFromResultSet(ResultSet pResultSet) {
-		List<RecordTableItem> wList = new ArrayList<RecordTableItem>();
+	private static Collection<RecordTableItem> getRecordTableItemFromResultSet(ResultSet pResultSet) {
+		Collection<RecordTableItem> wList = new ArrayList<RecordTableItem>();
 		try {
 			while (pResultSet.next()) {
 				wList.add(generateRecordTableItem(pResultSet));
@@ -2498,7 +2432,8 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		} finally {
 		}
-		return wList.toArray(new RecordTableItem[0]);
+//		return wList.toArray(new RecordTableItem[0]);
+		return wList;
 	}
 
 	private static int getBalance(Date pEndDate, Book pBook, boolean pIncludeEndDate) {

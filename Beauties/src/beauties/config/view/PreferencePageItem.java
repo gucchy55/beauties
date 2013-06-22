@@ -1,7 +1,7 @@
 package beauties.config.view;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
@@ -19,6 +19,7 @@ import org.eclipse.swt.widgets.Label;
 
 import beauties.common.lib.DbUtil;
 import beauties.common.model.Book;
+import beauties.common.model.Category;
 import beauties.common.view.MyFillLayout;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
@@ -325,20 +326,22 @@ class PreferencePageItem extends PreferencePage {
 	}
 
 	private void updateAttributeButtons(ConfigItem pConfigItem) {
+		Collection<Category> wSpecialCategories = DbUtil.getSpecialCategories();
+		Collection<Category> wTempCategories = DbUtil.getTempCategories();
 		if (pConfigItem.isSpecial() || pConfigItem.isCategory()) {
 			for (Map.Entry<Button, Book> entry : mBookButtonMap.entrySet()) {
 				Button wButton = entry.getKey();
 				wButton.setVisible(false);
 			}
 			if (pConfigItem.isCategory()) {
-				mSpecialIncomeExpenseButton.setSelection(DbUtil.getSpecialCategorys()
+				mSpecialIncomeExpenseButton.setSelection(wSpecialCategories
 						.contains(pConfigItem.getCategory()));
-				mTempIncomeExpenseButton.setSelection(DbUtil.getTempCategoryList().contains(
+				mTempIncomeExpenseButton.setSelection(wTempCategories.contains(
 						pConfigItem.getCategory()));
 			}
 
 		} else {
-			List<Book> wBookList = DbUtil.getRelatedBookList(pConfigItem);
+			Collection<Book> wBookList = DbUtil.getRelatedBooks(pConfigItem);
 			for (Map.Entry<Button, Book> entry : mBookButtonMap.entrySet()) {
 				Button wButton = entry.getKey();
 				wButton.setVisible(true);

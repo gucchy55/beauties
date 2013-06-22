@@ -29,12 +29,15 @@ public class SummaryTableItemFactory {
 	public static SummaryTableItem createItem(Item pItem, int pValue) {
 		return new SummaryTableItemNormalItem(pItem, pValue);
 	}
-	public static SummaryTableItem createCategory(String pName, int pValue, int pCategoryId) {
-		return new SummaryTableItemCategory(pName, pValue, pCategoryId);
-	}
 	
-	public static SummaryTableItem createItem(String pName, int pValue, int pItemId) {
-		return new SummaryTableItemNormalItem(pName, pValue, pItemId);
-	}
+//	@Deprecated
+//	public static SummaryTableItem createCategory(String pName, int pValue, Category pCategory) {
+//		return new SummaryTableItemCategory(pName, pValue, pCategory);
+//	}
+//	
+//	@Deprecated
+//	public static SummaryTableItem createItem(String pName, int pValue, Item pItem) {
+//		return new SummaryTableItemNormalItem(pName, pValue, pItem);
+//	}
 	
 }

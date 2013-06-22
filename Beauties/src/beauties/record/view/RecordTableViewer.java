@@ -2,15 +2,15 @@ package beauties.record.view;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.DoubleClickEvent;
 import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
@@ -34,7 +34,7 @@ import beauties.record.model.RecordTableItem;
 class RecordTableViewer extends TableViewer {
 
 	private RecordController mCTL;
-	private RecordTableItem[] mRecordTableItems;
+	private Collection<RecordTableItem> mRecordTableItems;
 
 	private TableColumn mBookCol;
 	private TableColumn mDateCol;
@@ -92,11 +92,12 @@ class RecordTableViewer extends TableViewer {
 		addListeners();
 	}
 
-	void setRecordTableItem(RecordTableItem[] pRecordTableItems) {
+	void setRecordTableItem(Collection<RecordTableItem> pRecordTableItems) {
 
 		mRecordTableItems = pRecordTableItems;
 
-		this.setContentProvider(new TableContentProvider());
+//		this.setContentProvider(new TableContentProvider());
+		this.setContentProvider(ArrayContentProvider.getInstance());
 		this.setInput(mRecordTableItems);
 
 		this.setLabelProvider(new TableLabelProvider(mCTL));
@@ -207,7 +208,7 @@ class RecordTableViewer extends TableViewer {
 		// }
 	}
 
-	void updateTableItem(RecordTableItem[] pRecordTableItems) {
+	void updateTableItem(Collection<RecordTableItem> pRecordTableItems) {
 		mRecordTableItems = pRecordTableItems;
 		this.setInput(mRecordTableItems);
 		this.refresh();
@@ -215,21 +216,21 @@ class RecordTableViewer extends TableViewer {
 	}
 }
 
-class TableContentProvider implements IStructuredContentProvider {
-	@Override
-	public Object[] getElements(Object inputElement) {
-		RecordTableItem[] wRecordTableItems = (RecordTableItem[]) inputElement;
-		return wRecordTableItems;
-	}
-
-	@Override
-	public void dispose() {
-	}
-
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-	}
-}
+//class TableContentProvider implements IStructuredContentProvider {
+//	@Override
+//	public Object[] getElements(Object inputElement) {
+//		RecordTableItem[] wRecordTableItems = (RecordTableItem[]) inputElement;
+//		return wRecordTableItems;
+//	}
+//
+//	@Override
+//	public void dispose() {
+//	}
+//
+//	@Override
+//	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+//	}
+//}
 
 class TableLabelProvider implements ITableLabelProvider {
 	private static DateFormat mDateFormat = new SimpleDateFormat("MM/dd");

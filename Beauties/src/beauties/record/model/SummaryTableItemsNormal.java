@@ -1,6 +1,7 @@
 package beauties.record.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -16,7 +17,7 @@ public class SummaryTableItemsNormal {
 	private List<SummaryTableItem> mItems;
 	private Map<Category, List<SummaryTableItem>> mCategoryItemMap;
 	
-	List<SummaryTableItem> mSummaryTableItems;
+	Collection<SummaryTableItem> mSummaryTableItems;
 	
 	public SummaryTableItemsNormal(int pAppearedIncome, int pAppearedExpense, List<SummaryTableItem> pItems) {
 		mAppearedProfit = SummaryTableItemFactory.createAppearedProfit("みかけ収支", pAppearedIncome - pAppearedExpense); 
@@ -39,7 +40,7 @@ public class SummaryTableItemsNormal {
 		mCategoryItemMap.clear();
 	}
 	
-	public List<SummaryTableItem> getItems() {
+	public Collection<SummaryTableItem> getItems() {
 		return mSummaryTableItems;
 	}
 	

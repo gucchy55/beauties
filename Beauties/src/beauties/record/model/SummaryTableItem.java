@@ -133,16 +133,17 @@ class SummaryTableItemAppearedExpense extends SummaryTableItem {
 
 class SummaryTableItemCategory extends SummaryTableItem {
 	
-	private final int mCategoryId;
+	private final Category mCategory;
 
-	SummaryTableItemCategory(String pName, int pValue, int pCategoryId) {
-		super(pName, pValue);
-		mCategoryId = pCategoryId;
-	}
+//	@Deprecated
+//	SummaryTableItemCategory(String pName, int pValue, Category pCategory) {
+//		super(pName, pValue);
+//		mCategory = pCategory;
+//	}
 	
 	SummaryTableItemCategory(Category pCategory, int pValue) {
 		super(pCategory, pValue);
-		mCategoryId = pCategory.getId();
+		mCategory = pCategory;
 	}
 
 	@Override
@@ -152,22 +153,23 @@ class SummaryTableItemCategory extends SummaryTableItem {
 
 	@Override
 	public ViewerFilter getRecordTableItemFilter() {
-		return RecordFilterPool.getCategory(mCategoryId);
+		return RecordFilterPool.getCategory(mCategory);
 	}
 	
 }
 
 class SummaryTableItemNormalItem extends SummaryTableItem {
 	
-	private final int mItemId;
+	private final Item mItem;
 
-	SummaryTableItemNormalItem(String pName, int pValue, int pItemId) {
-		super("  " + pName, pValue);
-		mItemId = pItemId;
-	}
+//	@Deprecated
+//	SummaryTableItemNormalItem(String pName, int pValue, Item pItem) {
+//		super("  " + pName, pValue);
+//		mItem = pItem;
+//	}
 	public SummaryTableItemNormalItem(Item pItem, int pValue) {
 		super(pItem, pValue);
-		mItemId = pItem.getId();
+		mItem = pItem;
 	}
 
 	@Override
@@ -177,7 +179,7 @@ class SummaryTableItemNormalItem extends SummaryTableItem {
 
 	@Override
 	public ViewerFilter getRecordTableItemFilter() {
-		return RecordFilterPool.getItem(mItemId);
+		return RecordFilterPool.getItem(mItem);
 	}
 	
 }

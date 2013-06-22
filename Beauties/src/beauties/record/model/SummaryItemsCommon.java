@@ -1,7 +1,7 @@
 package beauties.record.model;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Collection;
 
 public class SummaryItemsCommon {
 	private static final String wOperatingProfitName = "営業収支";
@@ -14,7 +14,7 @@ public class SummaryItemsCommon {
 	private SummaryTableItem mActualBalance;
 	private SummaryTableItem mTempBalance;
 	
-	private List<SummaryTableItem> mList;
+	private Collection<SummaryTableItem> mList;
 	
 	private void setOperatingProfit(int pOperatingProfit) {
 		mOperatingProfit = SummaryTableItemFactory.createOriginal(wOperatingProfitName, pOperatingProfit);
@@ -41,7 +41,7 @@ public class SummaryItemsCommon {
 		return mTempBalance;
 	}
 	
-	public List<SummaryTableItem> getList() {
+	public Collection<SummaryTableItem> getList() {
 		if (mList == null) {
 			mList = new ArrayList<>();
 			mList.add(mOperatingProfit);

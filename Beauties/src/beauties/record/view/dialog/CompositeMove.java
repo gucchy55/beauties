@@ -1,10 +1,8 @@
 package beauties.record.view.dialog;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -19,6 +17,7 @@ import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
 import beauties.common.model.Book;
 import beauties.common.model.Item;
+import beauties.common.view.MyComboViewer;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
 import beauties.record.model.RecordTableItem;
@@ -37,10 +36,10 @@ class CompositeMove extends Composite {
 	private Collection<Book> mBooks;
 
 	// Map of ComboIndex & ID
-	private List<Integer> mBookIdList = new ArrayList<Integer>();
+//	private List<Integer> mBookIdList = new ArrayList<Integer>();
 
-	private Combo mBookFromCombo;
-	private Combo mBookToCombo;
+	private MyComboViewer<Book> mBookFromCombo;
+	private MyComboViewer<Book> mBookToCombo;
 	private DateTime mDateTime;
 	private Spinner mValueSpinner;
 	private Spinner mFrequencySpinner;
@@ -132,35 +131,36 @@ class CompositeMove extends Composite {
 	}
 
 	private void setBookCombos() {
+		mBookFromCombo.setInput(mBooks);
+		mBookToCombo.setInput(mBooks);
+//		for (Book wBook : mBooks) {
+//			mBookIdList.add(wBook.getId());
+//			mBookFromCombo.add(wBook.getName());
+//			mBookToCombo.add(wBook.getName());
+//		}
+		mBookToCombo.setSelection(mBook);
 		for (Book wBook : mBooks) {
-			mBookIdList.add(wBook.getId());
-			mBookFromCombo.add(wBook.getName());
-			mBookToCombo.add(wBook.getName());
-		}
-		mBookToCombo.select(mBookIdList.indexOf(mBook));
-		for (int wBookId : mBookIdList) {
-			if (wBookId != mBook.getId()) {
-				mBookFromCombo.select(mBookIdList.indexOf(wBookId));
+			if (!wBook.equals(mBook)) {
+				mBookFromCombo.setSelection(wBook);
 				break;
 			}
 		}
-
-		mBookFromCombo.setVisibleItemCount(mVisibleComboItemCount);
-		mBookToCombo.setVisibleItemCount(mVisibleComboItemCount);
+		mBookFromCombo.getCombo().setVisibleItemCount(mVisibleComboItemCount);
+		mBookToCombo.getCombo().setVisibleItemCount(mVisibleComboItemCount);
 	}
 
 	private void createToBookCombo() {
 		Label wBookToLabel = new Label(this, SWT.NONE);
 		wBookToLabel.setText("移動先");
 
-		mBookToCombo = new Combo(this, SWT.READ_ONLY);
+		mBookToCombo = new MyComboViewer<>(this, SWT.READ_ONLY);
 	}
 
 	private void createFromBookCombo() {
 		Label wBookFromLabel = new Label(this, SWT.NONE);
 		wBookFromLabel.setText("移動元");
 
-		mBookFromCombo = new Combo(this, SWT.READ_ONLY);
+		mBookFromCombo = new MyComboViewer<>(this, SWT.READ_ONLY);
 	}
 
 	private void createDateTime() {
@@ -181,8 +181,8 @@ class CompositeMove extends Composite {
 		mDateTime.setMonth(wCal.get(Calendar.MONTH));
 		mDateTime.setDay(wCal.get(Calendar.DAY_OF_MONTH));
 
-		mBookFromCombo.select(mBookIdList.indexOf(mExpenseRecord.getBook()));
-		mBookToCombo.select(mBookIdList.indexOf(mIncomeRecord.getBook()));
+		mBookFromCombo.setSelection(mExpenseRecord.getBook());
+		mBookToCombo.setSelection(mIncomeRecord.getBook());
 
 		mValueSpinner.setSelection(mIncomeRecord.getIncome());
 		mFrequencySpinner.setSelection(mIncomeRecord.getFrequency());
@@ -213,23 +213,23 @@ class CompositeMove extends Composite {
 	}
 
 	public boolean isValidInput() {
-		return (mValueSpinner.getSelection() > 0 && !mBookFromCombo
-				.getText().equals(mBookToCombo.getText()));
+		return mValueSpinner.getSelection() > 0 
+				&& !mBookFromCombo.getSelectedItem().equals(mBookToCombo.getSelectedItem());
 	}
 
-	private int getSelectedFromBookId() {
-		return mBookIdList.get(mBookFromCombo.getSelectionIndex());
-	}
-
-	private int getSelectedToBookId() {
-		return mBookIdList.get(mBookToCombo.getSelectionIndex());
-	}
+//	private int getSelectedFromBookId() {
+//		return mBookIdList.get(mBookFromCombo.getSelectionIndex());
+//	}
+//
+//	private int getSelectedToBookId() {
+//		return mBookIdList.get(mBookToCombo.getSelectionIndex());
+//	}
 
 	private RecordTableItemForMove createNewMoveItem() {
-		Book wBook = Book.getBook(getSelectedToBookId());
+//		Book wBook = Book.getBook(getSelectedToBookId());
 		
-		return new RecordTableItemForMove(getSelectedFromBookId(),
-				new RecordTableItem.Builder(wBook, Item.getUndefinedItem(),
+		return new RecordTableItemForMove(mBookFromCombo.getSelectedItem(),
+				new RecordTableItem.Builder(mBookToCombo.getSelectedItem(), Item.getUndefinedItem(),
 						new GregorianCalendar(mDateTime.getYear(), mDateTime.getMonth(), mDateTime
 								.getDay()).getTime())
 						.income(mValueSpinner.getSelection())

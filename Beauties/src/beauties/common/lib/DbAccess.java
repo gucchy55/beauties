@@ -28,7 +28,8 @@ class DbAccess {
 		mDb = SystemData.getDbName();
 		mUser = SystemData.getDbUser();
 		mPass = SystemData.getDbPass();
-		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb;
+		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb + "?useServerPrepStmts=true";
+
 		try {
 			mCon = DriverManager.getConnection(mUrl, mUser, mPass);
 		} catch (SQLException e) {
@@ -60,7 +61,7 @@ class DbAccess {
 //	}
 
 	void executeUpdate(PreparedStatement pPreparedStatement) {
-		System.out.println(pPreparedStatement);
+//		System.out.println(pPreparedStatement);
 		try {
 			pPreparedStatement.executeUpdate();
 			if(!SystemData.getDbUpdated())
@@ -90,7 +91,7 @@ class DbAccess {
 //	}
 	
 	ResultSet executeQuery(PreparedStatement pPreparedStatement) {
-		System.out.println(pPreparedStatement);
+//		System.out.println(pPreparedStatement);
 		try {
 			mResultSet = pPreparedStatement.executeQuery();
 

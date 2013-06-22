@@ -114,17 +114,26 @@ public class ConfigItem {
 		}
 		ConfigItem wParent = this.getParent();
 		List<ConfigItem> wChildren = wParent.getChildren();
-		for (int i = 1; i < wChildren.size(); i++) {
-			ConfigItem ci = wChildren.get(i);
-//			if (ci.getId() != this.mId) {
-			if (ci.equals(this)) {
-				continue;
-			}
-			wChildren.set(i, wChildren.get(i - 1));
-			wChildren.set(i - 1, this);
-			wParent.setItems(wChildren);
+		int wThisIndex = wChildren.indexOf(this);
+		if (wThisIndex == 0) {
 			return;
 		}
+		ConfigItem wPre = wChildren.get(wThisIndex - 1);
+		
+		wChildren.set(wThisIndex, wPre);
+		wChildren.set(wThisIndex - 1, this);
+		wParent.setItems(wChildren);
+//		for (int i = 1; i < wChildren.size(); i++) {
+//			ConfigItem ci = wChildren.get(i);
+////			if (ci.getId() != this.mId) {
+//			if (ci.equals(this)) {
+//				continue;
+//			}
+//			wChildren.set(i, wChildren.get(i - 1));
+//			wChildren.set(i - 1, this);
+//			wParent.setItems(wChildren);
+//			return;
+//		}
 	}
 
 	public void moveDown() {
@@ -133,17 +142,26 @@ public class ConfigItem {
 		}
 		ConfigItem wParent = this.getParent();
 		List<ConfigItem> wChildren = wParent.getChildren();
-		for (int i = 0; i < wChildren.size() - 1; i++) {
-			ConfigItem ci = wChildren.get(i);
-//			if (ci.getId() != this.mId)
-			if (ci.equals(this)) {
-				continue;
-			}
-			wChildren.set(i, wChildren.get(i + 1));
-			wChildren.set(i + 1, this);
-			wParent.setItems(wChildren);
+		int wThisIndex = wChildren.indexOf(this);
+		if (wThisIndex == wChildren.size() - 1) {
 			return;
 		}
+		ConfigItem wNext = wChildren.get(wThisIndex + 1);
+		
+		wChildren.set(wThisIndex, wNext);
+		wChildren.set(wThisIndex + 1, this);
+		wParent.setItems(wChildren);
+//		for (int i = 0; i < wChildren.size() - 1; i++) {
+//			ConfigItem ci = wChildren.get(i);
+////			if (ci.getId() != this.mId)
+//			if (ci.equals(this)) {
+//				continue;
+//			}
+//			wChildren.set(i, wChildren.get(i + 1));
+//			wChildren.set(i + 1, this);
+//			wParent.setItems(wChildren);
+//			return;
+//		}
 	}
 
 	public Category getCategory() {

@@ -1,6 +1,6 @@
 package beauties.record.model;
 
-import java.util.List;
+import java.util.Collection;
 
 public class SummaryTableItemCollection {
 	private SummaryItemsCommon mItemsCommon;
@@ -11,8 +11,8 @@ public class SummaryTableItemCollection {
 		mItemsNormal = pItemsNormal;
 	}
 	
-	public List<SummaryTableItem> getList() {
-		List<SummaryTableItem> wList = mItemsCommon.getList();
+	public Collection<SummaryTableItem> getList() {
+		Collection<SummaryTableItem> wList = mItemsCommon.getList();
 		wList.addAll(mItemsNormal.getItems());
 		return wList;
 	}

@@ -4,6 +4,9 @@ package beauties.record.model;
 import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.viewers.ViewerFilter;
 
+import beauties.common.model.Category;
+import beauties.common.model.Item;
+
 public class RecordFilterPool {
 	private static RecordFilterDefault mRecordFilterDefault;
 	private static RecordFilterAllIncome mRecordFilterAllIncome;
@@ -30,17 +33,17 @@ public class RecordFilterPool {
 		return mRecordFilterAllExpense;
 	}
 	
-	public static ViewerFilter getCategory(int pCategoryId) {
+	public static ViewerFilter getCategory(Category pCategory) {
 		if (mRecordFilterCategory == null)
 			mRecordFilterCategory = new RecordFilterCategory();
-		mRecordFilterCategory.setCategoryId(pCategoryId);
+		mRecordFilterCategory.setCategory(pCategory);
 		return mRecordFilterCategory;
 	}
 	
-	public static ViewerFilter getItem(int pItemId) {
+	public static ViewerFilter getItem(Item pItem) {
 		if (mRecordFilterItem == null)
 			mRecordFilterItem = new RecordFilterItem();
-		mRecordFilterItem.setItemId(pItemId);
+		mRecordFilterItem.setItem(pItem);
 		return mRecordFilterItem;
 	}
 
@@ -70,29 +73,32 @@ class RecordFilterAllExpense extends ViewerFilter {
 }
 
 class RecordFilterCategory extends ViewerFilter {
-	private int mCategoryId;
+	private Category mCategory;
 
-	void setCategoryId(int pCategoryId) {
-		mCategoryId = pCategoryId;
+	void setCategory(Category pCategory) {
+		mCategory = pCategory;
 	}
 
 	@Override
 	public boolean select(Viewer arg0, Object arg1, Object arg2) {
 		RecordTableItem wItem = (RecordTableItem) arg2;
-		return wItem.getCategoryId() == mCategoryId;
+		if (wItem.getCategory() == null) {
+			return false;
+		}
+		return wItem.getCategory().equals(mCategory);
 	}
 }
 
 class RecordFilterItem extends ViewerFilter {
-	private int mItemId;
+	private Item mItem;
 
-	void setItemId(int pItemId) {
-		mItemId = pItemId;
+	void setItem(Item pItem) {
+		mItem = pItem;
 	}
 
 	@Override
 	public boolean select(Viewer arg0, Object arg1, Object arg2) {
 		RecordTableItem wItem = (RecordTableItem) arg2;
-		return wItem.getItem().getId() == mItemId;
+		return wItem.getItem().equals(mItem);
 	}
 }

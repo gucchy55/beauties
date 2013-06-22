@@ -1,8 +1,7 @@
 package beauties.config.view;
 
-import java.util.ArrayList;
+import java.util.Collection;
 import java.util.EnumSet;
-import java.util.List;
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
@@ -90,7 +89,7 @@ class CompositeNewItem extends Composite {
 //	private Map<Integer, String> mCategoryNameMap;
 
 	// Map of ComboIndex & ID
-	private List<Category> mCategoryList = new ArrayList<>();
+	private Collection<Category> mCategories;
 
 	private MyComboViewer<IncomeExpenseType> mIncomeExpenseComboViewer;
 	private MyComboViewer<Category> mCategoryCombo;
@@ -174,7 +173,7 @@ class CompositeNewItem extends Composite {
 		if (!isCategory) {
 			Category wCategory = mConfigItem.getParent().getCategory();
 
-			if (!mCategoryList.contains(wCategory)) {
+			if (!mCategories.contains(wCategory)) {
 				mIncomeExpenseType = mIncomeExpenseType == IncomeExpenseType.INCOME ? 
 						IncomeExpenseType.EXPENCE : IncomeExpenseType.INCOME;
 				updateCategoryCombo();
@@ -197,8 +196,8 @@ class CompositeNewItem extends Composite {
 
 	private void updateCategoryCombo() {
 //		mCategoryNameMap = DbUtil.getAllCategoryNameMap(mIncomeExpenseType);
-		mCategoryList = DbUtil.getAllCategorys(mIncomeExpenseType);
-		mCategoryCombo.setInput(mCategoryList);
+		mCategories = DbUtil.getAllCategorys(mIncomeExpenseType);
+		mCategoryCombo.setInput(mCategories);
 		mCategoryCombo.getCombo().update();
 //		mCategoryCombo.getCombo().removeAll();
 //		mCategoryIdList.clear();

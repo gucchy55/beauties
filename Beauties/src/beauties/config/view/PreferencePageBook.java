@@ -1,5 +1,7 @@
 package beauties.config.view;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -8,15 +10,14 @@ import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferencePage;
+import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelection;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
-import org.eclipse.jface.viewers.Viewer;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
@@ -57,7 +58,7 @@ class PreferencePageBook extends PreferencePage {
 
 	PreferencePageBook() {
 		setTitle("帳簿設定");
-		mBookList = DbUtil.getBookList();
+		mBookList = new ArrayList<>(DbUtil.getBooks());
 		mItemButtonMap = new HashMap<>();
 	}
 
@@ -133,7 +134,7 @@ class PreferencePageBook extends PreferencePage {
 				InputDialog wInputDialog = new InputDialog(getShell(), "帳簿名変更", "",
 						wBook.getName(), null);
 				if (wInputDialog.open() == Window.OK) {
-					DbUtil.updateBook(wBook.getId(), wInputDialog.getValue(), wBook.getBalance());
+					DbUtil.updateBook(wBook, wInputDialog.getValue(), wBook.getBalance());
 					int wIndex = mTableViewerBooks.getTable().getSelectionIndex();
 					updateBookTableWithDb();
 					mTableViewerBooks.getTable().setSelection(wIndex);
@@ -156,7 +157,7 @@ class PreferencePageBook extends PreferencePage {
 						.openConfirm(getShell(), "帳簿削除", wBook.getName() + " - 本当に削除しますか？"))
 					return;
 				
-				DbUtil.removeBook(wBook.getId());
+				DbUtil.removeBook(wBook);
 				updateBookTableWithDb();
 				if (getSelectedBook() == null)
 					return;
@@ -182,7 +183,6 @@ class PreferencePageBook extends PreferencePage {
 					mOrderChanged = true;
 					updateBookTable();
 				}
-
 			}
 		});
 	}
@@ -240,8 +240,8 @@ class PreferencePageBook extends PreferencePage {
 		wBookNameCol.setText("BookName");
 		wBookNameCol.pack();
 
-		mTableViewerBooks.setContentProvider(new TableContentProvider());
-		mTableViewerBooks.setInput(mBookList.toArray(new Book[0]));
+		mTableViewerBooks.setContentProvider(ArrayContentProvider.getInstance());
+		mTableViewerBooks.setInput(mBookList);
 
 		mTableViewerBooks.setLabelProvider(new TableLabelProvider());
 		addSelectionListenerToBookTable();
@@ -378,7 +378,9 @@ class PreferencePageBook extends PreferencePage {
 	}
 
 	private void updateBookTableWithDb() {
-		mBookList = DbUtil.getBookList();
+		mBookList.clear();
+		mBookList.addAll(DbUtil.getBooks());
+//		mBookList = DbUtil.getBookList();
 		updateBookTable();
 	}
 
@@ -390,7 +392,7 @@ class PreferencePageBook extends PreferencePage {
 	private void updateAttributeButtons(Book pBook) {
 		updateBalanceLabel();
 //		List<Item> wItems = DbUtil.getRelatedItems(getSelectedBook());
-		List<Item> wItems = DbUtil.getRelatedItems(pBook);
+		Collection<Item> wItems = DbUtil.getRelatedItems(pBook);
 		for (Map.Entry<Button, Item> entry : mItemButtonMap.entrySet()) {
 			entry.getKey().setSelection(wItems.contains(entry.getValue()));
 		}
@@ -409,21 +411,21 @@ class PreferencePageBook extends PreferencePage {
 
 }
 
-class TableContentProvider implements IStructuredContentProvider {
-	@Override
-	public Object[] getElements(Object inputElement) {
-		Book[] wBooks = (Book[]) inputElement;
-		return wBooks;
-	}
-
-	@Override
-	public void dispose() {
-	}
-
-	@Override
-	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-	}
-}
+//class TableContentProvider implements IStructuredContentProvider {
+//	@Override
+//	public Object[] getElements(Object inputElement) {
+//		Book[] wBooks = (Book[]) inputElement;
+//		return wBooks;
+//	}
+//
+//	@Override
+//	public void dispose() {
+//	}
+//
+//	@Override
+//	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
+//	}
+//}
 
 class TableLabelProvider implements ITableLabelProvider {
 	@Override

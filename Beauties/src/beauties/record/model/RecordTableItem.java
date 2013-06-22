@@ -6,6 +6,7 @@ import java.util.Date;
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
 import beauties.common.model.Book;
+import beauties.common.model.Category;
 import beauties.common.model.Item;
 
 
@@ -92,12 +93,12 @@ public final class RecordTableItem {
 //		return SystemData.getItemName(mItem);
 //	}
 
-	public int getCategoryId() {
+	public Category getCategory() {
 		// return mCategoryId;
-		if (this.isBalanceRow)
-			return SystemData.getUndefinedInt();
+//		if (this.isBalanceRow)
+//			return SystemData.getUndefinedInt();
 //		return SystemData.getCategoryByItemId(mItem);
-		return mItem.getCategory().getId();
+		return mItem.getCategory();
 	}
 
 	public int getGroupId() {
