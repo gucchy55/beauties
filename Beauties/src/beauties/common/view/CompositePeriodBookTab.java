@@ -13,6 +13,7 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
 import beauties.common.lib.SystemData;
+import beauties.common.model.Book;
 
 public class CompositePeriodBookTab extends Composite {
 
@@ -95,25 +96,25 @@ public class CompositePeriodBookTab extends Composite {
 	}
 
 	private void createBookNameComp() {
-		mBookNameComp = new CompositeBookNames(this, mCTL.getBookId());
-		mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setSelection(true);
-		mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setBackground(
+		mBookNameComp = new CompositeBookNames(this, mCTL.getBook());
+		mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setSelection(true);
+		mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setBackground(
 				SystemData.getColorYellow());
 
-		for (Map.Entry<Integer, Button> entry : mBookNameComp.getBookButtonMap().entrySet()) {
-			final int wBookId = entry.getKey();
+		for (Map.Entry<Book, Button> entry : mBookNameComp.getBookButtonMap().entrySet()) {
+			final Book wBook = entry.getKey();
 			Button wButton = entry.getValue();
 			wButton.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
-					if (mCTL.getBookId() == wBookId) {
+					if (mCTL.getBook().equals(wBook)) {
 						((Button) e.getSource()).setSelection(true);
 						return;
 					}
-					mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setSelection(false);
-					mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setBackground(null);
-					mCTL.setBookId(wBookId);
-					mBookNameComp.getBookButtonMap().get(mCTL.getBookId()).setBackground(
+					mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setSelection(false);
+					mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setBackground(null);
+					mCTL.setBook(wBook);
+					mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setBackground(
 							SystemData.getColorYellow());
 					mCTL.updateTable();
 				}

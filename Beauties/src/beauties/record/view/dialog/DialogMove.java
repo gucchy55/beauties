@@ -8,17 +8,18 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
+import beauties.common.model.Book;
 import beauties.record.model.RecordTableItem;
 
 public class DialogMove extends Dialog {
 
 	private CompositeMove mCompositeMove;
-	private int mBookId;
+	private Book mBook;
 	private RecordTableItem mRecordTableItem;
 	
-	public DialogMove(Shell parentShell, int pBookId) {
+	public DialogMove(Shell parentShell, Book pBook) {
 		super(parentShell);
-		mBookId = pBookId;
+		mBook = pBook;
 	}
 	
 	public DialogMove(Shell parentShell, RecordTableItem pRecordTableItem) {
@@ -29,7 +30,7 @@ public class DialogMove extends Dialog {
 	@Override
 	protected Control createDialogArea(Composite parent) {
 		if (mRecordTableItem == null) {
-			mCompositeMove = new CompositeMove(parent, mBookId);
+			mCompositeMove = new CompositeMove(parent, mBook);
 			return mCompositeMove;
 		} else {
 			mCompositeMove = new CompositeMove(parent, mRecordTableItem);

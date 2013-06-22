@@ -8,21 +8,23 @@ import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Shell;
 
+import beauties.common.model.Book;
+
 public class DialogNewRecord extends Dialog {
 
 	private CompositeRecord mCompositeRecord;
 	private int mReturnCode = IDialogConstants.CANCEL_ID;
 	
-	private int mBookId;
+	private Book mBook;
 	
-	public DialogNewRecord(Shell parentShell, int pBookId) {
+	public DialogNewRecord(Shell parentShell, Book pBook) {
 		super(parentShell);
-		mBookId = pBookId;
+		mBook = pBook;
 	}
 
 	@Override
 	protected Control createDialogArea(Composite parent) {
-		mCompositeRecord = new CompositeRecord(parent, mBookId);
+		mCompositeRecord = new CompositeRecord(parent, mBook);
 		return mCompositeRecord;
 	}
 

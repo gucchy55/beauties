@@ -5,15 +5,17 @@ import java.util.Date;
 
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
+import beauties.common.model.Book;
+import beauties.common.model.Item;
 
 
 
 public final class RecordTableItem {
 	// 日付 項目 収支 残高 回数 備考
 	private final int mId;
-	private final int mBookId;
+	private final Book mBook;
 	private final Date mDate;
-	private final int mItemId;
+	private final Item mItem;
 	private final int mIncome;
 	private final int mExpense;
 	private final int mGroupId;
@@ -29,9 +31,9 @@ public final class RecordTableItem {
 	
 	private RecordTableItem(Builder builder) {
 		this.mId = builder.mActId;
-		this.mBookId = builder.mBookId;
+		this.mBook = builder.mBook;
 		this.mDate = builder.mDate;
-		this.mItemId = builder.mItemId;
+		this.mItem = builder.mItem;
 		this.mGroupId = builder.mGroupId;
 		this.mIncome = builder.mIncome;
 		this.mExpense = builder.mExpense;
@@ -43,9 +45,17 @@ public final class RecordTableItem {
 	
 	private RecordTableItem(Date pDate, int pBalance) {
 		this.mId = SystemData.getUndefinedInt();
-		this.mBookId = SystemData.getUndefinedInt();
+		if (Book.getBook(SystemData.getUndefinedInt()) == null) {
+			Book.generateBook(SystemData.getUndefinedInt(), "");
+		}
+//		this.mBook = SystemData.getUndefinedInt();
+		this.mBook = Book.getBook(SystemData.getUndefinedInt());
 		this.mDate = pDate;
-		this.mItemId = SystemData.getUndefinedInt();
+		if (Item.getItem(SystemData.getUndefinedInt()) == null) {
+			Item.generateItem(SystemData.getUndefinedInt(), mBalanceItem, null);
+		}
+//		this.mItem = SystemData.getUndefinedInt();
+		this.mItem = Item.getItem(SystemData.getUndefinedInt());
 		this.mGroupId = SystemData.getUndefinedInt();
 		this.mIncome = 0;
 		this.mExpense = 0;
@@ -64,29 +74,30 @@ public final class RecordTableItem {
 		return mId;
 	}
 
-	public int getBookId() {
-		return mBookId;
+	public Book getBook() {
+		return mBook;
 	}
 
 	public Date getDate() {
 		return mDate;
 	}
 
-	public int getItemId() {
-		return mItemId;
+	public Item getItem() {
+		return mItem;
 	}
 
-	public String getItemName() {
-		if (this.isBalanceRow)
-			return mBalanceItem;
-		return SystemData.getItemName(mItemId);
-	}
+//	public String getItemName() {
+//		if (this.isBalanceRow)
+//			return mBalanceItem;
+//		return SystemData.getItemName(mItem);
+//	}
 
 	public int getCategoryId() {
 		// return mCategoryId;
 		if (this.isBalanceRow)
 			return SystemData.getUndefinedInt();
-		return SystemData.getCategoryByItemId(mItemId);
+//		return SystemData.getCategoryByItemId(mItem);
+		return mItem.getCategory().getId();
 	}
 
 	public int getGroupId() {
@@ -122,7 +133,7 @@ public final class RecordTableItem {
 	}
 
 	public boolean isMoveItem() {
-		return DbUtil.isMoveItem(mItemId);
+		return DbUtil.isMoveItem(mItem);
 	}
 
 	public boolean isIncome() {
@@ -136,7 +147,8 @@ public final class RecordTableItem {
 	public String getBookName() {
 		if (isBalanceRow)
 			return "";
-		return DbUtil.getBookNameById(mBookId);
+		return mBook.getName();
+//		return DbUtil.getBookNameById(mBookId);
 	}
 	
 	public int getYear() {
@@ -155,8 +167,8 @@ public final class RecordTableItem {
 	}
 	
 	public static class Builder {
-		private final int mBookId;
-		private final int mItemId;
+		private final Book mBook;
+		private final Item mItem;
 		private final Date mDate;
 		
 		private int mActId = SystemData.getUndefinedInt();
@@ -168,9 +180,9 @@ public final class RecordTableItem {
 		private String mNote = "";
 
 		
-		public Builder(int pBookId, int pItemId, Date pDate) {
-			mBookId = pBookId;
-			mItemId = pItemId;
+		public Builder(Book pBook, Item pItem, Date pDate) {
+			mBook = pBook;
+			mItem = pItem;
 			mDate = pDate;
 		}
 		

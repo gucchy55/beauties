@@ -2,10 +2,8 @@ package beauties.record.view.dialog;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.GregorianCalendar;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -21,6 +19,11 @@ import org.eclipse.swt.widgets.Spinner;
 
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
+import beauties.common.model.Book;
+import beauties.common.model.Category;
+import beauties.common.model.IncomeExpenseType;
+import beauties.common.model.Item;
+import beauties.common.view.MyComboViewer;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
 import beauties.record.model.RecordTableItem;
@@ -28,29 +31,31 @@ import beauties.record.model.RecordTableItem;
 
 class CompositeRecord extends Composite {
 
-	private int mBookId; // Selected on this Dialog
-	private boolean mIncome = false;
-	private int mCategoryId;
-	private int mItemId;
+	private Book mBook; // Selected on this Dialog
+	private IncomeExpenseType mIncomeExpenseType = IncomeExpenseType.EXPENCE;
+	private Category mCategory;
+	private Item mItem;
 
 	private RecordTableItem mRecordTableItem;
 
-	private static final String mCategoryAllName = "（すべて）";
-	private static final int mCategoryAllId = SystemData.getUndefinedInt();
+//	private static final String mCategoryAllName = "（すべて）";
+//	private static final int mCategoryAllId = SystemData.getUndefinedInt();
 
 	// Map of ID & Name
-	private Map<Integer, String> mBookNameMap;
+	private Collection<Book> mBooks;
+	private Collection<Category> mCategories;
+	private Collection<Item> mItems;
 
 	// Map of ComboIndex & ID
-	private List<Integer> mBookIdList = new ArrayList<Integer>();
-	private List<Integer> mCategoryIdList = new ArrayList<Integer>();
-	private List<Integer> mItemIdList = new ArrayList<Integer>();
+//	private List<Integer> mBookIdList = new ArrayList<Integer>();
+//	private List<Integer> mCategoryIdList = new ArrayList<Integer>();
+//	private List<Integer> mItemIdList = new ArrayList<Integer>();
 
-	private Combo mBookCombo;
+	private MyComboViewer<Book> mBookCombo;
 	private DateTime mDateTime;
-	private Combo mIncomeExpenseCombo;
-	private Combo mCategoryCombo;
-	private Combo mItemCombo;
+	private MyComboViewer<IncomeExpenseType> mIncomeExpenseCombo;
+	private MyComboViewer<Category> mCategoryCombo;
+	private MyComboViewer<Item> mItemCombo;
 	private Spinner mValueSpinner;
 	private Spinner mFrequencySpinner;
 	private Combo mNoteCombo;
@@ -58,15 +63,15 @@ class CompositeRecord extends Composite {
 	
 	private static final int mVisibleComboItemCount = 10;
 
-	public CompositeRecord(Composite pParent, int pBookId) {
+	public CompositeRecord(Composite pParent, Book pBook) {
 		super(pParent, SWT.NONE);
 
-		mBookId = pBookId;
+		mBook = pBook;
 
-		if (mBookId == SystemData.getAllBookInt())
-			mBookId = SystemData.getBookMap(false).keySet().iterator().next();
+		if (mBook.isAllBook())
+			mBook = SystemData.getBooks(false).iterator().next();
 
-		mIncome = false;
+		mIncomeExpenseType = IncomeExpenseType.EXPENCE;
 		initLayout();
 		initWidgets();
 		setListeners();
@@ -77,8 +82,9 @@ class CompositeRecord extends Composite {
 	public CompositeRecord(Composite pParent, RecordTableItem pRecordTableItem) {
 		super(pParent, SWT.NONE);
 		mRecordTableItem = pRecordTableItem;
-		mBookId = mRecordTableItem.getBookId();
-		mIncome = DbUtil.isIncomeCategory(SystemData.getCategoryByItemId(mRecordTableItem.getItemId()));
+		mBook = mRecordTableItem.getBook();
+//		mIncomeExpenseType = DbUtil.isIncomeCategory(SystemData.getCategoryByItemId(mRecordTableItem.getItem().getId()));
+		mIncomeExpenseType = pRecordTableItem.getItem().getCategory().getIncomeExpenseType();
 		initLayout();
 		initWidgets();
 		setWidgets();
@@ -145,27 +151,29 @@ class CompositeRecord extends Composite {
 	private void initItemCombo() {
 		Label wItemLabel = new Label(this, SWT.NONE);
 		wItemLabel.setText("項目");
-		mItemCombo = new Combo(this, SWT.READ_ONLY);
+		mItemCombo = new MyComboViewer<>(this, SWT.READ_ONLY);
 	}
 
 	private void initCategoryCombo() {
 		Label wCategoryLabel = new Label(this, SWT.NONE);
 		wCategoryLabel.setText("分類");
-		mCategoryCombo = new Combo(this, SWT.READ_ONLY);
+		mCategoryCombo = new MyComboViewer<>(this, SWT.READ_ONLY);
 	}
 
 	private void initInExCombo() {
 		Label wInExLabel = new Label(this, SWT.NONE);
 		wInExLabel.setText("収支");
 
-		mIncomeExpenseCombo = new Combo(this, SWT.READ_ONLY);
-		mIncomeExpenseCombo.add("収入");
-		mIncomeExpenseCombo.add("支出");
-		if (mIncome) {
-			mIncomeExpenseCombo.select(0);
-		} else {
-			mIncomeExpenseCombo.select(1);
-		}
+		mIncomeExpenseCombo = new MyComboViewer<>(this, SWT.READ_ONLY);
+		mIncomeExpenseCombo.setInput(IncomeExpenseType.values());
+//		mIncomeExpenseCombo.add("収入");
+//		mIncomeExpenseCombo.add("支出");
+		mIncomeExpenseCombo.setSelection(mIncomeExpenseType);
+//		if (mIncomeExpenseType) {
+//			mIncomeExpenseCombo.select(0);
+//		} else {
+//			mIncomeExpenseCombo.select(1);
+//		}
 //		mIncomeExpenseCombo.addModifyListener(new ModifyListener() {
 //			@Override
 //			public void modifyText(ModifyEvent e) {
@@ -186,21 +194,24 @@ class CompositeRecord extends Composite {
 		Label wBookLabel = new Label(this, SWT.NONE);
 		wBookLabel.setText("帳簿");
 
-		mBookCombo = new Combo(this, SWT.READ_ONLY);
-		mBookNameMap = SystemData.getBookMap(false);
-		mBookIdList.clear();
-		mBookCombo.removeAll();
+		mBookCombo = new MyComboViewer<>(this, SWT.READ_ONLY);
+		mBooks = SystemData.getBooks(false);
+//		mBookIdList.clear();
+//		mBookCombo.removeAll();
 
-		Iterator<Integer> wKeyIt = mBookNameMap.keySet().iterator();
-		while (wKeyIt.hasNext()) {
-			int wBookId = wKeyIt.next();
-			mBookIdList.add(wBookId);
-			mBookCombo.add(mBookNameMap.get(wBookId));
-		}
+//		Iterator<Integer> wKeyIt = mBookNameMap.keySet().iterator();
+//		for (Book wBook : mBooks) {
+//		while (wKeyIt.hasNext()) {
+//			int wBookId = wBook.getId();
+//			mBookIdList.add(wBookId);
+//			mBookCombo.add(wBook.getName());
+//		}
+		mBookCombo.setInput(mBooks);
 
-		mBookCombo.setVisibleItemCount(mVisibleComboItemCount);
+		mBookCombo.getCombo().setVisibleItemCount(mVisibleComboItemCount);
 
-		mBookCombo.select(mBookIdList.indexOf(mBookId));
+//		mBookCombo.select(mBookIdList.indexOf(mBook));
+		mBookCombo.setSelection(mBook);
 
 //		mBookCombo.addModifyListener(new ModifyListener() {
 //			@Override
@@ -229,22 +240,22 @@ class CompositeRecord extends Composite {
 //				modifyIncomeExpense();
 //			}
 //		});
-		mBookCombo.addSelectionListener(new SelectionAdapter() {
+		mBookCombo.getCombo().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
-				modifyBookId();
+				modifyBook();
 			}
 		});
-		mIncomeExpenseCombo.addSelectionListener(new SelectionAdapter() {
+		mIncomeExpenseCombo.getCombo().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				modifyIncomeExpense();
 			}
 		});
-		mCategoryCombo.addSelectionListener(new SelectionAdapter() {
+		mCategoryCombo.getCombo().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				modifyCategoryId();
 			}
 		});
-		mItemCombo.addSelectionListener(new SelectionAdapter() {
+		mItemCombo.getCombo().addSelectionListener(new SelectionAdapter() {
 			public void widgetSelected(SelectionEvent e) {
 				modifyItemId();
 			}
@@ -259,18 +270,22 @@ class CompositeRecord extends Composite {
 		mDateTime.setMonth(wCal.get(Calendar.MONTH));
 		mDateTime.setDay(wCal.get(Calendar.DAY_OF_MONTH));
 
-		mItemId = mRecordTableItem.getItemId();
-		if (!mItemIdList.contains(mItemId)) {
-			mItemIdList.add(mItemId);
-			mItemCombo.add(SystemData.getItemName(mItemId));
+		mItem = mRecordTableItem.getItem();
+		if (!mItems.contains(mItem)) {
+			mItems.add(mItem);
+//			mItemCombo.add(mRecordTableItem.getItem().getName());
+			mItemCombo.add(mRecordTableItem.getItem());
+			mItemCombo.refresh();
 		}
 
-		mItemCombo.select(mItemIdList.indexOf(mItemId));
+//		mItemCombo.select(mItemIdList.indexOf(mItem));
+		mItemCombo.setSelection(mItem);
 
-		if (mIncome)
+		if (mIncomeExpenseType == IncomeExpenseType.INCOME) {
 			mValueSpinner.setSelection(mRecordTableItem.getIncome());
-		else
+		} else {
 			mValueSpinner.setSelection(mRecordTableItem.getExpense());
+		}
 
 		mFrequencySpinner.setSelection(mRecordTableItem.getFrequency());
 
@@ -280,28 +295,48 @@ class CompositeRecord extends Composite {
 
 	}
 
-	private void modifyBookId() {
-		mBookId = mBookIdList.get(mBookCombo.getSelectionIndex());
+	private void modifyBook() {
+//		mBook = mBookIdList.get(mBookCombo.getSelectionIndex());
+		Book wNewBook = mBookCombo.getSelectedItem();
+		if (mBook.equals(wNewBook)) {
+			return;
+		}
+		mBook = wNewBook;
 		updateCategoryCombo();
 		updateItemCombo();
 		updateNoteCombo();
 	}
 
 	private void modifyIncomeExpense() {
-		mIncome = mIncomeExpenseCombo.getSelectionIndex() == 0;
+//		mIncomeExpenseType = mIncomeExpenseCombo.getSelectionIndex() == 0;
+		IncomeExpenseType wNewType = mIncomeExpenseCombo.getSelectedItem();
+		if (mIncomeExpenseType == wNewType) {
+			return;
+		}
+		mIncomeExpenseType = wNewType;
 		updateCategoryCombo();
 		updateItemCombo();
 		updateNoteCombo();
 	}
 
 	private void modifyCategoryId() {
-		mCategoryId = mCategoryIdList.get(mCategoryCombo.getSelectionIndex());
+//		mCategory = mCategoryIdList.get(mCategoryCombo.getSelectionIndex());
+		Category wNewCategory = mCategoryCombo.getSelectedItem();
+		if (mCategory.equals(wNewCategory)) {
+			return;
+		}
+		mCategory = wNewCategory;
 		updateItemCombo();
 		updateNoteCombo();
 	}
 
 	private void modifyItemId() {
-		mItemId = mItemIdList.get(mItemCombo.getSelectionIndex());
+//		mItem = mItemIdList.get(mItemCombo.getSelectionIndex());
+		Item wNewItem = mItemCombo.getSelectedItem();
+		if (mItem.equals(wNewItem)) {
+			return;
+		}
+		mItem = wNewItem;
 		updateNoteCombo();
 	}
 
@@ -311,24 +346,32 @@ class CompositeRecord extends Composite {
 //			mCategoryCombo.removeListener(SWT.Modify, l);
 //		mCategoryCombo.removeSelectionListener(mCategorySelectionAdapter);
 
-		mCategoryCombo.removeAll();
-		mCategoryIdList.clear();
+//		mCategoryCombo.removeAll();
+//		mCategoryIdList.clear();
 
-		mCategoryCombo.add(mCategoryAllName);
-		mCategoryIdList.add(mCategoryAllId);
-		mCategoryIdList.addAll(DbUtil.getCategoryIdList(mBookId, mIncome));
-
-		for (int wId : mCategoryIdList) {
-			if (wId != mCategoryAllId)
-				mCategoryCombo.add(SystemData.getCategoryName(wId));
+		Category wCategoryAll = Category.getAllCategory();
+//		mCategoryCombo.add(wCategoryAll.getName());
+		if (mCategories == null) {
+			mCategories = new ArrayList<>();
+		} else {
+			mCategories.clear();
 		}
+		mCategories.add(wCategoryAll);
+		mCategories.addAll(DbUtil.getCategoryList(mBook, mIncomeExpenseType));
 
-		mCategoryCombo.setVisibleItemCount(mVisibleComboItemCount);
+//		for (int wId : mCategoryIdList) {
+//			if (wId != wCategoryAll.getId())
+//				mCategoryCombo.add(SystemData.getCategoryName(wId));
+//		}
+		mCategoryCombo.setInput(mCategories);
 
-		mCategoryCombo.select(0);
-		mCategoryId = mCategoryIdList.get(0);
+		mCategoryCombo.getCombo().setVisibleItemCount(mVisibleComboItemCount);
 
-		mCategoryCombo.pack();
+		mCategoryCombo.getCombo().select(0);
+//		mCategory = mCategoryIdList.get(0);
+		mCategory = mCategoryCombo.getSelectedItem();
+
+		mCategoryCombo.getCombo().pack();
 //		mCategoryCombo.addSelectionListener(mCategorySelectionAdapter);
 //		mCategoryCombo.addModifyListener(new ModifyListener() {
 //			@Override
@@ -345,21 +388,28 @@ class CompositeRecord extends Composite {
 //			mItemCombo.removeListener(SWT.Modify, l);
 //		mItemCombo.removeSelectionListener(mItemSelectionAdapter);
 
-		if (mCategoryId == mCategoryAllId)
-			mItemIdList = DbUtil.getItemIdList(mBookId, mIncome);
-		else
-			mItemIdList = DbUtil.getItemIdList(mBookId, mCategoryId);
+		if (mCategory.isAllCategory()) {
+			mItems = DbUtil.getItemList(mBook, mIncomeExpenseType);
+		} else {
+			mItems = DbUtil.getItemList(mBook, mCategory);
+		}
+		mItemCombo.setInput(mItems);
 		
-		mItemCombo.removeAll();
-		for (int wId : mItemIdList)
-			mItemCombo.add(SystemData.getItemName(wId));
+//		mItemCombo.removeAll();
+//		for (int wId : mItemIdList)
+//			mItemCombo.add(SystemData.getItemName(wId));
 
-		mItemCombo.select(0);
-		if (!mItemIdList.isEmpty())
-			mItemId = mItemIdList.get(0);
+//		mItem = mItems.iterator().next();
+//		mItemCombo.setSelection(mItem);
+		mItemCombo.getCombo().select(0);
 
-		mItemCombo.pack();
-		mItemCombo.setVisibleItemCount(10);
+//		if (!mItemIdList.isEmpty())
+		if (!mItems.isEmpty()) {
+			mItem = mItemCombo.getSelectedItem();
+		}
+
+		mItemCombo.getCombo().pack();
+		mItemCombo.getCombo().setVisibleItemCount(10);
 
 //		mItemCombo.addSelectionListener(mItemSelectionAdapter);
 //		mItemCombo.addModifyListener(new ModifyListener() {
@@ -373,7 +423,7 @@ class CompositeRecord extends Composite {
 	private void updateNoteCombo() {
 //		System.out.println("updateNoteCombo");
 		String wNote = mNoteCombo.getText();
-		mNoteItems = DbUtil.getNotes(mItemId, SystemData.getNoteLimit());
+		mNoteItems = DbUtil.getNotes(mItem);
 		mNoteCombo.setItems(mNoteItems);
 		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
@@ -392,11 +442,11 @@ class CompositeRecord extends Composite {
 
 		mValueSpinner.setSelection(0);
 		mFrequencySpinner.setSelection(0);
-		if (mCategoryCombo.getSelectionIndex() != 0) {
-			mCategoryCombo.select(0);
+		if (mCategoryCombo.getCombo().getSelectionIndex() != 0) {
+			mCategoryCombo.getCombo().select(0);
 			modifyCategoryId();
 		} else {
-			mItemCombo.select(0);
+			mItemCombo.getCombo().select(0);
 			modifyItemId();
 //			updateNoteCombo();
 		}
@@ -410,13 +460,13 @@ class CompositeRecord extends Composite {
 //			mItemCombo.select(0);
 //		}
 		
-		mItemCombo.setFocus();
+		mItemCombo.getCombo().setFocus();
 	}
 
 	public void insertRecord() {
 		// New/Update, Single/Multi records
 		// Common
-		if (mItemIdList.isEmpty()) {
+		if (mItems.isEmpty()) {
 			MessageDialog.openError(getShell(), "設定された項目がありません", "設定画面から関連付ける項目を設定してください");
 			return;
 		}
@@ -430,22 +480,13 @@ class CompositeRecord extends Composite {
 		return mValueSpinner.getSelection();
 	}
 
-	private int getSelectedBookId() {
-		return mBookIdList.get(mBookCombo.getSelectionIndex());
-	}
-
-	private int getSelectedItemId() {
-		return mItemIdList.get(mItemCombo.getSelectionIndex());
-	}
-
 	private RecordTableItem createNewRecordTableItem() {
 		return new RecordTableItem.Builder(
-				getSelectedBookId(),
-				getSelectedItemId(),
+				mBook, mItem,
 				new GregorianCalendar(mDateTime.getYear(), mDateTime.getMonth(), mDateTime.getDay())
 						.getTime()).frequency(mFrequencySpinner.getSelection()).note(
-				mNoteCombo.getText()).income(mIncome ? mValueSpinner.getSelection() : 0).expense(
-				mIncome ? 0 : mValueSpinner.getSelection()).build();
+				mNoteCombo.getText()).income(mIncomeExpenseType == IncomeExpenseType.INCOME ? mValueSpinner.getSelection() : 0)
+				.expense(mIncomeExpenseType == IncomeExpenseType.INCOME ? 0 : mValueSpinner.getSelection()).build();
 	}
 
 }

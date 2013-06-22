@@ -4,22 +4,38 @@ import java.util.ArrayList;
 import java.util.List;
 
 import beauties.common.lib.SystemData;
+import beauties.common.model.Category;
+import beauties.common.model.Item;
 
 
 public class ConfigItem {
-	private int mId = SystemData.getUndefinedInt();
+//	private int mId = SystemData.getUndefinedInt();
 	private String mName;
 	private boolean isSpecial = false;
 	private boolean isCategory = false;
 	private boolean hasParent = false;
+	private Category mCategory;
+	private Item mItem;
 
 	private ConfigItem mParent;
 	private List<ConfigItem> mItemList = new ArrayList<ConfigItem>();
 
-	public ConfigItem(int pId, String pName, boolean isCategory) {
-		mId = pId;
-		mName = pName;
-		this.isCategory = isCategory;
+//	public ConfigItem(int pId, String pName, boolean isCategory) {
+//		mId = pId;
+//		mName = pName;
+//		this.isCategory = isCategory;
+//	}
+	
+	public ConfigItem(Item pItem) {
+		mItem = pItem;
+		mName = pItem.getName();
+		isCategory = false;
+	}
+	
+	public ConfigItem(Category pCategory) {
+		mCategory = pCategory;
+		mName = pCategory.getName();
+		isCategory = true;
 	}
 
 	public ConfigItem(String pName) {
@@ -32,9 +48,9 @@ public class ConfigItem {
 		mItemList.add(pItem);
 	}
 
-	public int getId() {
-		return mId;
-	}
+//	public int getId() {
+//		return mId;
+//	}
 
 	public String getName() {
 		return mName;
@@ -52,8 +68,8 @@ public class ConfigItem {
 		return (mItemList.size() > 0);
 	}
 
-	public ConfigItem[] getChildren() {
-		return mItemList.toArray(new ConfigItem[0]);
+	public List<ConfigItem> getChildren() {
+		return mItemList;
 	}
 	
 	public List<ConfigItem> getChildrenAsList() {
@@ -75,46 +91,67 @@ public class ConfigItem {
 
 	@Override
 	public String toString() {
-		return mId + "_" + mName;
+		if (isSpecial) {
+			return SystemData.getUndefinedInt() + "_" + mName;
+		}
+		if (isCategory) {
+			return mCategory.toString();
+		}
+		return mItem.toString();
 	}
 
-	public void setItems(ConfigItem[] pItems) {
-		mItemList.clear();
-		for (ConfigItem wItem : pItems) {
-			mItemList.add(wItem);
-		}
+	public void setItems(List<ConfigItem> pItems) {
+		mItemList = pItems;
+//		mItemList.clear();
+//		for (ConfigItem wItem : pItems) {
+//			mItemList.add(wItem);
+//		}
 	}
 
 	public void moveUp() {
-		if (this.isSpecial)
+		if (this.isSpecial) {
 			return;
+		}
 		ConfigItem wParent = this.getParent();
-		ConfigItem[] wChildren = wParent.getChildren();
-		for (int i = 1; i < wChildren.length; i++) {
-			ConfigItem ci = wChildren[i];
-			if (ci.getId() != this.mId)
+		List<ConfigItem> wChildren = wParent.getChildren();
+		for (int i = 1; i < wChildren.size(); i++) {
+			ConfigItem ci = wChildren.get(i);
+//			if (ci.getId() != this.mId) {
+			if (ci.equals(this)) {
 				continue;
-			wChildren[i] = wChildren[i - 1];
-			wChildren[i - 1] = this;
+			}
+			wChildren.set(i, wChildren.get(i - 1));
+			wChildren.set(i - 1, this);
 			wParent.setItems(wChildren);
 			return;
 		}
 	}
 
 	public void moveDown() {
-		if (this.isSpecial)
+		if (this.isSpecial) {
 			return;
+		}
 		ConfigItem wParent = this.getParent();
-		ConfigItem[] wChildren = wParent.getChildren();
-		for (int i = 0; i < wChildren.length - 1; i++) {
-			ConfigItem ci = wChildren[i];
-			if (ci.getId() != this.mId)
+		List<ConfigItem> wChildren = wParent.getChildren();
+		for (int i = 0; i < wChildren.size() - 1; i++) {
+			ConfigItem ci = wChildren.get(i);
+//			if (ci.getId() != this.mId)
+			if (ci.equals(this)) {
 				continue;
-			wChildren[i] = wChildren[i + 1];
-			wChildren[i + 1] = this;
+			}
+			wChildren.set(i, wChildren.get(i + 1));
+			wChildren.set(i + 1, this);
 			wParent.setItems(wChildren);
 			return;
 		}
+	}
+
+	public Category getCategory() {
+		return mCategory;
+	}
+
+	public Item getItem() {
+		return mItem;
 	}
 
 }

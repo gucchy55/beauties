@@ -18,7 +18,7 @@ public class OpenDialogNewMove extends Action {
 	@Override
 	public void run() {
 //		mCtl.getShell().setImeInputMode(SWT.NONE);
-		DialogMove wDialogMove = new DialogMove(mCtl.getShell(), mCtl.getBookId());
+		DialogMove wDialogMove = new DialogMove(mCtl.getShell(), mCtl.getBook());
 		int wRet = wDialogMove.open();
 		if (wRet == IDialogConstants.OK_ID) {
 			mCtl.updateTable();

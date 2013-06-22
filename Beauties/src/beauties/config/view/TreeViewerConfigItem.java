@@ -1,6 +1,8 @@
 package beauties.config.view;
 
 
+import java.util.List;
+
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITreeContentProvider;
 import org.eclipse.jface.viewers.LabelProvider;
@@ -23,7 +25,7 @@ public class TreeViewerConfigItem extends TreeViewer {
 		this.setInput(pConfigItem);
 		this.setLabelProvider(new TreeLabelProvider());
 
-		this.setExpandedElements(pConfigItem.getChildren());
+		this.setExpandedElements(pConfigItem.getChildren().toArray(new Object[0]));
 
 		final Tree wTree = this.getTree();
 		final TreeEditor wTreeEditor = new TreeEditor(wTree);
@@ -46,7 +48,8 @@ class TreeContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object element) {
 		ConfigItem wItem = (ConfigItem) element;
 		if (wItem.hasItem()) {
-			return wItem.getChildren();
+			List<?> wList = (List<?>) wItem.getChildren();
+			return wList.toArray();
 		}
 		return new Object[0];
 	}

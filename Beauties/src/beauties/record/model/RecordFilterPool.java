@@ -93,6 +93,6 @@ class RecordFilterItem extends ViewerFilter {
 	@Override
 	public boolean select(Viewer arg0, Object arg1, Object arg2) {
 		RecordTableItem wItem = (RecordTableItem) arg2;
-		return wItem.getItemId() == mItemId;
+		return wItem.getItem().getId() == mItemId;
 	}
 }

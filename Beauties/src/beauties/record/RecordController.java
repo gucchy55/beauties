@@ -14,6 +14,7 @@ import org.eclipse.swt.widgets.Shell;
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
 import beauties.common.lib.Util;
+import beauties.common.model.Book;
 import beauties.common.model.DateRange;
 import beauties.common.view.IPeriodBookTabController;
 import beauties.record.model.RecordTableItem;
@@ -23,7 +24,7 @@ import beauties.record.view.CompositeEntry;
 import beauties.record.view.dialog.DialogPeriod;
 
 public class RecordController implements IPeriodBookTabController {
-	private int mBookId;
+	private Book mBook;
 	private DateRange mDateRange;
 
 	private boolean mMonthPeriod = true;
@@ -39,23 +40,23 @@ public class RecordController implements IPeriodBookTabController {
 
 	public RecordController(CompositeEntry pCompositeEntry) {
 		mCompositeEntry = pCompositeEntry;
-		mBookId = SystemData.getBookMap(false).keySet().iterator().next();
+		mBook = SystemData.getBooks(false).iterator().next();
 		mDateRange = Util.getMonthDateRange(new Date(), SystemData.getCutOff());
 		updateTableItems();
 	}
 
 	private void updateTableItems() {
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBookId);
+		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBook);
 		mRecordItemsUp = wRecordTableItemAll[0];
 		mRecordItemsBottom = wRecordTableItemAll[1];
-		mSummaryTableItems = DbUtil.getSummaryTableItems(mBookId, mDateRange);
+		mSummaryTableItems = DbUtil.getSummaryTableItems(mBook, mDateRange);
 	}
 
 	private void updateTableItemsForBookChange() {
-		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBookId);
+		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBook);
 		mRecordItemsUp = wRecordTableItemAll[0];
 		mRecordItemsBottom = wRecordTableItemAll[1];
-		mSummaryTableItems.setItemsNormal(DbUtil.getSummaryTableItemsNormal(mBookId, mDateRange));
+		mSummaryTableItems.setItemsNormal(DbUtil.getSummaryTableItemsNormal(mBook, mDateRange));
 	}
 	
 	@Override
@@ -77,10 +78,9 @@ public class RecordController implements IPeriodBookTabController {
 		mSummaryTableItems = null;
 	}
 
-	@Override
-	public int getBookId() {
-		return mBookId;
-	}
+//	public int getBookId() {
+//		return mBookId;
+//	}
 
 	public DateRange getDateRange() {
 		return mDateRange;
@@ -102,10 +102,9 @@ public class RecordController implements IPeriodBookTabController {
 		return mSummaryTableItems.getList();
 	}
 
-	@Override
-	public void setBookId(int pBookId) {
-		this.mBookId = pBookId;
-	}
+//	public void setBookId(int pBookId) {
+//		this.mBookId = pBookId;
+//	}
 
 	public void setDateRange(DateRange pDateRange) {
 		this.mDateRange = pDateRange;
@@ -121,7 +120,7 @@ public class RecordController implements IPeriodBookTabController {
 	}
 
 	public boolean showBookColumn() {
-		return getBookId() == SystemData.getAllBookInt() || getSearchResult();
+		return mBook.isAllBook() || getSearchResult();
 	}
 
 	public boolean showYear() {
@@ -196,6 +195,16 @@ public class RecordController implements IPeriodBookTabController {
 		mDateRange = Util.getMonthDateRange(Util.getAdjusentMonth(mDateRange
 				.getEndDate(), -1), SystemData.getCutOff());
 		updateTable();
+	}
+
+	@Override
+	public Book getBook() {
+		return mBook;
+	}
+
+	@Override
+	public void setBook(Book pBook) {
+		mBook = pBook;
 	}
 	
 //	public void addRecordTableListeners() {

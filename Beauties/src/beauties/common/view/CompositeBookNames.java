@@ -1,5 +1,6 @@
 package beauties.common.view;
 
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -10,37 +11,38 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 import beauties.common.lib.SystemData;
+import beauties.common.model.Book;
 
 
 class CompositeBookNames extends Composite {
 
-	private Map<Integer, String> mBookNameMap;
-	private Map<Integer, Button> mBookButtonMap;
-	private int mBookId;
+	private Collection<Book> mBooks;
+	private Map<Book, Button> mBookButtonMap;
+	private Book mBook;
 
-	CompositeBookNames(Composite pParent, int pBookId) {
+	CompositeBookNames(Composite pParent, Book pBook) {
 		super(pParent, SWT.NONE);
 
-		mBookNameMap = SystemData.getBookMap(true);
-		mBookButtonMap = new LinkedHashMap<Integer, Button>();
-		mBookId = pBookId;
+		mBooks = SystemData.getBooks(true);
+		mBookButtonMap = new LinkedHashMap<>();
+		mBook = pBook;
 
 		this.setLayout(new MyRowLayout().getMyRowLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
-		for (Map.Entry<Integer, String> entry : mBookNameMap.entrySet()) {
-			int wBookId = entry.getKey();
+		for (Book wBook : mBooks) {
+//			int wBookId = wBook.getId();
 			Button wBookButton = new Button(this, SWT.TOGGLE);
-			wBookButton.setText(entry.getValue());
-			mBookButtonMap.put(wBookId, wBookButton);
+			wBookButton.setText(wBook.getName());
+			mBookButtonMap.put(wBook, wBookButton);
 
-			if (mBookId == wBookId) {
+			if (mBook.equals(wBook)) {
 				wBookButton.setSelection(true);
 			}
 		}
 	}
 	
-	Map<Integer, Button> getBookButtonMap() {
+	Map<Book, Button> getBookButtonMap() {
 		return mBookButtonMap;
 	}
 

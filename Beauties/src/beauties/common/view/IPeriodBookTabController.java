@@ -2,23 +2,29 @@ package beauties.common.view;
 
 import org.eclipse.swt.widgets.Composite;
 
+import beauties.common.model.Book;
+
 public interface IPeriodBookTabController {
 	
-	public void setPrevPeriod();
+	void setPrevPeriod();
 	
-	public void setNextPeriod();
+	void setNextPeriod();
 	
-	public void openDialogPeriod();
+	void openDialogPeriod();
 	
-	public String getPeriodLabelText();
+	String getPeriodLabelText();
 	
-	public int getBookId();
+//	int getBookId();
 	
-	public void setBookId(int pId);
+	Book getBook();
 	
-	public void updateTable();
+//	void setBookId(int pId);
 	
-	public void changeBook();
+	void setBook(Book pBook);
+
+	void updateTable();
 	
-	public Composite getComposite();
+	void changeBook();
+	
+	Composite getComposite();
 }

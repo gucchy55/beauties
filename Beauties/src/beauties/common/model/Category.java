@@ -3,7 +3,9 @@ package beauties.common.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Category {
+import beauties.common.lib.SystemData;
+
+public class Category implements IComboItem {
 	private int mId;
 	private String mName;
 	private IncomeExpenseType mIncomeExpenseType;
@@ -20,6 +22,7 @@ public class Category {
 		return mId;
 	}
 	
+	@Override
 	public String getName() {
 		return mName;
 	}
@@ -40,6 +43,22 @@ public class Category {
 	
 	public static void clear() {
 		mCategoryMap.clear();
+	}
+	
+	public static Category getAllCategory() {
+		if (getCategory(SystemData.getUndefinedInt()) == null) {
+			generateCategory(SystemData.getUndefinedInt(), "（すべて）", null);
+		}
+		return getCategory(SystemData.getUndefinedInt());
+	}
+	
+	public boolean isAllCategory() {
+		return mId == SystemData.getUndefinedInt();
+	}
+	
+	@Override
+	public String toString() {
+		return mId + "_" + mName;
 	}
 	
 }

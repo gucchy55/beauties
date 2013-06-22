@@ -2,25 +2,16 @@ package beauties.config.view;
 
 import java.util.ArrayList;
 import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
-
 
 import org.eclipse.jface.dialogs.Dialog;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.MessageDialog;
-import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.ComboViewer;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
-import org.eclipse.jface.viewers.LabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
-import org.eclipse.jface.viewers.StructuredSelection;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.layout.GridLayout;
-import org.eclipse.swt.widgets.Combo;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
@@ -28,7 +19,9 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import beauties.common.lib.DbUtil;
+import beauties.common.model.Category;
 import beauties.common.model.IncomeExpenseType;
+import beauties.common.view.MyComboViewer;
 import beauties.config.model.ConfigItem;
 
 class DialogNewItem extends Dialog {
@@ -94,13 +87,13 @@ class CompositeNewItem extends Composite {
 //	private boolean mIncome = false;
 
 	// Map of ID & Name
-	private Map<Integer, String> mCategoryNameMap;
+//	private Map<Integer, String> mCategoryNameMap;
 
 	// Map of ComboIndex & ID
-	private List<Integer> mCategoryIdList = new ArrayList<Integer>();
+	private List<Category> mCategoryList = new ArrayList<>();
 
-	private ComboViewer mIncomeExpenseComboViewer;
-	private Combo mCategoryCombo;
+	private MyComboViewer<IncomeExpenseType> mIncomeExpenseComboViewer;
+	private MyComboViewer<Category> mCategoryCombo;
 	private Text mNameText;
 
 	private static final int mVisibleComboItemCount = 10;
@@ -134,17 +127,18 @@ class CompositeNewItem extends Composite {
 		Label wInExLabel = new Label(this, SWT.NONE);
 		wInExLabel.setText("収支");
 
-		mIncomeExpenseComboViewer = new ComboViewer(this, SWT.READ_ONLY);
-		mIncomeExpenseComboViewer.setContentProvider(ArrayContentProvider.getInstance());
-		mIncomeExpenseComboViewer.setLabelProvider(new LabelProvider() {
-			@Override
-			public String getText(Object element) {
-				IncomeExpenseType wType = (IncomeExpenseType) element;
-				return wType.getName();
-			}
-		});
+		mIncomeExpenseComboViewer = new MyComboViewer<>(this, SWT.READ_ONLY);
+//		mIncomeExpenseComboViewer.setContentProvider(ArrayContentProvider.getInstance());
+//		mIncomeExpenseComboViewer.setLabelProvider(new LabelProvider() {
+//			@Override
+//			public String getText(Object element) {
+//				IncomeExpenseType wType = (IncomeExpenseType) element;
+//				return wType.getName();
+//			}
+//		});
 		mIncomeExpenseComboViewer.setInput(EnumSet.allOf(IncomeExpenseType.class));
-		mIncomeExpenseComboViewer.setSelection(new StructuredSelection(mIncomeExpenseType));
+//		mIncomeExpenseComboViewer.setSelection(new StructuredSelection(mIncomeExpenseType));
+		mIncomeExpenseComboViewer.setSelection(mIncomeExpenseType);
 		
 		mIncomeExpenseComboViewer.addSelectionChangedListener(new ISelectionChangedListener() {
 			
@@ -158,7 +152,7 @@ class CompositeNewItem extends Composite {
 		Label wCategoryLabel = new Label(this, SWT.NONE);
 		wCategoryLabel.setText("分類");
 
-		mCategoryCombo = new Combo(this, SWT.READ_ONLY);
+		mCategoryCombo = new MyComboViewer<>(this, SWT.READ_ONLY);
 
 		// Item
 		Label wItemLabel = new Label(this, SWT.NONE);
@@ -170,7 +164,7 @@ class CompositeNewItem extends Composite {
 	private void initWidgets() {
 
 		if (isCategory) {
-			mCategoryCombo.setVisible(false);
+			mCategoryCombo.getCombo().setVisible(false);
 		} else {
 			updateCategoryCombo();
 		}
@@ -178,13 +172,15 @@ class CompositeNewItem extends Composite {
 
 	private void setWidgets() {
 		if (!isCategory) {
-			int wCategoryId = mConfigItem.getParent().getId();
+			Category wCategory = mConfigItem.getParent().getCategory();
 
-			if (!mCategoryIdList.contains(wCategoryId)) {
-				mIncomeExpenseType = mIncomeExpenseType == IncomeExpenseType.INCOME ? IncomeExpenseType.EXPENCE : IncomeExpenseType.INCOME;
+			if (!mCategoryList.contains(wCategory)) {
+				mIncomeExpenseType = mIncomeExpenseType == IncomeExpenseType.INCOME ? 
+						IncomeExpenseType.EXPENCE : IncomeExpenseType.INCOME;
 				updateCategoryCombo();
 			}
-			mCategoryCombo.select(mCategoryIdList.indexOf(wCategoryId));
+//			mCategoryCombo.select(mCategoryIdList.indexOf(wCategoryId));
+			mCategoryCombo.setSelection(wCategory);
 		}
 		mIncomeExpenseComboViewer.getCombo().setVisible(false);
 
@@ -192,29 +188,33 @@ class CompositeNewItem extends Composite {
 	}
 
 	private void modifyIncomeExpense() {
-		mIncomeExpenseType = (IncomeExpenseType) ((IStructuredSelection) mIncomeExpenseComboViewer.getSelection()).getFirstElement();
+//		mIncomeExpenseType = (IncomeExpenseType) ((IStructuredSelection) mIncomeExpenseComboViewer.getSelection()).getFirstElement();
+		mIncomeExpenseType = mIncomeExpenseComboViewer.getSelectedItem();
 		if (!isCategory) {
 			updateCategoryCombo();
 		}
 	}
 
 	private void updateCategoryCombo() {
-		mCategoryNameMap = DbUtil.getAllCategoryNameMap(mIncomeExpenseType);
-		mCategoryCombo.removeAll();
-		mCategoryIdList.clear();
+//		mCategoryNameMap = DbUtil.getAllCategoryNameMap(mIncomeExpenseType);
+		mCategoryList = DbUtil.getAllCategorys(mIncomeExpenseType);
+		mCategoryCombo.setInput(mCategoryList);
+		mCategoryCombo.getCombo().update();
+//		mCategoryCombo.getCombo().removeAll();
+//		mCategoryIdList.clear();
 
-		Iterator<Integer> wKeyIt = mCategoryNameMap.keySet().iterator();
-		while (wKeyIt.hasNext()) {
-			int wCategoryId = wKeyIt.next();
-			mCategoryIdList.add(wCategoryId);
-			mCategoryCombo.add(mCategoryNameMap.get(wCategoryId));
-		}
+//		Iterator<Integer> wKeyIt = mCategoryNameMap.keySet().iterator();
+//		while (wKeyIt.hasNext()) {
+//			int wCategoryId = wKeyIt.next();
+//			mCategoryIdList.add(wCategoryId);
+//			mCategoryCombo.add(mCategoryNameMap.get(wCategoryId));
+//		}
 
-		mCategoryCombo.setVisibleItemCount(mVisibleComboItemCount);
+		mCategoryCombo.getCombo().setVisibleItemCount(mVisibleComboItemCount);
 
-		mCategoryCombo.select(0);
+		mCategoryCombo.getCombo().select(0);
 
-		mCategoryCombo.pack();
+		mCategoryCombo.getCombo().pack();
 
 	}
 
@@ -228,8 +228,9 @@ class CompositeNewItem extends Composite {
 			DbUtil.insertNewCategory(mIncomeExpenseType, mNameText.getText());
 			return;
 		}
-		int wCategoryId = mCategoryIdList.get(mCategoryCombo.getSelectionIndex());
-		DbUtil.insertNewItem(wCategoryId, mNameText.getText());
+//		Category wCategory = mCategoryIdList.get(mCategoryCombo.getSelectionIndex());
+		Category wCategory = mCategoryCombo.getSelectedItem();
+		DbUtil.insertNewItem(wCategory, mNameText.getText());
 	}
 
 	protected void updateItem() {
@@ -238,11 +239,10 @@ class CompositeNewItem extends Composite {
 			return;
 		}
 		if (isCategory) {
-			DbUtil.updateCategory(mConfigItem.getId(), mNameText.getText());
+			DbUtil.updateCategory(mConfigItem.getCategory(), mNameText.getText());
 			return;
 		}
-		DbUtil.updateItem(mCategoryIdList.get(mCategoryCombo.getSelectionIndex()), mConfigItem.getId(),
-				mNameText.getText());
+		DbUtil.updateItem(mCategoryCombo.getSelectedItem(), mConfigItem.getItem(), mNameText.getText());
 	}
 
 }

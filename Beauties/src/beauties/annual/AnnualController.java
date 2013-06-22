@@ -18,12 +18,13 @@ import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
 import beauties.common.lib.Util;
 import beauties.common.model.AnnualDateRange;
+import beauties.common.model.Book;
 import beauties.common.model.DateRange;
 import beauties.common.view.IPeriodBookTabController;
 import beauties.record.model.SummaryTableItem;
 
 public class AnnualController implements IPeriodBookTabController {
-	private int mBookId = SystemData.getAllBookInt();
+	private Book mBook = Book.getBook(SystemData.getAllBookInt());
 	private AnnualDateRange mAnnualDateRange;
 	private boolean mFiscalPeriod = false;
 	private AnnualViewType mAnnualViewType = AnnualViewType.Category;
@@ -62,11 +63,11 @@ public class AnnualController implements IPeriodBookTabController {
 			break;
 		case Category:
 			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(
-					mBookId, mAnnualDateRange, false);
+					mBook, mAnnualDateRange, false);
 			break;
 		default:
 			mSummaryTableItems = DbUtil.getAnnualSummaryTableItems(
-						mBookId, mAnnualDateRange, true);
+						mBook, mAnnualDateRange, true);
 		}
 
 		// 列のヘッダの設定
@@ -87,19 +88,19 @@ public class AnnualController implements IPeriodBookTabController {
 		updateTable();
 	}
 	
-	@Override
-	public int getBookId() {
-		return mBookId;
-	}
+//	@Override
+//	public int getBookId() {
+//		return mBookId;
+//	}
 
 	public AnnualDateRange getAnnualDateRange() {
 		return mAnnualDateRange;
 	}
 
-	@Override
-	public void setBookId(int pBookId) {
-		this.mBookId = pBookId;
-	}
+//	@Override
+//	public void setBookId(int pBookId) {
+//		this.mBookId = pBookId;
+//	}
 
 	public void setFiscalPeriod(boolean pFiscalPeriod) {
 		this.mFiscalPeriod = pFiscalPeriod;
@@ -207,5 +208,16 @@ public class AnnualController implements IPeriodBookTabController {
 					.getEndDate());
 
 		return "期間指定";
+	}
+
+	@Override
+	public Book getBook() {
+		return mBook;
+	}
+
+	@Override
+	public void setBook(Book pBook) {
+		mBook = pBook;
+		
 	}
 }

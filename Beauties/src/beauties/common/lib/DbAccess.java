@@ -5,8 +5,6 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.sql.Statement;
-
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.widgets.Display;
@@ -21,7 +19,6 @@ class DbAccess {
 	private static String mUrl;
 	private static int mDbPort;
 	private Connection mCon = null;
-	private Statement mStmt = null;
 	private ResultSet mResultSet = null;
 	private static DbAccess mInstance;
 
@@ -47,22 +44,23 @@ class DbAccess {
 	    return mInstance;
 	  }
 
-	@Deprecated
-	void executeUpdate(String pQuery) {
-		try {
-			mStmt = mCon.createStatement();
-			mStmt.executeUpdate(pQuery);
-//			System.out.println(pQuery);
-			if(!SystemData.getDbUpdated())
-				SystemData.setDbUpdated(true);
-		} catch (SQLException e) {
-			sqlStatementError(e);
-		} catch (Exception e) {
-		}
-
-	}
+//	@Deprecated
+//	void executeUpdate(String pQuery) {
+//		try {
+//			mStmt = mCon.createStatement();
+//			mStmt.executeUpdate(pQuery);
+////			System.out.println(pQuery);
+//			if(!SystemData.getDbUpdated())
+//				SystemData.setDbUpdated(true);
+//		} catch (SQLException e) {
+//			sqlStatementError(e);
+//		} catch (Exception e) {
+//		}
+//
+//	}
 
 	void executeUpdate(PreparedStatement pPreparedStatement) {
+		System.out.println(pPreparedStatement);
 		try {
 			pPreparedStatement.executeUpdate();
 			if(!SystemData.getDbUpdated())
@@ -74,25 +72,25 @@ class DbAccess {
 
 	}
 	
-	@Deprecated
-	ResultSet executeQuery(String pQuery) {
-
-		try {
-			// Statementオブジェクトの生成
-			mStmt = mCon.createStatement();
-			mResultSet = mStmt.executeQuery(pQuery);
-
-		} catch (SQLException e) {
-			sqlStatementError(e);
-		} catch (Exception e) {
-		}
-
-		return mResultSet;
-
-	}
+//	@Deprecated
+//	ResultSet executeQuery(String pQuery) {
+//
+//		try {
+//			// Statementオブジェクトの生成
+//			mStmt = mCon.createStatement();
+//			mResultSet = mStmt.executeQuery(pQuery);
+//
+//		} catch (SQLException e) {
+//			sqlStatementError(e);
+//		} catch (Exception e) {
+//		}
+//
+//		return mResultSet;
+//
+//	}
 	
 	ResultSet executeQuery(PreparedStatement pPreparedStatement) {
-
+		System.out.println(pPreparedStatement);
 		try {
 			mResultSet = pPreparedStatement.executeQuery();
 

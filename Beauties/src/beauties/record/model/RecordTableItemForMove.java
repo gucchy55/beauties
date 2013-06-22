@@ -21,14 +21,14 @@ public class RecordTableItemForMove {
 	public RecordTableItemForMove(RecordTableItem pFromRecord, RecordTableItem pToRecord) {
 		this.mFromRecordTableItem = pFromRecord;
 		this.mToRecordTableItem = pToRecord;
-		this.mFromBookId = pFromRecord.getBookId();
+		this.mFromBookId = pFromRecord.getBook().getId();
 	}
 	
 	public int getFromBookId() {
 		return mFromBookId;
 	}
 	public int getToBookId() {
-		return mToRecordTableItem.getBookId();
+		return mToRecordTableItem.getBook().getId();
 	}
 	public Date getDate() {
 		return mToRecordTableItem.getDate();

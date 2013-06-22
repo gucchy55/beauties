@@ -258,7 +258,7 @@ class TableLabelProvider implements ITableLabelProvider {
 				return mDateFormat.format(wRecord.getDate()) + "("
 						+ Util.getDayOfTheWeekShort(wRecord.getDate()) + ")";
 		case 2:
-			return wRecord.getItemName();
+			return wRecord.getItem().getName();
 		case 3:
 			return getNumerical(wRecord.getIncome());
 		case 4:

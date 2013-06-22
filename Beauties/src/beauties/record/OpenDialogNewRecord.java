@@ -18,7 +18,7 @@ public class OpenDialogNewRecord extends Action {
 	@Override
 	public void run() {
 //		mCtl.getShell().setImeInputMode(SWT.NONE);
-		DialogNewRecord wDialogNewRecord = new DialogNewRecord(mCtl.getShell(), mCtl.getBookId());
+		DialogNewRecord wDialogNewRecord = new DialogNewRecord(mCtl.getShell(), mCtl.getBook());
 		int wRet = wDialogNewRecord.open();
 		if (wRet == IDialogConstants.OK_ID) { // Updated
 			mCtl.updateTable();

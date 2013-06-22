@@ -1,6 +1,6 @@
 package beauties.common.model;
 
-public enum IncomeExpenseType {
+public enum IncomeExpenseType implements IComboItem {
 	
 	INCOME(1, "収入"),
 	EXPENCE(2, "支出");
@@ -17,6 +17,7 @@ public enum IncomeExpenseType {
 		return mCategoryRexpDiv;
 	}
 	
+	@Override
 	public String getName() {
 		return mName;
 	}

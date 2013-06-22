@@ -33,6 +33,8 @@ import org.eclipse.swt.widgets.TableColumn;
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
 import beauties.common.model.Book;
+import beauties.common.model.IncomeExpenseType;
+import beauties.common.model.Item;
 import beauties.common.view.MyFillLayout;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
@@ -50,13 +52,13 @@ class PreferencePageBook extends PreferencePage {
 	private Label mBalanceLabel;
 	private Composite mAttributeComposite;
 
-	private Map<Button, Integer> mItemButtonMap;
+	private Map<Button, Item> mItemButtonMap;
 	private List<Book> mBookList;
 
 	PreferencePageBook() {
 		setTitle("帳簿設定");
 		mBookList = DbUtil.getBookList();
-		mItemButtonMap = new HashMap<Button, Integer>();
+		mItemButtonMap = new HashMap<>();
 	}
 
 	@Override
@@ -76,7 +78,7 @@ class PreferencePageBook extends PreferencePage {
 
 		// 初期設定
 		mTableViewerBooks.getTable().setFocus();
-		updateAttributeButtons(mBookList.get(0).getId());
+		updateAttributeButtons(mBookList.get(0));
 
 		return mMainComposite;
 	}
@@ -113,7 +115,7 @@ class PreferencePageBook extends PreferencePage {
 						mTableViewerBooks.getTable().getItemCount() - 1);
 				if (getSelectedBook() == null)
 					return;
-				updateAttributeButtons(getSelectedBook().getId());
+				updateAttributeButtons(getSelectedBook());
 
 			}
 		});
@@ -135,7 +137,7 @@ class PreferencePageBook extends PreferencePage {
 					int wIndex = mTableViewerBooks.getTable().getSelectionIndex();
 					updateBookTableWithDb();
 					mTableViewerBooks.getTable().setSelection(wIndex);
-					updateAttributeButtons(wBook.getId());
+					updateAttributeButtons(wBook);
 				}
 			}
 		});
@@ -158,7 +160,7 @@ class PreferencePageBook extends PreferencePage {
 				updateBookTableWithDb();
 				if (getSelectedBook() == null)
 					return;
-				updateAttributeButtons(getSelectedBook().getId());
+				updateAttributeButtons(getSelectedBook());
 
 			}
 		});
@@ -251,7 +253,7 @@ class PreferencePageBook extends PreferencePage {
 			public void selectionChanged(SelectionChangedEvent arg0) {
 				Book wBook = getSelectedBook();
 				if (wBook != null) {
-					updateAttributeButtons(wBook.getId());
+					updateAttributeButtons(wBook);
 				}
 			}
 		});
@@ -314,23 +316,24 @@ class PreferencePageBook extends PreferencePage {
 		wGridData.horizontalSpan = 2;
 		wCompositeItemButtons.setLayoutData(wGridData);
 		
+		Map<IncomeExpenseType, List<Item>> wItemMap = DbUtil.getAllItems();
 		Label wIncomeLabel = new Label(wCompositeItemButtons, SWT.NONE);
 		wIncomeLabel.setText("収入");
-		createEachItemButtons(wCompositeItemButtons, DbUtil.getItemNameMap(true));
+		createEachItemButtons(wCompositeItemButtons, wItemMap.get(IncomeExpenseType.INCOME));
 		
 		new Label(wCompositeItemButtons, SWT.NONE);
 		Label wExpenseLabel = new Label(wCompositeItemButtons, SWT.NONE);
 		wExpenseLabel.setText("支出");
 		
-		createEachItemButtons(wCompositeItemButtons, DbUtil.getItemNameMap(false));
+		createEachItemButtons(wCompositeItemButtons, wItemMap.get(IncomeExpenseType.EXPENCE));
 	}
 
-	private void createEachItemButtons(Composite wCompositeItemButtons,
-			Map<Integer, String> wIncomeItemNameMap) {
-		for (Map.Entry<Integer, String> entry : wIncomeItemNameMap.entrySet()) {
-			Button wButton = new Button(wCompositeItemButtons, SWT.CHECK);
-			wButton.setText(entry.getValue());
-			mItemButtonMap.put(wButton, entry.getKey());
+	private void createEachItemButtons(Composite pCompositeItemButtons, List<Item> pItems) {
+//		for (Map.Entry<Integer, String> entry : wIncomeItemNameMap.entrySet()) {
+		for (Item wItem : pItems) {
+			Button wButton = new Button(pCompositeItemButtons, SWT.CHECK);
+			wButton.setText(wItem.getName());
+			mItemButtonMap.put(wButton, wItem);
 
 			wButton.addSelectionListener(new SelectionAdapter() {
 				@Override
@@ -339,8 +342,7 @@ class PreferencePageBook extends PreferencePage {
 					if (wBook == null)
 						return;
 					Button wButton = (Button) e.getSource();
-					DbUtil.updateItemRelation(mItemButtonMap.get(wButton), wBook.getId(), wButton
-							.getSelection());
+					DbUtil.updateItemRelation(mItemButtonMap.get(wButton), wBook, wButton.getSelection());
 				}
 			});
 		}
@@ -385,11 +387,12 @@ class PreferencePageBook extends PreferencePage {
 		mOrderChanged = false;
 	}
 
-	private void updateAttributeButtons(int pBookId) {
+	private void updateAttributeButtons(Book pBook) {
 		updateBalanceLabel();
-		List<Integer> wItemIdList = DbUtil.getRelatedItemIdList(getSelectedBook().getId());
-		for (Map.Entry<Button, Integer> entry : mItemButtonMap.entrySet()) {
-			entry.getKey().setSelection(wItemIdList.contains(entry.getValue()));
+//		List<Item> wItems = DbUtil.getRelatedItems(getSelectedBook());
+		List<Item> wItems = DbUtil.getRelatedItems(pBook);
+		for (Map.Entry<Button, Item> entry : mItemButtonMap.entrySet()) {
+			entry.getKey().setSelection(wItems.contains(entry.getValue()));
 		}
 	}
 

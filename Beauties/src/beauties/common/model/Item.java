@@ -3,7 +3,9 @@ package beauties.common.model;
 import java.util.HashMap;
 import java.util.Map;
 
-public class Item {
+import beauties.common.lib.SystemData;
+
+public class Item implements IComboItem {
 	private int mId;
 	private String mName;
 	private Category mCategory;
@@ -20,6 +22,7 @@ public class Item {
 		return mId;
 	}
 	
+	@Override
 	public String getName() {
 		return mName;
 	}
@@ -41,4 +44,17 @@ public class Item {
 	public static void clear() {
 		mItemMap.clear();
 	}
+
+	public static Item getUndefinedItem() {
+		if (Item.getItem(SystemData.getUndefinedInt()) == null) {
+			Item.generateItem(SystemData.getUndefinedInt(), "", null);
+		}
+		return Item.getItem(SystemData.getUndefinedInt());
+	}
+	
+	@Override
+	public String toString() {
+		return mId + "_" + mName;
+	}
+
 }

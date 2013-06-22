@@ -18,6 +18,7 @@ import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Label;
 
 import beauties.common.lib.DbUtil;
+import beauties.common.model.Book;
 import beauties.common.view.MyFillLayout;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
@@ -37,14 +38,14 @@ class PreferencePageItem extends PreferencePage {
 
 	private Composite mAttributeComposite;
 
-	private Map<Button, Integer> mBookButtonMap;
+	private Map<Button, Book> mBookButtonMap;
 
 	private Button mSpecialIncomeExpenseButton;
 	private Button mTempIncomeExpenseButton;
 
 	protected PreferencePageItem() {
 		setTitle("項目設定");
-		mBookButtonMap = new LinkedHashMap<Button, Integer>();
+		mBookButtonMap = new LinkedHashMap<>();
 	}
 
 	@Override
@@ -213,18 +214,18 @@ class PreferencePageItem extends PreferencePage {
 	}
 
 	private void createBookButtons() {
-		for (Map.Entry<Integer, String> entry : DbUtil.getBookNameMap().entrySet()) {
+		for (Book wBook : DbUtil.getBooks()) {
 			Button wButton = new Button(mAttributeComposite, SWT.CHECK);
-			wButton.setText(entry.getValue());
+			wButton.setText(wBook.getName());
 			wButton.setVisible(false);
-			mBookButtonMap.put(wButton, entry.getKey());
+			mBookButtonMap.put(wButton, wBook);
 
 			wButton.addSelectionListener(new SelectionAdapter() {
 				@Override
 				public void widgetSelected(SelectionEvent e) {
 					ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 					Button wButton = (Button) e.getSource();
-					DbUtil.updateItemRelation(wSelectedItem.getId(), mBookButtonMap.get(wButton),
+					DbUtil.updateItemRelation(wSelectedItem.getItem(), mBookButtonMap.get(wButton),
 							wButton.getSelection());
 				}
 			});
@@ -241,7 +242,7 @@ class PreferencePageItem extends PreferencePage {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				if (wSelectedItem.isCategory()) {
 					Button wButton = (Button) e.getSource();
-					DbUtil.updateSpecialCategory(wSelectedItem.getId(), wButton.getSelection());
+					DbUtil.updateSpecialCategory(wSelectedItem.getCategory(), wButton.getSelection());
 				}
 			}
 		});
@@ -257,7 +258,7 @@ class PreferencePageItem extends PreferencePage {
 				ConfigItem wSelectedItem = mTreeViewerConfigItem.getSelectedConfigItem();
 				if (wSelectedItem.isCategory()) {
 					Button wButton = (Button) e.getSource();
-					DbUtil.updateTempCategory(wSelectedItem.getId(), wButton.getSelection());
+					DbUtil.updateTempCategory(wSelectedItem.getCategory(), wButton.getSelection());
 				}
 			}
 		});
@@ -316,7 +317,7 @@ class PreferencePageItem extends PreferencePage {
 	private void updateTree() {
 		mRootConfigItem = DbUtil.getRootConfigItem();
 		mTreeViewerConfigItem.setInput(mRootConfigItem);
-		mTreeViewerConfigItem.setExpandedElements(mRootConfigItem.getChildren());
+		mTreeViewerConfigItem.setExpandedElements(mRootConfigItem.getChildren().toArray(new Object[0]));
 		mTreeViewerConfigItem.refresh();
 		DbUtil.updateSortKeys(mRootConfigItem);
 		updateAttributeButtons(mTreeViewerConfigItem.getSelectedConfigItem());
@@ -325,23 +326,23 @@ class PreferencePageItem extends PreferencePage {
 
 	private void updateAttributeButtons(ConfigItem pConfigItem) {
 		if (pConfigItem.isSpecial() || pConfigItem.isCategory()) {
-			for (Map.Entry<Button, Integer> entry : mBookButtonMap.entrySet()) {
+			for (Map.Entry<Button, Book> entry : mBookButtonMap.entrySet()) {
 				Button wButton = entry.getKey();
 				wButton.setVisible(false);
 			}
 			if (pConfigItem.isCategory()) {
-				mSpecialIncomeExpenseButton.setSelection(DbUtil.getSpecialCategoryIdList()
-						.contains(pConfigItem.getId()));
-				mTempIncomeExpenseButton.setSelection(DbUtil.getTempCategoryIdList().contains(
-						pConfigItem.getId()));
+				mSpecialIncomeExpenseButton.setSelection(DbUtil.getSpecialCategorys()
+						.contains(pConfigItem.getCategory()));
+				mTempIncomeExpenseButton.setSelection(DbUtil.getTempCategoryList().contains(
+						pConfigItem.getCategory()));
 			}
 
 		} else {
-			List<Integer> wBookIdList = DbUtil.getRelatedBookIdList(pConfigItem);
-			for (Map.Entry<Button, Integer> entry : mBookButtonMap.entrySet()) {
+			List<Book> wBookList = DbUtil.getRelatedBookList(pConfigItem);
+			for (Map.Entry<Button, Book> entry : mBookButtonMap.entrySet()) {
 				Button wButton = entry.getKey();
 				wButton.setVisible(true);
-				wButton.setSelection(wBookIdList.contains(entry.getValue()));
+				wButton.setSelection(wBookList.contains(entry.getValue()));
 			}
 		}
 
