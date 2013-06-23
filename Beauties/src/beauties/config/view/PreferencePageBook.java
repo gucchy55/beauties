@@ -44,6 +44,8 @@ import beauties.common.view.MyRowLayout;
 class PreferencePageBook extends PreferencePage {
 
 	private static final int mRightHint = 250;
+	
+	private MyPreferenceManager mManager;
 
 	private Composite mMainComposite;
 	private Composite mTableComposite;
@@ -52,16 +54,17 @@ class PreferencePageBook extends PreferencePage {
 
 	private Label mBalanceLabel;
 	private Composite mAttributeComposite;
-
+	private Composite mCompositeItemButtons;
 	private Map<Button, Item> mItemButtonMap;
 	private List<Book> mBookList;
 
-	PreferencePageBook() {
-		setTitle("帳簿設定");
+	PreferencePageBook(MyPreferenceManager pManager) {
+		mManager = pManager;
 		mBookList = new ArrayList<>(DbUtil.getBooks());
 		mItemButtonMap = new HashMap<>();
+		setTitle("帳簿設定");
 	}
-
+	
 	@Override
 	protected Control createContents(Composite parent) {
 		mMainComposite = new Composite(parent, SWT.NONE);
@@ -134,7 +137,7 @@ class PreferencePageBook extends PreferencePage {
 				InputDialog wInputDialog = new InputDialog(getShell(), "帳簿名変更", "",
 						wBook.getName(), null);
 				if (wInputDialog.open() == Window.OK) {
-					DbUtil.updateBook(wBook, wInputDialog.getValue(), wBook.getBalance());
+					DbUtil.updateBookName(wBook, wInputDialog.getValue());
 					int wIndex = mTableViewerBooks.getTable().getSelectionIndex();
 					updateBookTableWithDb();
 					mTableViewerBooks.getTable().setSelection(wIndex);
@@ -310,26 +313,25 @@ class PreferencePageBook extends PreferencePage {
 
 	private void createCompositeItemButtons() {
 		GridData wGridData;
-		Composite wCompositeItemButtons = new Composite(mAttributeComposite, SWT.BORDER);
-		wCompositeItemButtons.setLayout(new MyGridLayout(1, false).getMyGridLayout());
+		mCompositeItemButtons = new Composite(mAttributeComposite, SWT.BORDER);
+		mCompositeItemButtons.setLayout(new MyGridLayout(1, false).getMyGridLayout());
 		wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		wGridData.horizontalSpan = 2;
-		wCompositeItemButtons.setLayoutData(wGridData);
+		mCompositeItemButtons.setLayoutData(wGridData);
 		
 		Map<IncomeExpenseType, List<Item>> wItemMap = DbUtil.getAllItems();
-		Label wIncomeLabel = new Label(wCompositeItemButtons, SWT.NONE);
+		Label wIncomeLabel = new Label(mCompositeItemButtons, SWT.NONE);
 		wIncomeLabel.setText("収入");
-		createEachItemButtons(wCompositeItemButtons, wItemMap.get(IncomeExpenseType.INCOME));
+		createEachItemButtons(mCompositeItemButtons, wItemMap.get(IncomeExpenseType.INCOME));
 		
-		new Label(wCompositeItemButtons, SWT.NONE);
-		Label wExpenseLabel = new Label(wCompositeItemButtons, SWT.NONE);
+		new Label(mCompositeItemButtons, SWT.NONE);
+		Label wExpenseLabel = new Label(mCompositeItemButtons, SWT.NONE);
 		wExpenseLabel.setText("支出");
 		
-		createEachItemButtons(wCompositeItemButtons, wItemMap.get(IncomeExpenseType.EXPENCE));
+		createEachItemButtons(mCompositeItemButtons, wItemMap.get(IncomeExpenseType.EXPENCE));
 	}
-
+	
 	private void createEachItemButtons(Composite pCompositeItemButtons, List<Item> pItems) {
-//		for (Map.Entry<Integer, String> entry : wIncomeItemNameMap.entrySet()) {
 		for (Item wItem : pItems) {
 			Button wButton = new Button(pCompositeItemButtons, SWT.CHECK);
 			wButton.setText(wItem.getName());
@@ -369,7 +371,7 @@ class PreferencePageBook extends PreferencePage {
 
 		try {
 			ISelection selection = mTableViewerBooks.getSelection();
-			mTableViewerBooks.setInput(mBookList.toArray(new Book[0]));
+			mTableViewerBooks.setInput(mBookList);
 			mTableViewerBooks.refresh();
 			mTableViewerBooks.setSelection(selection);
 		} finally {
@@ -380,8 +382,8 @@ class PreferencePageBook extends PreferencePage {
 	private void updateBookTableWithDb() {
 		mBookList.clear();
 		mBookList.addAll(DbUtil.getBooks());
-//		mBookList = DbUtil.getBookList();
 		updateBookTable();
+		mManager.updateBooks(mBookList);
 	}
 
 	private void updateBookSortKeys() {
@@ -391,7 +393,6 @@ class PreferencePageBook extends PreferencePage {
 
 	private void updateAttributeButtons(Book pBook) {
 		updateBalanceLabel();
-//		List<Item> wItems = DbUtil.getRelatedItems(getSelectedBook());
 		Collection<Item> wItems = DbUtil.getRelatedItems(pBook);
 		for (Map.Entry<Button, Item> entry : mItemButtonMap.entrySet()) {
 			entry.getKey().setSelection(wItems.contains(entry.getValue()));
@@ -410,22 +411,6 @@ class PreferencePageBook extends PreferencePage {
 	}
 
 }
-
-//class TableContentProvider implements IStructuredContentProvider {
-//	@Override
-//	public Object[] getElements(Object inputElement) {
-//		Book[] wBooks = (Book[]) inputElement;
-//		return wBooks;
-//	}
-//
-//	@Override
-//	public void dispose() {
-//	}
-//
-//	@Override
-//	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-//	}
-//}
 
 class TableLabelProvider implements ITableLabelProvider {
 	@Override

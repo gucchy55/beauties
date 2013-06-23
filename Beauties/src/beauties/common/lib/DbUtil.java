@@ -379,45 +379,32 @@ public class DbUtil {
 		Map<IncomeExpenseType, List<Item>> wResultMap = new EnumMap<>(IncomeExpenseType.class);
 		wResultMap.put(IncomeExpenseType.INCOME, new ArrayList<Item>());
 		wResultMap.put(IncomeExpenseType.EXPENCE, new ArrayList<Item>());
-//		List<Item> wResult = new ArrayList<>();
 
 		StringBuilder wQueryBuilder = new StringBuilder();
 		
-		// select cbm_item.ITEM_ID, cbm_item.ITEM_NAME from cbm_item, cbr_book, cbm_category
-		// where cbm_item.ITEM_ID = cbr_book.ITEM_ID
-		//	and cbm_category.CATEGORY_ID = cbm_item.CATEGORY_ID
-		//	and cbm_category.REXP_DIV = ?	// 1 (int)
-		//	and cbr_book.DEL_FLG = b?		// 2 (String:0)
-		//	and cbm_item.DEL_FLG = b?		// 3 (String:0)
+		// select cbm_item.ITEM_ID, cbm_item.ITEM_NAME from cbm_item, cbm_category
+		// where cbm_category.CATEGORY_ID = cbm_item.CATEGORY_ID
+		//	and cbm_item.DEL_FLG = b?		// 1 (String:0)
 		// order by cbm_item.SORT_KEY
 		wQueryBuilder.append("select distinct ").append(mItemTable).append(".").append(mItemIdCol)
 				.append(", ").append(mItemTable).append(".").append(mItemNameCol)
 				.append(", ").append(mCategoryTable).append(".").append(mCategoryIdCol)
 				.append(", ").append(mCategoryTable).append(".").append(mCategoryNameCol)
 				.append(", ").append(mCategoryTable).append(".").append(mCategoryRexpCol)
-			.append(" from ").append(mItemTable).append(" , ").append(mBookItemTable)
+			.append(" from ").append(mItemTable)//.append(" , ").append(mBookItemTable)
 				.append(", ").append(mCategoryTable)
-			.append(" where ").append(mItemTable).append(".").append(mItemIdCol)
-				.append(" = ").append(mBookItemTable).append(".").append(mItemIdCol)
-			.append(" and ").append(mCategoryTable).append(".").append(mCategoryIdCol)
+			.append(" where ")
+			.append(mCategoryTable).append(".").append(mCategoryIdCol)
 				.append(" = ").append(mItemTable).append(".").append(mCategoryIdCol)
-//			.append(" and ").append(mCategoryTable).append(".").append(mCategoryRexpCol)
-//				.append(" = ?")
-			.append(" and ").append(mBookItemTable).append(".").append(mDelFlgCol).append(" = b?")
 			.append(" and ").append(mItemTable).append(".").append(mDelFlgCol).append(" = b?")
 			.append(" order by ").append(mItemTable).append(".").append(mSortKeyCol);
 		
 		try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
-			int i=1;
-//			wStatement.setInt(i++, pType.getCategoryRexp());
-			wStatement.setString(i++, "0");
-			wStatement.setString(i++, "0");
+			wStatement.setString(1, "0");
 			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
 				while (wResultSet.next()) {
 					Item wItem = getItem(wResultSet, getCategory(wResultSet));
 					wResultMap.get(wItem.getCategory().getIncomeExpenseType()).add(wItem);
-//					wResult.add(getItem(wResultSet, getCategory(wResultSet, pType)));
-//					wResultMap.put(wResultSet.getInt(mItemIdCol), wResultSet.getString(mItemNameCol));
 				}
 			} catch (SQLException e) {
 				resultSetHandlingError(e);
@@ -2020,6 +2007,7 @@ public class DbUtil {
 	}
 
 	public static void updateCategory(Category pCategory, String pNewCategoryName) {
+		Category.clear();
 		// update cbm_category set CATEGORY_NAME = ? where CATEGORY_ID = ?
 		String wQuery = new StringBuilder("update ").append(mCategoryTable)
 				.append(" set ").append(mCategoryNameCol).append(" = ?")
@@ -2034,6 +2022,7 @@ public class DbUtil {
 	}
 
 	public static void updateItem(Category pCategory, Item pItem, String pNewItemName) {
+		Item.clear();
 		// update cbm_item set CATEGORY_ID = ?, ITEM_NAME = ? where ITEM_ID = ?
 		String wQuery = new StringBuilder("update ").append(mItemTable).append(" set ")
 				.append(mCategoryIdCol).append(" = ?, ").append(mItemNameCol).append(" = ?")
@@ -2051,10 +2040,25 @@ public class DbUtil {
 	public static void deleteCategoryItem(ConfigItem pConfigItem) {
 		String wTableName = (pConfigItem.isCategory()) ? mCategoryTable : mItemTable;
 		String wIdName = (pConfigItem.isCategory()) ? mCategoryIdCol : mItemIdCol;
+		int wId = pConfigItem.isCategory() ? pConfigItem.getCategory().getId() : pConfigItem.getItem().getId();
 
 		// update wTableName set DEL_FLG = b'1' where wIdName = ?
 		String wQuery = new StringBuilder("update ").append(wTableName).append(" set ")
 				.append(mDelFlgCol).append(" = b'1' where ").append(wIdName).append(" = ?")
+				.toString();
+		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQuery)) {
+			wStatement.setInt(1, wId);
+			mDbAccess.executeUpdate(wStatement);
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		}
+		
+		if (!pConfigItem.isCategory()) {
+			return;
+		}
+		// update cbm_item set DEL_FLG = b'1' where CATEGORY_ID = ?
+		wQuery = new StringBuilder("update ").append(mItemTable).append(" set ")
+				.append(mDelFlgCol).append(" = b'1' where ").append(mCategoryIdCol).append(" = ?")
 				.toString();
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQuery)) {
 			wStatement.setInt(1, pConfigItem.getCategory().getId());
@@ -2088,9 +2092,14 @@ public class DbUtil {
 
 	public static Collection<Item> getRelatedItems(Book pBook) {
 		Collection<Item> wList = new ArrayList<>();
-		// select ITEM_ID from cbr_book where BOOK_ID = ?
-		String wQuery = new StringBuilder("select ").append(mItemIdCol).append(" from ")
-				.append(mBookItemTable).append(" where ").append(mBookIdCol).append(" = ?")
+		// select cbm_item.ITEM_ID from cbr_book inner join cbm_item on cbr_book.ITEM_ID = cbm_item.ITEM_ID
+		// where cbr_book.BOOK_ID = ? and cbm_item.DEL_FLG = b'0'
+		String wQuery = new StringBuilder("select ").append(mItemTable).append(".").append(mItemIdCol)
+				.append(" from ").append(mBookItemTable).append(" inner join ").append(mItemTable).append(" on ")
+					.append(mBookItemTable).append(".").append(mItemIdCol).append(" = ")
+					.append(mItemTable).append(".").append(mItemIdCol)
+				.append(" where ").append(mBookItemTable).append(".").append(mBookIdCol).append(" = ?")
+					.append(" and ").append(mItemTable).append(".").append(mDelFlgCol).append(" = b'0'")
 				.toString();
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQuery)) {
 			wStatement.setInt(1, pBook.getId());
@@ -2178,6 +2187,7 @@ public class DbUtil {
 	private static Item getItem(ResultSet pResultSet, Category pCategory) throws SQLException {
 		int wItemId = pResultSet.getInt(mItemIdCol);
 		if (Item.getItem(wItemId) == null) {
+			assert pCategory != null;
 			Item.generateItem(wItemId, pResultSet.getString(mItemNameCol), pCategory);
 		}
 		return Item.getItem(wItemId);
@@ -2301,15 +2311,15 @@ public class DbUtil {
 		}
 	}
 
-	public static void updateBook(Book pBook, String pBookName, int pBalance) {
-		// update cbm_book set BOOK_NAME = ?, BALANCE = ? where BOOK_ID = ?
+	public static void updateBookName(Book pBook, String pBookName) {
+		Book.clear();
+		// update cbm_book set BOOK_NAME = ? where BOOK_ID = ?
 		String wQuery = new StringBuilder("update ").append(mBookTable).append(" set ")
-				.append(mBookNameCol).append(" = ?, ").append(mBookBalanceCol).append(" = ?")
+				.append(mBookNameCol).append(" = ? ")
 				.append(" where ").append(mBookIdCol).append(" = ?").toString();
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQuery)) {
 			wStatement.setString(1, pBookName);
-			wStatement.setInt(2, pBalance);
-			wStatement.setInt(3, pBook.getId());
+			wStatement.setInt(2, pBook.getId());
 			mDbAccess.executeUpdate(wStatement);
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
@@ -2473,7 +2483,7 @@ public class DbUtil {
 		return wBalance;
 	}
 
-	private static int getInitialBalance(Book pBook) {
+	public static int getInitialBalance(Book pBook) {
 		int wBalance = 0;
 		StringBuilder wQueryBuilder = new StringBuilder("select SUM(").append(mBookBalanceCol).append(") ")
 					.append(mBookBalanceCol).append(" from ").append(mBookTable).append(" where ");

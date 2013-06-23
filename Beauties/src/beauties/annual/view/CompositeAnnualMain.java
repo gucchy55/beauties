@@ -41,7 +41,7 @@ public class CompositeAnnualMain extends Composite {
 	}
 
 	public void updateTable() {
-		mCompositeAnnualBookTab.setVisible(mCTL.getAnnualViewType() != AnnualViewType.Original);
+		mCompositeAnnualBookTab.getBookNameComposite().setVisible(mCTL.getAnnualViewType() != AnnualViewType.Original);
 		mCompositeAnnualActionTab.updateFiscalButton();
 		mCompositeAnnualTable.recreateMainTable();
 	}

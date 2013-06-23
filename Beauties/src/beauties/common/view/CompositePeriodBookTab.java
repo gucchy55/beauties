@@ -125,4 +125,8 @@ public class CompositePeriodBookTab extends Composite {
 	public void updateMonthLabel() {
 		mPeriodLabel.setText(mCTL.getPeriodLabelText());
 	}
+	
+	public Composite getBookNameComposite() {
+		return mBookNameComp;
+	}
 }

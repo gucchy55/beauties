@@ -30,6 +30,8 @@ import beauties.config.model.ConfigItem;
 class PreferencePageItem extends PreferencePage {
 
 	private static final int mRightHint = 150;
+	
+	private MyPreferenceManager mManager;
 
 	private Composite mMainComposite;
 	private Composite mTreeComposite;
@@ -44,7 +46,8 @@ class PreferencePageItem extends PreferencePage {
 	private Button mSpecialIncomeExpenseButton;
 	private Button mTempIncomeExpenseButton;
 
-	protected PreferencePageItem() {
+	protected PreferencePageItem(MyPreferenceManager pManager) {
+		mManager = pManager;
 		setTitle("項目設定");
 		mBookButtonMap = new LinkedHashMap<>();
 	}
@@ -216,10 +219,15 @@ class PreferencePageItem extends PreferencePage {
 
 	private void createBookButtons() {
 		for (Book wBook : DbUtil.getBooks()) {
+			createBookButton(wBook);
+		}
+	}
+	
+	private void createBookButton(Book pBook) {
 			Button wButton = new Button(mAttributeComposite, SWT.CHECK);
-			wButton.setText(wBook.getName());
+			wButton.setText(pBook.getName());
 			wButton.setVisible(false);
-			mBookButtonMap.put(wButton, wBook);
+			mBookButtonMap.put(wButton, pBook);
 
 			wButton.addSelectionListener(new SelectionAdapter() {
 				@Override
@@ -230,7 +238,6 @@ class PreferencePageItem extends PreferencePage {
 							wButton.getSelection());
 				}
 			});
-		}
 	}
 
 	private void createSpecialIncomeExpenseButton() {
@@ -323,6 +330,7 @@ class PreferencePageItem extends PreferencePage {
 		DbUtil.updateSortKeys(mRootConfigItem);
 		updateAttributeButtons(mTreeViewerConfigItem.getSelectedConfigItem());
 		mTreeOrderChanged = false;
+		mManager.updateItems();
 	}
 
 	private void updateAttributeButtons(ConfigItem pConfigItem) {

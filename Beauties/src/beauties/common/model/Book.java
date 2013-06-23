@@ -9,7 +9,7 @@ import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
 
 public class Book implements IComboItem {
-	private int mBalance = 0;
+	private int mBalance = SystemData.getUndefinedInt();
 	private int mId;
 	private String mName;
 	private static Book mAllBook;
@@ -40,6 +40,9 @@ public class Book implements IComboItem {
 	}
 	
 	public int getBalance() {
+		if (mBalance == SystemData.getUndefinedInt()) {
+			mBalance = DbUtil.getInitialBalance(this);
+		}
 		return mBalance;
 	}
 	
