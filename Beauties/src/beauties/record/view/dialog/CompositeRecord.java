@@ -75,8 +75,9 @@ class CompositeRecord extends Composite {
 		mRecordTableItem = pRecordTableItem;
 		mBook = mRecordTableItem.getBook();
 		mIncomeExpenseType = pRecordTableItem.getItem().getCategory().getIncomeExpenseType();
+		mItem = mRecordTableItem.getItem();
 		initLayout();
-		initWidgets();
+//		initWidgets();
 		setWidgets();
 		setListeners();
 	}
@@ -207,20 +208,23 @@ class CompositeRecord extends Composite {
 	}
 
 	private void setWidgets() {
+
 		Calendar wCal = Calendar.getInstance();
 		wCal.setTime(mRecordTableItem.getDate());
 		mDateTime.setYear(wCal.get(Calendar.YEAR));
 		mDateTime.setMonth(wCal.get(Calendar.MONTH));
 		mDateTime.setDay(wCal.get(Calendar.DAY_OF_MONTH));
 
+		updateCategoryCombo();
+		updateItemCombo();
 		mItem = mRecordTableItem.getItem();
 		if (!mItems.contains(mItem)) {
 			mItems.add(mItem);
 			mItemCombo.add(mRecordTableItem.getItem());
 			mItemCombo.refresh();
 		}
-
 		mItemCombo.setSelection(mItem);
+		updateNoteCombo();
 
 		if (mIncomeExpenseType == IncomeExpenseType.INCOME) {
 			mValueSpinner.setSelection(mRecordTableItem.getIncome());
