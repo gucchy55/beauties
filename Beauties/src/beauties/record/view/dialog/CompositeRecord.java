@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.SWT;
@@ -50,7 +51,7 @@ class CompositeRecord extends Composite {
 	private Spinner mValueSpinner;
 	private Spinner mFrequencySpinner;
 	private Combo mNoteCombo;
-	private String[] mNoteItems;
+	private List<String> mNoteItems;
 	
 	private static final int mVisibleComboItemCount = 10;
 
@@ -234,10 +235,13 @@ class CompositeRecord extends Composite {
 
 		mFrequencySpinner.setSelection(mRecordTableItem.getFrequency());
 
-		if (!"".equals(mRecordTableItem.getNote()))
-			mNoteCombo.setItem(0, mRecordTableItem.getNote());
+		if (!"".equals(mRecordTableItem.getNote())) {
+			mNoteItems.set(0, mRecordTableItem.getNote());
+			mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
+//			mNoteCombo.setItem(0, mRecordTableItem.getNote());
+		}
 		mNoteCombo.select(0);
-
+		System.out.println(mNoteCombo.getItem(0));
 	}
 
 	private void modifyBook() {
@@ -320,13 +324,13 @@ class CompositeRecord extends Composite {
 //		System.out.println("updateNoteCombo");
 		String wNote = mNoteCombo.getText();
 		mNoteItems = DbUtil.getNotes(mItem);
-		mNoteCombo.setItems(mNoteItems);
-		mNoteCombo.add(wNote, 0);
+		mNoteItems.add(0, wNote);
+		mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
+//		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
 		mNoteCombo.setVisibleItemCount(mVisibleComboItemCount);
-
 	}
-
+	
 	public void updateForNextInput() {
 		mValueSpinner.setSelection(0);
 		mFrequencySpinner.setSelection(0);
@@ -337,7 +341,12 @@ class CompositeRecord extends Composite {
 			mItemCombo.getCombo().select(0);
 			modifyItem();
 		}
-		mNoteCombo.setItem(0, "");
+		if (!"".equals(mNoteItems.get(0))) {
+			mNoteItems = DbUtil.getNotes(mItem);
+			mNoteItems.add(0, "");
+			mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
+		}
+//		mNoteCombo.setItem(0, "");
 		mNoteCombo.select(0);
 		mItemCombo.getCombo().setFocus();
 	}

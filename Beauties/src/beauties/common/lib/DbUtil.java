@@ -336,16 +336,16 @@ public class DbUtil {
 		return wBooks;
 	}
 	
-	public static String[] getNoteMove() {
+	public static List<String> getNoteMove() {
 		return getNotes(getMoveIncomeItemId());
 	}
 	
-	public static String[] getNotes(Item pItem) {
+	public static List<String> getNotes(Item pItem) {
 		return getNotes(pItem.getId());
 	}
 	
-	private static String[] getNotes(int pItemId) {
-		List<String> wResultList = new ArrayList<String>();
+	private static List<String> getNotes(int pItemId) {
+		List<String> wResultList = new LinkedList<String>();
 
 		// select NOTE_NAME from cbt_note 
 		// where ITEM_ID = ? and DEL_FLG = b?	// 1 (int), 2 (String 0)
@@ -371,7 +371,7 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 
-		return wResultList.toArray(new String[0]);
+		return wResultList;
 
 	}
 

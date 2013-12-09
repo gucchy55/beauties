@@ -3,6 +3,7 @@ package beauties.record.view.dialog;
 import java.util.Calendar;
 import java.util.Collection;
 import java.util.GregorianCalendar;
+import java.util.List;
 
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
@@ -44,7 +45,7 @@ class CompositeMove extends Composite {
 	private Spinner mValueSpinner;
 	private Spinner mFrequencySpinner;
 	private Combo mNoteCombo;
-	private String[] mNoteItems;
+	private List<String> mNoteItems;
 
 	private static final int mVisibleComboItemCount = 10;
 
@@ -187,18 +188,22 @@ class CompositeMove extends Composite {
 		mValueSpinner.setSelection(mIncomeRecord.getIncome());
 		mFrequencySpinner.setSelection(mIncomeRecord.getFrequency());
 
-		if (!"".equals(mIncomeRecord.getNote()))
-			mNoteCombo.setItem(0, mIncomeRecord.getNote());
+		if (!"".equals(mIncomeRecord.getNote())) {
+			mNoteItems.set(0, mIncomeRecord.getNote());
+			mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
+//			mNoteCombo.setItem(0, mIncomeRecord.getNote());
+		}
 		
 		mNoteCombo.select(0);
 
 	}
 
 	private void updateNoteCombo() {
-		String wNote = mNoteCombo.getText();
+//		String wNote = mNoteCombo.getText();
 		mNoteItems = DbUtil.getNoteMove();
-		mNoteCombo.setItems(mNoteItems);
-		mNoteCombo.add(wNote, 0);
+		mNoteItems.add(0, "");
+		mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
+//		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
 		mNoteCombo.setVisibleItemCount(mVisibleComboItemCount);
 	}

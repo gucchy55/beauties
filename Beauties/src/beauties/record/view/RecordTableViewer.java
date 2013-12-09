@@ -156,15 +156,18 @@ class RecordTableViewer extends TableViewer {
 	}
 	
 	private boolean keyEventForNew(KeyEvent e) {
-		if (e.stateMask == SWT.CTRL && e.keyCode == 'i') {
+		if (e.stateMask == SWT.CTRL && e.keyCode == 'i'
+			|| e.stateMask == SWT.COMMAND && e.keyCode == 'i') {
 			new OpenDialogNewRecord(mCTL).run();
 			return true;
 		}
-		if (e.stateMask == SWT.CTRL && e.keyCode == 'j') {
+		if (e.stateMask == SWT.CTRL && e.keyCode == 'm'
+			|| e.stateMask == SWT.COMMAND && e.keyCode == 'm') {
 			new OpenDialogNewMove(mCTL).run();
 			return true;
 		}
-		if (e.stateMask == SWT.CTRL && e.keyCode == 'f') {
+		if (e.stateMask == SWT.CTRL && e.keyCode == 'f'
+			|| e.stateMask == SWT.COMMAND && e.keyCode == 'f') {
 			mCTL.openSearchDialog();
 			return true;
 		}
@@ -176,13 +179,13 @@ class RecordTableViewer extends TableViewer {
 		if (!mCTL.hasSelectedRecordTableItem())
 			return false;
 		// Enterキーが押されたら変更ダイアログ
-		if (e.character == SWT.CR) {
-			if (mCTL.getSelectedRecordItem().isMoveItem())
-				new OpenDialogModifyMove(mCTL).run();
-			else
-				new OpenDialogModifyRecord(mCTL).run();
-			return true;
-		}
+//		if (e.character == SWT.CR) {
+//			if (mCTL.getSelectedRecordItem().isMoveItem())
+//				new OpenDialogModifyMove(mCTL).run();
+//			else
+//				new OpenDialogModifyRecord(mCTL).run();
+//			return true;
+//		}
 
 		// DELキーが押されたら削除（確認ダイアログ）
 		if (e.character == SWT.DEL) {
