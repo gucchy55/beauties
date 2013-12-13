@@ -103,7 +103,8 @@ public class CompositeMemoMain extends Composite {
 		pText.addKeyListener(new KeyListener() {
 			@Override
 			public void keyPressed(KeyEvent e) {
-				if (e.stateMask == SWT.CTRL && e.keyCode == 's'
+				if ((e.stateMask == SWT.CTRL || e.stateMask == SWT.COMMAND) 
+						&& e.keyCode == 's'
 						&& mModifiedMap.get(mCTabFolder.getSelection())) {
 					writeToFile(((Text) e.getSource()).getText());
 					mCTabFolder.getSelection().setText(

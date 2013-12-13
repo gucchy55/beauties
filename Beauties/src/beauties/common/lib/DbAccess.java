@@ -45,21 +45,6 @@ class DbAccess {
 	    return mInstance;
 	  }
 
-//	@Deprecated
-//	void executeUpdate(String pQuery) {
-//		try {
-//			mStmt = mCon.createStatement();
-//			mStmt.executeUpdate(pQuery);
-////			System.out.println(pQuery);
-//			if(!SystemData.getDbUpdated())
-//				SystemData.setDbUpdated(true);
-//		} catch (SQLException e) {
-//			sqlStatementError(e);
-//		} catch (Exception e) {
-//		}
-//
-//	}
-
 	void executeUpdate(PreparedStatement pPreparedStatement) {
 //		System.out.println(pPreparedStatement);
 		try {
@@ -72,23 +57,6 @@ class DbAccess {
 		}
 
 	}
-	
-//	@Deprecated
-//	ResultSet executeQuery(String pQuery) {
-//
-//		try {
-//			// Statementオブジェクトの生成
-//			mStmt = mCon.createStatement();
-//			mResultSet = mStmt.executeQuery(pQuery);
-//
-//		} catch (SQLException e) {
-//			sqlStatementError(e);
-//		} catch (Exception e) {
-//		}
-//
-//		return mResultSet;
-//
-//	}
 	
 	ResultSet executeQuery(PreparedStatement pPreparedStatement) {
 //		System.out.println(pPreparedStatement);
