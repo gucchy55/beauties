@@ -97,7 +97,7 @@ public class BeautiesMain extends ApplicationWindow {
 	private void createLeftComposite() {
 
 		mLeftComposite = new Composite(mMainComposite, SWT.NONE);
-		mLeftComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getMyFillLayout());
+		mLeftComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getLayout());
 
 		GridData wGridData = new MyGridData(GridData.HORIZONTAL_ALIGN_FILL,
 				GridData.VERTICAL_ALIGN_END, false, false).getMyGridData();

@@ -73,7 +73,7 @@ class PreferencePageItem extends PreferencePage {
 
 	private void createTopComposite() {
 		Composite wTopComposite = new Composite(mMainComposite, SWT.NONE);
-		wTopComposite.setLayout(new MyRowLayout().getMyRowLayout());
+		wTopComposite.setLayout(new MyRowLayout().getLayout());
 		GridData wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, false)
 		.getMyGridData();
 		wGridData.horizontalSpan = 2;
@@ -184,7 +184,7 @@ class PreferencePageItem extends PreferencePage {
 		GridData wGridData;
 		// TreeViewer
 		mTreeComposite = new Composite(mMainComposite, SWT.BORDER);
-		mTreeComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getMyFillLayout());
+		mTreeComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getLayout());
 		wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		mTreeComposite.setLayoutData(wGridData);
 

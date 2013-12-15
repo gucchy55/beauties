@@ -28,7 +28,9 @@ class CompositeAnnualActionTab extends Composite {
 		mCTL = pCTL;
 		mAnnualViewTypeMap = new EnumMap<AnnualViewType, Button>(AnnualViewType.class);
 
-		this.setLayout(new MyRowLayout().getMyRowLayout());
+		MyRowLayout wLayout = new MyRowLayout();
+		wLayout.setSpacing(SystemData.getHorizontalSpacing());
+		this.setLayout(wLayout.getLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false)
 				.getMyGridData());
 

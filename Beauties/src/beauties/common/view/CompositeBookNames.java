@@ -27,7 +27,11 @@ class CompositeBookNames extends Composite {
 		mBookButtonMap = new LinkedHashMap<>();
 		mBook = pBook;
 
-		this.setLayout(new MyRowLayout().getMyRowLayout());
+//		this.setLayout(new MyRowLayout().getMyRowLayout());
+//		MyFillLayout wLayout = new MyFillLayout(SWT.HORIZONTAL);
+		MyRowLayout wLayout = new MyRowLayout();
+		wLayout.setSpacing(SystemData.getHorizontalSpacing());
+		this.setLayout(wLayout.getLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
 		for (Book wBook : mBooks) {

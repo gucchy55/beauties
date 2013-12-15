@@ -89,7 +89,7 @@ class PreferencePageBook extends PreferencePage {
 
 	private void createTopComposite(GridData wGridData) {
 		Composite wTopComposite = new Composite(mMainComposite, SWT.NONE);
-		wTopComposite.setLayout(new MyRowLayout().getMyRowLayout());
+		wTopComposite.setLayout(new MyRowLayout().getLayout());
 		wGridData.horizontalSpan = 2;
 		wTopComposite.setLayoutData(wGridData);
 
@@ -215,7 +215,7 @@ class PreferencePageBook extends PreferencePage {
 		GridData wGridData;
 		// BookNameTable
 		mTableComposite = new Composite(mMainComposite, SWT.BORDER);
-		mTableComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getMyFillLayout());
+		mTableComposite.setLayout(new MyFillLayout(SWT.VERTICAL).getLayout());
 		wGridData = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
 		mTableComposite.setLayoutData(wGridData);
 		initBookNameTable();

@@ -28,7 +28,11 @@ class CompositeActionTab extends Composite {
 		super(pCTL.getComposite(), SWT.NONE);
 		mCTL = pCTL;
 		
-		this.setLayout(new MyRowLayout().getMyRowLayout());
+//		this.setLayout(new MyRowLayout().getMyRowLayout());
+//		MyFillLayout wLayout = new MyFillLayout(SWT.HORIZONTAL);
+		MyRowLayout wLayout = new MyRowLayout();
+		wLayout.setSpacing(SystemData.getHorizontalSpacing());
+		this.setLayout(wLayout.getLayout());
 		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData());
 		
 		createSearchButton();

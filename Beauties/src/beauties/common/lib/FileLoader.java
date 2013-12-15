@@ -43,6 +43,8 @@ public class FileLoader {
 	private static final String mMemoDirKey = "memoDirName";
 	
 	private static final String mAutoDumpKey = "autoDump";
+	
+	private static final String mHorizontalSpacing = "horizontalSpacing";
 
 	public FileLoader(String pFileName) {
 		mFileName = pFileName;
@@ -91,12 +93,18 @@ public class FileLoader {
 			
 			SystemData.setAnnualWidth(Integer.parseInt(prop.getProperty(mAnnualWidthKey)));
 			
-			if (prop.getProperty(mMemoDirKey) != null && !"".equals(prop.getProperty(mMemoDirKey)))
+			if (prop.getProperty(mMemoDirKey) != null && !"".equals(prop.getProperty(mMemoDirKey))) {
 				SystemData.setPathMemoDir(prop.getProperty(mMemoDirKey));
+			}
 			
-			if (Integer.parseInt(prop.getProperty(mAutoDumpKey)) == 1)
+			if (Integer.parseInt(prop.getProperty(mAutoDumpKey)) == 1) {
 				SystemData.setAutoSave(true);
+			}
 			
+			if (prop.getProperty(mHorizontalSpacing) != null) {
+				SystemData.setHorizontalSpacing(Integer.parseInt(prop.getProperty(mHorizontalSpacing)));
+			}
+
 		} catch (java.io.IOException e) {
 			e.printStackTrace();
 		}

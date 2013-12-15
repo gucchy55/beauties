@@ -25,8 +25,12 @@ public class MyRowLayout {
 		mRowLayout.spacing = mSpacing;
 	}
 	
-	public RowLayout getMyRowLayout() {
+	public RowLayout getLayout() {
 		return mRowLayout;
+	}
+	
+	public void setSpacing (int pSpacing) {
+		mRowLayout.spacing = pSpacing;
 	}
 	
 }
