@@ -122,9 +122,8 @@ class CompositeRecordTable extends Composite {
 
 	private void initLayout() {
 		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-		this
-				.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
-						.getMyGridData());
+//		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true)
+//						.getMyGridData());
 
 		mSashForm = new SashForm(this, SWT.VERTICAL);
 		mSashForm.setLayout(new MyGridLayout(1, false).getMyGridLayout());

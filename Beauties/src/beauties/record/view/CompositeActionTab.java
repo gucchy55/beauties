@@ -4,12 +4,10 @@ package beauties.record.view;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 
 import beauties.common.lib.SystemData;
-import beauties.common.view.MyGridData;
 import beauties.common.view.MyRowLayout;
 import beauties.record.DeleteRecord;
 import beauties.record.OpenDialogModifyMove;
@@ -28,12 +26,9 @@ class CompositeActionTab extends Composite {
 		super(pCTL.getComposite(), SWT.NONE);
 		mCTL = pCTL;
 		
-//		this.setLayout(new MyRowLayout().getMyRowLayout());
-//		MyFillLayout wLayout = new MyFillLayout(SWT.HORIZONTAL);
 		MyRowLayout wLayout = new MyRowLayout();
 		wLayout.setSpacing(SystemData.getHorizontalSpacing());
 		this.setLayout(wLayout.getLayout());
-		this.setLayoutData(new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData());
 		
 		createSearchButton();
 

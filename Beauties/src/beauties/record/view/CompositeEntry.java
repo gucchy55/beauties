@@ -28,13 +28,27 @@ public class CompositeEntry extends Composite {
 	}
 
 	private void init() {
-		this.setLayout(new MyGridLayout(2, false).getMyGridLayout());
+		this.setLayout(new MyGridLayout(3, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
+
+		GridData wGridDataAction = new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData();
+		wGridDataAction.horizontalSpan = 2;
+
+		GridData wGridDataRecord = new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData();
+		wGridDataRecord.horizontalSpan = 2;
+
+		GridData wGridDataSummary = new MyGridData(GridData.END, GridData.FILL, false, false)
+				.getMyGridData();
+		wGridDataSummary.horizontalSpan = 1;
+		wGridDataSummary.widthHint = 230;
 
 		mCompositePeriodBookTab = new CompositePeriodBookTab(mCTL);
 		mCompositeActionTab = new CompositeActionTab(mCTL);
+		mCompositeActionTab.setLayoutData(wGridDataAction);
 		mCompositeRecordTable = new CompositeRecordTable(mCTL);
+		mCompositeRecordTable.setLayoutData(wGridDataRecord);
 		mCompositeSummaryTable = new CompositeSummaryTable(mCTL);
+		mCompositeSummaryTable.setLayoutData(wGridDataSummary);
 	}
 
 	public void updateView() {

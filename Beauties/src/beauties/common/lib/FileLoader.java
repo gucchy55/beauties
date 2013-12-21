@@ -45,6 +45,8 @@ public class FileLoader {
 	private static final String mAutoDumpKey = "autoDump";
 	
 	private static final String mHorizontalSpacing = "horizontalSpacing";
+	private static final String mRecordWidthSummaryItem = "widthSummaryItem";
+	private static final String mRecordWidthSummaryValue = "widthSummaryValue";
 
 	public FileLoader(String pFileName) {
 		mFileName = pFileName;
@@ -103,6 +105,12 @@ public class FileLoader {
 			
 			if (prop.getProperty(mHorizontalSpacing) != null) {
 				SystemData.setHorizontalSpacing(Integer.parseInt(prop.getProperty(mHorizontalSpacing)));
+			}
+			if (prop.getProperty(mRecordWidthSummaryItem) != null) {
+				SystemData.setRecordWidthSummaryItem(Integer.parseInt(prop.getProperty(mRecordWidthSummaryItem)));
+			}
+			if (prop.getProperty(mRecordWidthSummaryValue) != null) {
+				SystemData.setRecordWidthSummaryValue(Integer.parseInt(prop.getProperty(mRecordWidthSummaryValue)));
 			}
 
 		} catch (java.io.IOException e) {

@@ -26,8 +26,6 @@ import beauties.record.model.SummaryTableItem;
 
 class CompositeSummaryTable extends Composite {
 
-	private static final int mRightWidthHint = 200;
-
 	private RecordController mCTL;
 	private TableViewer mSummaryTableViewer;
 	private ISelectionChangedListener mSelectionChangedListener;
@@ -63,22 +61,17 @@ class CompositeSummaryTable extends Composite {
 		// 列のヘッダの設定
 		TableColumn wItemNameCol = new TableColumn(wTable, SWT.LEFT);
 		wItemNameCol.setText("項目名");
-		wItemNameCol.setWidth(100);
+		wItemNameCol.setWidth(SystemData.getRecordWidthSummaryItem());
 
 		TableColumn wValueCol = new TableColumn(wTable, SWT.RIGHT);
 		wValueCol.setText("合計");
-		wValueCol.setWidth(80);
+		wValueCol.setWidth(SystemData.getRecordWidthSummaryValue());
 		
 		return wSummaryTableViewer;
 	}
 
 	private void initLayout() {
 		this.setLayout(new MyGridLayout(1, false).getMyGridLayout());
-
-		GridData wGridData = new MyGridData(GridData.BEGINNING, GridData.FILL, false, true)
-				.getMyGridData();
-		wGridData.widthHint = mRightWidthHint;
-		this.setLayoutData(wGridData);
 	}
 
 	private ISelectionChangedListener createSelectionChangedListener() {
