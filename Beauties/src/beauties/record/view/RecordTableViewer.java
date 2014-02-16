@@ -5,15 +5,15 @@ import java.text.SimpleDateFormat;
 import java.util.Collection;
 
 import org.eclipse.jface.viewers.ArrayContentProvider;
-import org.eclipse.jface.viewers.DoubleClickEvent;
-import org.eclipse.jface.viewers.IDoubleClickListener;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
+import org.eclipse.swt.events.MouseAdapter;
+import org.eclipse.swt.events.MouseEvent;
+import org.eclipse.swt.events.MouseListener;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -40,7 +40,8 @@ class RecordTableViewer extends TableViewer {
 	private TableColumn mDateCol;
 
 	private KeyListener mKeyListener;
-	private IDoubleClickListener mDoubleClickListener;
+//	private IDoubleClickListener mDoubleClickListener;
+	private MouseListener mDoubleClickListener;
 	
 	RecordTableViewer(Composite pComp, RecordController pCTL) {
 		super(pComp, SWT.FULL_SELECTION | SWT.BORDER | SWT.VIRTUAL);
@@ -108,7 +109,8 @@ class RecordTableViewer extends TableViewer {
 
 	private void addListeners() {
 		this.getTable().addKeyListener(mKeyListener);
-		addDoubleClickListener(mDoubleClickListener);
+		this.getTable().addMouseListener(mDoubleClickListener);
+//		addDoubleClickListener(mDoubleClickListener);
 	}
 	
 //	void removeListeners() {
@@ -116,14 +118,19 @@ class RecordTableViewer extends TableViewer {
 //		this.getTable().removeKeyListener(mKeyListener);
 //	}
 
-	private IDoubleClickListener getDoubleClickListener() {
-		return new IDoubleClickListener() {
+	private MouseListener getDoubleClickListener() {
+		return new MouseAdapter() {
 			@Override
-			public void doubleClick(DoubleClickEvent event) {
-				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-				RecordTableItem wRecord = (RecordTableItem) sel.getFirstElement();
-				if (wRecord.isBalanceRow())
+			public void mouseDoubleClick(MouseEvent event) {
+//		return new IDoubleClickListener() {
+//			@Override
+//			public void doubleClick(DoubleClickEvent event) {
+//				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
+//				RecordTableItem wRecord = (RecordTableItem) sel.getFirstElement();
+				RecordTableItem wRecord = mCTL.getSelectedRecordItem();
+				if (wRecord.isBalanceRow()) {
 					return;
+				}
 				if (wRecord.isMoveItem()) {
 					new OpenDialogModifyMove(mCTL).run();
 				} else {

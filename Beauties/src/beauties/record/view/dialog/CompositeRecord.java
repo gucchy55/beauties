@@ -241,7 +241,7 @@ class CompositeRecord extends Composite {
 //			mNoteCombo.setItem(0, mRecordTableItem.getNote());
 		}
 		mNoteCombo.select(0);
-		System.out.println(mNoteCombo.getItem(0));
+//		System.out.println(mNoteCombo.getItem(0));
 	}
 
 	private void modifyBook() {
