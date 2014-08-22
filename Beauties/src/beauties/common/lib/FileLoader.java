@@ -41,6 +41,8 @@ public class FileLoader {
 	private static final String mAnnualWidthKey = "widthAnnual";
 	
 	private static final String mMemoDirKey = "memoDirName";
+	private static final String mMemoFontNameKey = "memoFontName";
+	private static final String mMemoFontSizeKey = "memoFontSize";
 	
 	private static final String mAutoDumpKey = "autoDump";
 	
@@ -97,6 +99,12 @@ public class FileLoader {
 			
 			if (prop.getProperty(mMemoDirKey) != null && !"".equals(prop.getProperty(mMemoDirKey))) {
 				SystemData.setPathMemoDir(prop.getProperty(mMemoDirKey));
+			}
+			if (prop.getProperty(mMemoFontNameKey) != null && !"".equals(prop.getProperty(mMemoFontNameKey))) {
+				SystemData.setMemoFontName(prop.getProperty(mMemoFontNameKey));
+			}
+			if (prop.getProperty(mMemoFontSizeKey) != null && !"".equals(prop.getProperty(mMemoFontSizeKey))) {
+				SystemData.setMemoFontSize(Integer.parseInt(prop.getProperty(mMemoFontSizeKey)));
 			}
 			
 			if (Integer.parseInt(prop.getProperty(mAutoDumpKey)) == 1) {

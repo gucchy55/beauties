@@ -18,6 +18,8 @@ import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
+import org.eclipse.swt.graphics.Font;
+import org.eclipse.swt.graphics.FontData;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Display;
@@ -50,6 +52,7 @@ public class CompositeMemoMain extends Composite {
 		}
 		mModifiedMap = new HashMap<CTabItem, Boolean>();
 		mCTabItemFileMap = new HashMap<CTabItem, File>();
+		Font wFont = new Font(Display.getCurrent(), new FontData(SystemData.getMemoFontName(), SystemData.getMemoFontSize(), SWT.NONE));
 		for (File wFile : wFiles) {
 			if (wFile.isDirectory()) {
 				continue;
@@ -57,6 +60,7 @@ public class CompositeMemoMain extends Composite {
 			CTabItem wItem = new CTabItem(mCTabFolder, SWT.NONE);
 			wItem.setText(wFile.getName());
 			Text wText = new Text(mCTabFolder, SWT.MULTI | SWT.V_SCROLL | SWT.H_SCROLL);
+			wText.setFont(wFont);
 			wText.setText(getFileContent(wFile));
 			addListeners(wText);
 			wItem.setControl(wText);
