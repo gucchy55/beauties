@@ -1,8 +1,10 @@
 package beauties.common.lib;
 
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Properties;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Point;
@@ -58,8 +60,13 @@ public class FileLoader {
 		mFileName = pFileName;
 
 		try {
-			java.util.Properties prop = new java.util.Properties();
-			prop.load(new InputStreamReader(new FileInputStream(mFileName), "UTF-8"));
+			Properties prop = new Properties();
+			File wFile = new File(mFileName);
+//			prop.load(new InputStreamReader(new FileInputStream(mFileName), "UTF-8"));
+			prop.load(new InputStreamReader(new FileInputStream(wFile), "UTF-8"));
+			
+			String wMemoParentDirName = wFile.getAbsoluteFile().getParent();
+			SystemData.setWorkDir(wMemoParentDirName);
 			
 			if (prop.getProperty(mWindowTitleKey) != null) {
 				SystemData.setWindowTitle(prop.getProperty(mWindowTitleKey));

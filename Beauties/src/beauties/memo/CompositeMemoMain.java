@@ -46,7 +46,9 @@ public class CompositeMemoMain extends Composite {
 		mCTabFolder.setSimple(false);
 		mCTabFolder.setLayoutData(wGridData);
 
-		File[] wFiles = new File(SystemData.getPathMemoDir()).listFiles();
+		File[] wFiles = "".equals(SystemData.getWorkDir()) ? 
+				new File(SystemData.getPathMemoDir()).listFiles() :
+				new File(SystemData.getWorkDir(), SystemData.getPathMemoDir()).listFiles();
 		if (wFiles == null) {
 			return;
 		}

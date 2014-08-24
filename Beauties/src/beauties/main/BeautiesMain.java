@@ -96,10 +96,10 @@ public class BeautiesMain extends ApplicationWindow {
 				}
 			});
 		}
-//		MenuItem exit = new MenuItem(wDropdown, SWT.PUSH);
-//		exit.setText("Exit");
 		
-		ImageData wImageData = new ImageData("image/beauties.gif");
+//		ImageData wImageData = new ImageData("image/beauties.gif");
+		String wParentDir = "".equals(SystemData.getWorkDir()) ? "" : SystemData.getWorkDir() + "/";
+		ImageData wImageData = new ImageData(wParentDir + "image/beauties.gif");
 		mIcon = new Image(pShell.getDisplay(), wImageData);
 		pShell.setImage(mIcon);
 
@@ -108,7 +108,7 @@ public class BeautiesMain extends ApplicationWindow {
 	@Override
 	public boolean close() {
 		// イメージの破棄
-		if (!mIcon.isDisposed())
+		if (mIcon != null && !mIcon.isDisposed())
 			mIcon.dispose();
 		return super.close();
 	}
