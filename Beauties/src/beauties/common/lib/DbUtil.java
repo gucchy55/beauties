@@ -2445,4 +2445,12 @@ public class DbUtil {
 		MessageDialog.openWarning(Display.getCurrent().getShells()[0],
 				"SQL ResultSet Handling Error", e.toString() + "\n\n" + wStack);
 	}
+	
+	public static void updateDb() {
+		mDbAccess = DbAccess.updateInstance();
+	}
+	
+	public static boolean isDbNull() {
+		return mDbAccess.isNull();
+	}
 }

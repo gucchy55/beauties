@@ -1,10 +1,13 @@
 package beauties.common.lib;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStreamReader;
 
+import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Rectangle;
+import org.eclipse.swt.widgets.Display;
 
 
 public class FileLoader {
@@ -18,6 +21,7 @@ public class FileLoader {
 	private static final String mDbUserKey = "dbUser";
 	private static final String mDbPassKey = "dbPass";
 	private static final String mDbNameKey = "dbName";
+	private static final String mDbNameMapKey = "dbNames";
 
 	private static final String mWindowXKey = "x";
 	private static final String mWindowYKey = "y";
@@ -66,6 +70,14 @@ public class FileLoader {
 			SystemData.setDbUser(prop.getProperty(mDbUserKey));
 			SystemData.setDbPass(prop.getProperty(mDbPassKey));
 			SystemData.setDbName(prop.getProperty(mDbNameKey));
+			String wDbNamesString = prop.getProperty(mDbNameMapKey);
+			for (String wDbString : wDbNamesString.split(",")) {
+				String[] wDbName = wDbString.split(":");
+				if (wDbName.length != 2) {
+					break;
+				}
+				SystemData.addDbName(wDbName[1], wDbName[0]);
+			}
 			
 			SystemData.setWindowRectangle(new Rectangle(
 					Integer.parseInt(prop.getProperty(mWindowXKey)),
@@ -107,7 +119,7 @@ public class FileLoader {
 				SystemData.setMemoFontSize(Integer.parseInt(prop.getProperty(mMemoFontSizeKey)));
 			}
 			
-			if (Integer.parseInt(prop.getProperty(mAutoDumpKey)) == 1) {
+			if (prop.getProperty(mAutoDumpKey) != null && Integer.parseInt(prop.getProperty(mAutoDumpKey)) == 1) {
 				SystemData.setAutoSave(true);
 			}
 			
@@ -121,7 +133,9 @@ public class FileLoader {
 				SystemData.setRecordWidthSummaryValue(Integer.parseInt(prop.getProperty(mRecordWidthSummaryValue)));
 			}
 
-		} catch (java.io.IOException e) {
+		} catch (IOException | NumberFormatException e) {
+			MessageDialog.openWarning(Display.getCurrent().getShells()[0], "Properties File Error", e.toString());
+			System.err.println("Properties File Error: " + e.toString());
 			e.printStackTrace();
 		}
 	}

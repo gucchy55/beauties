@@ -15,9 +15,12 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Control;
 import org.eclipse.swt.widgets.Display;
+import org.eclipse.swt.widgets.Menu;
+import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
 import beauties.annual.view.CompositeAnnualMain;
+import beauties.common.lib.DbUtil;
 import beauties.common.lib.FileLoader;
 import beauties.common.lib.SystemData;
 import beauties.common.model.RightType;
@@ -41,24 +44,21 @@ public class BeautiesMain extends ApplicationWindow {
 
 	private static final int mLeftWidthHint = 100;
 	private static final int mLeftHeightHint = 200;
+	
+	private String mFileLoaderFileName = "beauties.properties";
 
 	private Image mIcon;
 
-	public BeautiesMain() {
+	public BeautiesMain(String pFileName) {
 		super(null);
+		if (!"".equals(pFileName)) {
+			mFileLoaderFileName = pFileName;
+		}
 	}
 
 	@Override
 	protected void configureShell(final Shell pShell) {
 		super.configureShell(pShell);
-		pShell.setText(SystemData.getWindowTitle());
-		pShell.setSize(SystemData.getWindowPoint());
-		pShell.setMaximized(SystemData.isWindowMaximized());
-
-		ImageData wImageData = new ImageData("image/beauties.gif");
-		mIcon = new Image(pShell.getDisplay(), wImageData);
-		pShell.setImage(mIcon);
-
 		setExceptionHandler(new IExceptionHandler() {
 			@Override
 			public void handleException(Throwable e) {
@@ -71,6 +71,38 @@ public class BeautiesMain extends ApplicationWindow {
 				e.printStackTrace();
 			}
 		});
+		new FileLoader(mFileLoaderFileName);
+
+		pShell.setText(SystemData.getWindowTitle());
+		pShell.setSize(SystemData.getWindowPoint());
+		pShell.setMaximized(SystemData.isWindowMaximized());
+		
+		Menu wMenuBar = pShell.getDisplay().getMenuBar();
+		if (wMenuBar == null) {
+			wMenuBar = new Menu(pShell, SWT.BAR);
+			pShell.setMenuBar(wMenuBar);
+		}
+		MenuItem wDbMenu = new MenuItem(wMenuBar, SWT.CASCADE);
+		wDbMenu.setText("切り替え");
+		Menu wDropdown = new Menu(wMenuBar);
+		wDbMenu.setMenu(wDropdown);
+		for (final String wDbName : SystemData.getDbNameMap().keySet()) {
+			MenuItem wDbItem = new MenuItem(wDropdown, SWT.PUSH);
+			wDbItem.setText(wDbName);
+			wDbItem.addSelectionListener(new SelectionAdapter() {
+				@Override
+				public void widgetSelected(SelectionEvent e) {
+					updateDb(wDbName, pShell);
+				}
+			});
+		}
+//		MenuItem exit = new MenuItem(wDropdown, SWT.PUSH);
+//		exit.setText("Exit");
+		
+		ImageData wImageData = new ImageData("image/beauties.gif");
+		mIcon = new Image(pShell.getDisplay(), wImageData);
+		pShell.setImage(mIcon);
+
 	}
 
 	@Override
@@ -91,6 +123,9 @@ public class BeautiesMain extends ApplicationWindow {
 
 	private void init() {
 		createLeftComposite();
+		if (DbUtil.isDbNull()) {
+			return;
+		}
 		createRightComposite();
 	}
 
@@ -127,12 +162,13 @@ public class BeautiesMain extends ApplicationWindow {
 					return;
 				}
 				if (!wType.equals(RightType.Setting)) {
-					mRightTypeMap.get(mRightType).setBackground(null);
-					mRightTypeMap.get(mRightType).setSelection(false);
-					mRightType = wType;
-					wButton.setBackground(SystemData.getColorYellow());
-					mRightComposite.dispose();
-					createRightComposite();
+//					mRightTypeMap.get(mRightType).setBackground(null);
+//					mRightTypeMap.get(mRightType).setSelection(false);
+//					mRightType = wType;
+					updateRight(wType);
+//					wButton.setBackground(SystemData.getColorYellow());
+//					mRightComposite.dispose();
+//					createRightComposite();
 				} else {
 					openConfigDialog();
 				}
@@ -158,23 +194,49 @@ public class BeautiesMain extends ApplicationWindow {
 		new PreferenceDialog(getShell(), new MyPreferenceManager()).open();
 		SystemData.crearCache();
 
+//		mRightTypeMap.get(mRightType).setBackground(null);
+//		mRightTypeMap.get(mRightType).setSelection(false);
+
+		updateRight(RightType.Main);
+	}
+
+	private void updateRight(RightType pRightType) {
 		mRightTypeMap.get(mRightType).setBackground(null);
 		mRightTypeMap.get(mRightType).setSelection(false);
+		mRightType = pRightType;
 
-		mRightType = RightType.Main;
 		mRightTypeMap.get(mRightType).setBackground(SystemData.getColorYellow());
 		mRightTypeMap.get(mRightType).setSelection(true);
 		
-		mRightComposite.dispose();
+		if (mRightComposite != null) {
+			mRightComposite.dispose();
+		}
+		if (DbUtil.isDbNull()) {
+			return;
+		}
 		createRightComposite();
+	}
+	
+	private void updateDb(String pNewDisplayName, Shell pShell) {
+		if (SystemData.getDbName().equals(SystemData.getDbNameByDisplayName(pNewDisplayName))) {
+			return;
+		}
+		SystemData.setDbName(SystemData.getDbNameByDisplayName(pNewDisplayName));
+		SystemData.setWindowTitle(pNewDisplayName);
+		DbUtil.updateDb();
+		pShell.setText(pNewDisplayName);
+
+		SystemData.crearCache();
+		updateRight(RightType.Main);
 	}
 
 	public static void main(String[] args) {
-		if (args.length > 0) {
-			new FileLoader(args[0]);
-		}
+//		if (args.length > 0) {
+//			new FileLoader(args[0]);
+//		}
+		String wFileName = args.length > 0 ? args[0] : "";
 
-		BeautiesMain wWindow = new BeautiesMain();// トップレベル・シェルの作成
+		BeautiesMain wWindow = new BeautiesMain(wFileName);// トップレベル・シェルの作成
 		wWindow.setBlockOnOpen(true); // ウィンドウが閉じられるまでopen()メソッドをブロック
 		wWindow.open(); // 表示
 		Display.getCurrent().dispose();

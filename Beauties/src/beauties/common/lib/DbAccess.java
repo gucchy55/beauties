@@ -43,7 +43,12 @@ class DbAccess {
 	      mInstance = new DbAccess();
 	    }
 	    return mInstance;
-	  }
+	}
+	
+	static synchronized DbAccess updateInstance() {
+		mInstance = new DbAccess();
+		return mInstance;
+	}
 
 	void executeUpdate(PreparedStatement pPreparedStatement) {
 //		System.out.println(pPreparedStatement);
@@ -111,5 +116,8 @@ class DbAccess {
 		} catch (Exception e) {
 		}
 	}
-
+	
+	boolean isNull() {
+		return mCon == null;
+	}
 }
