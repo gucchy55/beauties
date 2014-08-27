@@ -45,8 +45,13 @@ class DbAccess {
 	    return mInstance;
 	}
 	
-	static synchronized DbAccess updateInstance() {
-		mInstance = new DbAccess();
+	static DbAccess updateInstance() {
+		try {
+			mInstance.mCon.setCatalog(SystemData.getDbName());
+		} catch (SQLException e) {
+			sqlStatementError(e);
+		} catch (Exception e) {
+		}
 		return mInstance;
 	}
 
@@ -94,7 +99,7 @@ class DbAccess {
 		System.err.println("SQL Connection Error: " + e.toString());
 	}
 
-	private void sqlStatementError(SQLException e) {
+	private static void sqlStatementError(SQLException e) {
 		StringBuffer wStack = new StringBuffer();
 		for (int i = 0; i < e.getStackTrace().length; i++) {
 			if (i == 20) {

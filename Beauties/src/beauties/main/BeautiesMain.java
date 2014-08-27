@@ -239,7 +239,9 @@ public class BeautiesMain extends ApplicationWindow {
 		BeautiesMain wWindow = new BeautiesMain(wFileName);// トップレベル・シェルの作成
 		wWindow.setBlockOnOpen(true); // ウィンドウが閉じられるまでopen()メソッドをブロック
 		wWindow.open(); // 表示
-		Display.getCurrent().dispose();
+		if (Display.getCurrent() != null) {
+			Display.getCurrent().dispose();
+		}
 		SystemData.closeProcess();
 	}
 
