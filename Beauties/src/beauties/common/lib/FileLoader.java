@@ -15,6 +15,7 @@ import org.eclipse.swt.widgets.Display;
 public class FileLoader {
 
 	private static String mFileName;
+	private static final String mImageFileNameKey = "imageFile";
 	
 	private static final String mWindowTitleKey = "windowTitle";
 
@@ -70,6 +71,10 @@ public class FileLoader {
 			
 			if (prop.getProperty(mWindowTitleKey) != null) {
 				SystemData.setWindowTitle(prop.getProperty(mWindowTitleKey));
+			}
+			
+			if (prop.getProperty(mImageFileNameKey) != null) {
+				SystemData.setImageFileName(prop.getProperty(mImageFileNameKey));
 			}
 			
 			SystemData.setDbHost(prop.getProperty(mDbHostKey));

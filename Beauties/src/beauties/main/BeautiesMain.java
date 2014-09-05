@@ -1,11 +1,15 @@
 package beauties.main;
 
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.EnumMap;
 
 import org.eclipse.jface.dialogs.MessageDialog;
 import org.eclipse.jface.preference.PreferenceDialog;
 import org.eclipse.jface.window.ApplicationWindow;
 import org.eclipse.swt.SWT;
+import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent; //import org.eclipse.swt.graphics.Point;
 import org.eclipse.swt.graphics.Image;
@@ -97,12 +101,24 @@ public class BeautiesMain extends ApplicationWindow {
 			});
 		}
 		
-//		ImageData wImageData = new ImageData("image/beauties.gif");
+		if (SystemData.getImageFileName() == null) {
+			return;
+		}
 		String wParentDir = "".equals(SystemData.getWorkDir()) ? "" : SystemData.getWorkDir() + "/";
-		ImageData wImageData = new ImageData(wParentDir + "image/beauties.gif");
+		ImageData wImageData = null;
+		try {
+			InputStream wImageFileStream = new FileInputStream(wParentDir + SystemData.getImageFileName());
+			wImageData = new ImageData(wImageFileStream);
+		} catch (IOException | SWTException e) {
+			MessageDialog.openWarning(Display.getCurrent().getShells()[0], "Image file error", e.toString());
+			System.err.println("Image file error: " + e.toString());
+			e.printStackTrace();
+		}
+		if (wImageData == null) {
+			return;
+		}
 		mIcon = new Image(pShell.getDisplay(), wImageData);
 		pShell.setImage(mIcon);
-
 	}
 
 	@Override
