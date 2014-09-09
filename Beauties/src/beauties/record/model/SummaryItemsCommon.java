@@ -16,16 +16,16 @@ public class SummaryItemsCommon {
 	
 	private Collection<SummaryTableItem> mList;
 	
-	private void setOperatingProfit(int pOperatingProfit) {
+	private void setOperatingProfit(long pOperatingProfit) {
 		mOperatingProfit = SummaryTableItemFactory.createOriginal(wOperatingProfitName, pOperatingProfit);
 	}
-	private void setActualProfit(int pActualProft) {
+	private void setActualProfit(long pActualProft) {
 		mActualProfit = SummaryTableItemFactory.createOriginal(wActualProfitName, pActualProft);
 	}
-	private void setActualBalance(int pActualBalance) {
+	private void setActualBalance(long pActualBalance) {
 		mActualBalance = SummaryTableItemFactory.createOriginal(wActualBalanceName, pActualBalance);
 	}
-	private void setTempBalance(int pTempBalance) {
+	private void setTempBalance(long pTempBalance) {
 		mTempBalance = SummaryTableItemFactory.createOriginal(wTempBalanceName, pTempBalance);
 	}
 	public SummaryTableItem getOperatingProfit() {
@@ -60,27 +60,27 @@ public class SummaryItemsCommon {
 	}
 	
 	public static class Builder {
-		private int mOperatingProfit;
-		private int mActualProfit;
-		private int mActualBalance;
-		private int mTempBalance;
+		private long mOperatingProfit;
+		private long mActualProfit;
+		private long mActualBalance;
+		private long mTempBalance;
 		
-		public Builder operationalProfit(int pOperationalProfit) {
+		public Builder operationalProfit(long pOperationalProfit) {
 			mOperatingProfit = pOperationalProfit;
 			return this;
 		}
 		
-		public Builder actualProfit(int pActualProfit) {
+		public Builder actualProfit(long pActualProfit) {
 			mActualProfit = pActualProfit;
 			return this;
 		}
 		
-		public Builder actualBalance(int pActualBalance) {
+		public Builder actualBalance(long pActualBalance) {
 			mActualBalance = pActualBalance;
 			return this;
 		}
 		
-		public Builder tempBalance(int pTempBalance) {
+		public Builder tempBalance(long pTempBalance) {
 			mTempBalance = pTempBalance;
 			return this;
 		}

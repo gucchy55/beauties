@@ -19,7 +19,7 @@ public class SummaryTableItemsNormal {
 	
 	Collection<SummaryTableItem> mSummaryTableItems;
 	
-	public SummaryTableItemsNormal(int pAppearedIncome, int pAppearedExpense, List<SummaryTableItem> pItems) {
+	public SummaryTableItemsNormal(long pAppearedIncome, long pAppearedExpense, List<SummaryTableItem> pItems) {
 		mAppearedProfit = SummaryTableItemFactory.createAppearedProfit("みかけ収支", pAppearedIncome - pAppearedExpense); 
 		mAppearedIncome = SummaryTableItemFactory.createAppearedIncome("みかけ収入", pAppearedIncome);
 		mAppearedExpense = SummaryTableItemFactory.createAppearedExpense("みかけ支出", pAppearedExpense);

@@ -24,63 +24,63 @@ public class IncomeExpenseSummary {
 		return mTempIncomeExpense;
 	}
 
-	public int getAppearedIncome() {
+	public long getAppearedIncome() {
 		return mAppearedIncomeExpense.getIncome();
 	}
 	
-	public int getAppearedExpense() {
+	public long getAppearedExpense() {
 		return mAppearedIncomeExpense.getExpense();
 	}
 	
-	public int getAppearedProfit() {
+	public long getAppearedProfit() {
 		return mAppearedIncomeExpense.getProfit();
 	}
 	
-	public int getSpecialIncome() {
+	public long getSpecialIncome() {
 		return mSpecialIncomeExpense.getIncome();
 	}
 	
-	public int getSpecialExpense() {
+	public long getSpecialExpense() {
 		return mSpecialIncomeExpense.getExpense();
 	}
 	
-	public int getSpecialProfit() {
+	public long getSpecialProfit() {
 		return mSpecialIncomeExpense.getProfit();
 	}
 	
-	public int getTempIncome() {
+	public long getTempIncome() {
 		return mTempIncomeExpense.getIncome();
 	}
 	
-	public int getTempExpense() {
+	public long getTempExpense() {
 		return mTempIncomeExpense.getExpense();
 	}
 	
-	public int getTempProfit() {
+	public long getTempProfit() {
 		return mTempIncomeExpense.getProfit();
 	}
 	
-	public int getActualProfit() {
+	public long getActualProfit() {
 		return getAppearedProfit() - getTempProfit();
 	}
 	
-	public int getOperationProfit() {
+	public long getOperationProfit() {
 		return getAppearedProfit() - getTempProfit() - getSpecialProfit();
 	}
 	
-	public int getOperationIncome() {
+	public long getOperationIncome() {
 		return getAppearedIncome() - getSpecialIncome() - getTempIncome();
 	}
 	
-	public int getOperationExpense() {
+	public long getOperationExpense() {
 		return getAppearedExpense() - getSpecialExpense() - getTempExpense();
 	}
 	
-	public int getActualIncome() {
+	public long getActualIncome() {
 		return getAppearedIncome()	- getTempIncome();
 	}
 	
-	public int getActualExpense() {
+	public long getActualExpense() {
 		return getAppearedExpense() - getTempExpense();
 	}
 

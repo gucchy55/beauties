@@ -11,21 +11,21 @@ import beauties.common.model.Item;
 
 public abstract class SummaryTableItem {
 	private final String mName;
-	private final int mValue;
+	private final long mValue;
 	private Category mCategory;
 	private Item mItem;
 
-	SummaryTableItem(String pName, int pValue) {
+	SummaryTableItem(String pName, long pValue) {
 		mName = pName;
 		mValue = pValue;
 	}
 	
-	SummaryTableItem(Category pCategory, int pValue) {
+	SummaryTableItem(Category pCategory, long pValue) {
 		mName = pCategory.getName();
 		mValue = pValue;
 		mCategory = pCategory;
 	}
-	SummaryTableItem(Item pItem, int pValue) {
+	SummaryTableItem(Item pItem, long pValue) {
 		mName = "  " + pItem.getName();
 		mValue = pValue;
 		mItem = pItem;
@@ -38,7 +38,7 @@ public abstract class SummaryTableItem {
 	public String getName() {
 		return mName;
 	}
-	public int getValue() {
+	public long getValue() {
 		return mValue;
 	}
 	public boolean isCategory() {
@@ -60,7 +60,7 @@ public abstract class SummaryTableItem {
 
 class SummaryTableItemOriginal extends SummaryTableItem {
 
-	SummaryTableItemOriginal(String pName, int pValue) {
+	SummaryTableItemOriginal(String pName, long pValue) {
 		super(pName, pValue);
 	}
 
@@ -78,7 +78,7 @@ class SummaryTableItemOriginal extends SummaryTableItem {
 
 class SummaryTableItemAppearedProfit extends SummaryTableItem {
 
-	SummaryTableItemAppearedProfit(String pName, int pValue) {
+	SummaryTableItemAppearedProfit(String pName, long pValue) {
 		super(pName, pValue);
 	}
 
@@ -96,7 +96,7 @@ class SummaryTableItemAppearedProfit extends SummaryTableItem {
 
 class SummaryTableItemAppearedIncome extends SummaryTableItem {
 
-	SummaryTableItemAppearedIncome(String pName, int pValue) {
+	SummaryTableItemAppearedIncome(String pName, long pValue) {
 		super(pName, pValue);
 	}
 	
@@ -115,7 +115,7 @@ class SummaryTableItemAppearedIncome extends SummaryTableItem {
 class SummaryTableItemAppearedExpense extends SummaryTableItem {
 
 
-	SummaryTableItemAppearedExpense(String pName, int pValue) {
+	SummaryTableItemAppearedExpense(String pName, long pValue) {
 		super(pName, pValue);
 	}
 	
@@ -136,12 +136,12 @@ class SummaryTableItemCategory extends SummaryTableItem {
 	private final Category mCategory;
 
 //	@Deprecated
-//	SummaryTableItemCategory(String pName, int pValue, Category pCategory) {
+//	SummaryTableItemCategory(String pName, long pValue, Category pCategory) {
 //		super(pName, pValue);
 //		mCategory = pCategory;
 //	}
 	
-	SummaryTableItemCategory(Category pCategory, int pValue) {
+	SummaryTableItemCategory(Category pCategory, long pValue) {
 		super(pCategory, pValue);
 		mCategory = pCategory;
 	}
@@ -163,11 +163,11 @@ class SummaryTableItemNormalItem extends SummaryTableItem {
 	private final Item mItem;
 
 //	@Deprecated
-//	SummaryTableItemNormalItem(String pName, int pValue, Item pItem) {
+//	SummaryTableItemNormalItem(String pName, long pValue, Item pItem) {
 //		super("  " + pName, pValue);
 //		mItem = pItem;
 //	}
-	public SummaryTableItemNormalItem(Item pItem, int pValue) {
+	public SummaryTableItemNormalItem(Item pItem, long pValue) {
 		super(pItem, pValue);
 		mItem = pItem;
 	}

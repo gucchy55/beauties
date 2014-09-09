@@ -2,23 +2,23 @@ package beauties.common.model;
 
 public class IncomeExpense {
 
-	private final int mIncome;
-	private final int mExpense;
+	private final long mIncome;
+	private final long mExpense;
 	
-	public IncomeExpense(int pIncome, int pExpense) {
+	public IncomeExpense(long pIncome, long pExpense) {
 		this.mIncome = pIncome;
 		this.mExpense = pExpense;
 	}
 	
-	public int getIncome() {
+	public long getIncome() {
 		return mIncome;
 	}
 	
-	public int getExpense() {
+	public long getExpense() {
 		return mExpense;
 	}
 	
-	public int getProfit() {
+	public long getProfit() {
 		return mIncome - mExpense;
 	}
 	

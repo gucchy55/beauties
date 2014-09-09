@@ -20,7 +20,7 @@ public final class RecordTableItem {
 	private final int mIncome;
 	private final int mExpense;
 	private final int mGroupId;
-	private final int mBalance;
+	private final long mBalance;
 	private final int mFrequency;
 	private final String mNote;
 	
@@ -44,7 +44,7 @@ public final class RecordTableItem {
 		this.isBalanceRow = false;
 	}
 	
-	private RecordTableItem(Date pDate, int pBalance) {
+	private RecordTableItem(Date pDate, long pBalance) {
 		this.mId = SystemData.getUndefinedInt();
 		if (Book.getBook(SystemData.getUndefinedInt()) == null) {
 			Book.generateBook(SystemData.getUndefinedInt(), "");
@@ -67,7 +67,7 @@ public final class RecordTableItem {
 	}
 	
 	// for balance row
-	public static RecordTableItem createBalanceRowItem(Date pDate, int pBalance) {
+	public static RecordTableItem createBalanceRowItem(Date pDate, long pBalance) {
 		return new RecordTableItem(pDate, pBalance);
 	}
 
@@ -113,7 +113,7 @@ public final class RecordTableItem {
 		return mExpense;
 	}
 
-	public int getBalance() {
+	public long getBalance() {
 		return mBalance;
 	}
 
@@ -176,7 +176,7 @@ public final class RecordTableItem {
 		private int mIncome = 0;
 		private int mExpense = 0;
 		private int mGroupId = 0;
-		private int mBalance = 0;
+		private long mBalance = 0;
 		private int mFrequency = 0;
 		private String mNote = "";
 
@@ -207,7 +207,7 @@ public final class RecordTableItem {
 			return this;
 		}
 		
-		public Builder balance(int pBalance) {
+		public Builder balance(long pBalance) {
 			mBalance = pBalance;
 			return this;
 		}

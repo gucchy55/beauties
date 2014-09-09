@@ -187,7 +187,7 @@ public class DbUtil {
 		List<RecordTableItem> wRecordTableItemListUp = new ArrayList<RecordTableItem>();
 		List<RecordTableItem> wRecordTableItemListBottom = new ArrayList<RecordTableItem>();
 
-		int wBalance = getBalance(pDateRange.getStartDate(), pBook, false);
+		long wBalance = getBalance(pDateRange.getStartDate(), pBook, false);
 		RecordTableItem wBalanceRecord = RecordTableItem.createBalanceRowItem(pDateRange
 				.getStartDate(), wBalance);
 
@@ -267,7 +267,7 @@ public class DbUtil {
 		return new RecordTableItemCollection(wRecordTableItemListUp, wRecordTableItemListBottom);
 	}
 
-	private static RecordTableItem generateRecordTableItem(int wBalance, ResultSet wResultSet)
+	private static RecordTableItem generateRecordTableItem(long wBalance, ResultSet wResultSet)
 			throws SQLException {
 		Book wBook = Book.getBook(wResultSet.getInt(mBookIdCol));
 		Category wCategory = getCategory(wResultSet);
@@ -1171,10 +1171,10 @@ public class DbUtil {
 			}
 			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
 				wResultSet.next();
-				int wOperationalProfit = wResultSet.getInt("TOP.OP");
-				int wActualProfit = wResultSet.getInt("TAP.AP");
-				int wActualBalance = wResultSet.getInt("TAB.AB");
-				int wTempBalance = wResultSet.getInt("TTB.TB");
+				long wOperationalProfit = wResultSet.getLong("TOP.OP");
+				long wActualProfit = wResultSet.getLong("TAP.AP");
+				long wActualBalance = wResultSet.getLong("TAB.AB");
+				long wTempBalance = wResultSet.getLong("TTB.TB");
 				return new SummaryItemsCommon.Builder().operationalProfit(wOperationalProfit)
 						.actualProfit(wActualProfit).actualBalance(wActualBalance).tempBalance(wTempBalance).build();
 			} catch (SQLException e) {
@@ -1240,8 +1240,8 @@ public class DbUtil {
 			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
 				while (wResultSet.next()) {
 					Category wCategory = getCategory(wResultSet);
-					int wValue = wCategory.getIncomeExpenseType() == IncomeExpenseType.INCOME ?
-							wResultSet.getInt("INCOME") : wResultSet.getInt("EXPENSE");
+					long wValue = wCategory.getIncomeExpenseType() == IncomeExpenseType.INCOME ?
+							wResultSet.getLong("INCOME") : wResultSet.getLong("EXPENSE");
 					wSummaryTableItems.add(SummaryTableItemFactory.createCategory(wCategory, wValue));
 				}
 			} catch (SQLException e) {
@@ -1291,8 +1291,8 @@ public class DbUtil {
 		wQueryBuilder.append(" group by ").append(mItemTable).append(".").append(mItemIdCol).append(" with rollup");
 
 		Map<Integer, SummaryTableItem> wSummaryTableMap = new TreeMap<>();
-		int wAppearedIncome = 0;
-		int wAppearedExpense = 0;
+		long wAppearedIncome = 0;
+		long wAppearedExpense = 0;
 		
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())){
 			wStatement.setString(1, mDateFormat.format(pDateRange.getStartDate()));
@@ -1304,15 +1304,15 @@ public class DbUtil {
 				while (wResultSet.next()) {
 					wResultSet.getInt(mItemTable + "." + mItemIdCol);
 					if (wResultSet.wasNull()) {
-						wAppearedIncome = wResultSet.getInt("INCOME");
-						wAppearedExpense = wResultSet.getInt("EXPENSE");
+						wAppearedIncome = wResultSet.getLong("INCOME");
+						wAppearedExpense = wResultSet.getLong("EXPENSE");
 						continue;
 					}
 					int wSortKey = wResultSet.getInt(mItemTable + "." + mSortKeyCol);
 					int wCategoryId = wResultSet.getInt(mCategoryTable + "." + mCategoryIdCol);
 					Category wCategory = Category.getCategory(wCategoryId);
 					Item wItem = getItem(wResultSet, wCategory);
-					int wValue = wCategory.getIncomeExpenseType() == IncomeExpenseType.INCOME ? wResultSet.getInt("INCOME") : wResultSet.getInt("EXPENSE");
+					long wValue = wCategory.getIncomeExpenseType() == IncomeExpenseType.INCOME ? wResultSet.getLong("INCOME") : wResultSet.getLong("EXPENSE");
 					while (wSummaryTableMap.get(wSortKey) != null) {
 						wSortKey--;
 					}
@@ -1431,8 +1431,8 @@ public class DbUtil {
 
 		try {
 			for (int i = 0; i < pAnnualDateRange.size(); i++) {
-				int wIncome = pResultSet.getInt(mActIncomeCol + mPeriodName + i);
-				int wExpense = pResultSet.getInt(mActExpenseCol + mPeriodName + i);
+				long wIncome = pResultSet.getLong(mActIncomeCol + mPeriodName + i);
+				long wExpense = pResultSet.getLong(mActExpenseCol + mPeriodName + i);
 				if (i == pAnnualDateRange.getAveIndex()) {
 					wIncome = wIncome / (i - 1);
 					wExpense = wExpense / (i - 1);
@@ -1464,8 +1464,8 @@ public class DbUtil {
 			int wRexpDiv = pResultSet.getInt(mCategoryTable + "." + mCategoryRexpCol);
 			int wCategorySortKey = pResultSet.getInt(mCategoryTable + "." + mSortKeyCol);
 			for (int i = 0; i < pAnnualDateRange.size(); i++) {
-				int wIncome = pResultSet.getInt(mActIncomeCol + mPeriodName + i);
-				int wExpense = pResultSet.getInt(mActExpenseCol + mPeriodName + i);
+				long wIncome = pResultSet.getLong(mActIncomeCol + mPeriodName + i);
+				long wExpense = pResultSet.getLong(mActExpenseCol + mPeriodName + i);
 				if (i == pAnnualDateRange.getAveIndex()) {
 					wIncome = wIncome / (i - 1);
 					wExpense = wExpense / (i - 1);
@@ -1638,23 +1638,21 @@ public class DbUtil {
 		IncomeExpenseSummary wSummary = null;
 		try {
 			if (pIndex == pAnnualDateRange.getAveIndex()) {
-				wSummary = new IncomeExpenseSummary(new IncomeExpense(pResultSet
-						.getInt(mAppearedIncomeName + pIndex)
-						/ (pIndex - 1), pResultSet.getInt(mAppearedExpenseName + pIndex)
-						/ (pIndex - 1)), new IncomeExpense(pResultSet.getInt(mSpecialIncomeName
-						+ pIndex)
-						/ (pIndex - 1), pResultSet.getInt(mSpecialExpenseName + pIndex)
-						/ (pIndex - 1)),
-						new IncomeExpense(pResultSet.getInt(mTempIncomeName + pIndex)
-								/ (pIndex - 1), pResultSet.getInt(mTempExpenseName + pIndex)
-								/ (pIndex - 1)));
+				wSummary = new IncomeExpenseSummary(
+						new IncomeExpense(pResultSet.getLong(mAppearedIncomeName + pIndex) / (pIndex - 1),
+								pResultSet.getLong(mAppearedExpenseName + pIndex) / (pIndex - 1)),
+                        new IncomeExpense(pResultSet.getLong(mSpecialIncomeName + pIndex) / (pIndex - 1),
+                        		pResultSet.getLong(mSpecialExpenseName + pIndex) / (pIndex - 1)),
+						new IncomeExpense(pResultSet.getLong(mTempIncomeName + pIndex) / (pIndex - 1),
+								pResultSet.getLong(mTempExpenseName + pIndex) / (pIndex - 1)));
 			} else {
-				wSummary = new IncomeExpenseSummary(new IncomeExpense(pResultSet
-						.getInt(mAppearedIncomeName + pIndex), pResultSet
-						.getInt(mAppearedExpenseName + pIndex)), new IncomeExpense(pResultSet
-						.getInt(mSpecialIncomeName + pIndex), pResultSet.getInt(mSpecialExpenseName
-						+ pIndex)), new IncomeExpense(pResultSet.getInt(mTempIncomeName + pIndex),
-						pResultSet.getInt(mTempExpenseName + pIndex)));
+				wSummary = new IncomeExpenseSummary(
+						new IncomeExpense(pResultSet.getLong(mAppearedIncomeName + pIndex),
+								pResultSet.getLong(mAppearedExpenseName + pIndex)),
+                        new IncomeExpense(pResultSet.getLong(mSpecialIncomeName + pIndex),
+                        		pResultSet.getLong(mSpecialExpenseName + pIndex)),
+                        new IncomeExpense(pResultSet.getLong(mTempIncomeName + pIndex),
+                        		pResultSet.getLong(mTempExpenseName + pIndex)));
 			}
 		} catch (SQLException e) {
 			resultSetHandlingError(e);
@@ -1714,9 +1712,9 @@ public class DbUtil {
 		for (int i = 0; i < pAnnualDateRange.size(); i++)
 			wSummaryTableItemList.add(new ArrayList<SummaryTableItem>());
 
-		int wAppearedBalance = getInitialBalance(Book.getAllBook());
-		int wActualBalance = 0;
-		int wTempBalance = 0;
+		long wAppearedBalance = getInitialBalance(Book.getAllBook());
+		long wActualBalance = 0;
+		long wTempBalance = 0;
 		
 		try (PreparedStatement wStatement = mDbAccess.getPreparedStatement(
 				getQueryStringForAnnualSummaryTableItemsOriginal(pAnnualDateRange))) {
@@ -1739,8 +1737,8 @@ public class DbUtil {
 			
 			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
 				while (wResultSet.next()) {
-					wAppearedBalance += wResultSet.getInt(mAppearedBalanceName);
-					wTempBalance += wResultSet.getInt(mTempBalanceName);
+					wAppearedBalance += wResultSet.getLong(mAppearedBalanceName);
+					wTempBalance += wResultSet.getLong(mTempBalanceName);
 					wActualBalance += wAppearedBalance - wTempBalance;
 	
 					for (int i = 0; i < pAnnualDateRange.size(); i++) {
@@ -2318,9 +2316,9 @@ public class DbUtil {
 		return wList;
 	}
 
-	private static int getBalance(Date pEndDate, Book pBook, boolean pIncludeEndDate) {
+	private static long getBalance(Date pEndDate, Book pBook, boolean pIncludeEndDate) {
 
-		int wBalance = getInitialBalance(pBook);
+		long wBalance = getInitialBalance(pBook);
 		String wResultCol = "Value";
 
 		// select SUM(INCOME - EXPENSE) as Value from cbt_act
@@ -2345,7 +2343,7 @@ public class DbUtil {
 			}
 			ResultSet wResultSet = mDbAccess.executeQuery(wStatement);
 			wResultSet.next();
-			wBalance += wResultSet.getInt(wResultCol);
+			wBalance += wResultSet.getLong(wResultCol);
 			wResultSet.close();
 
 		} catch (SQLException e) {
