@@ -7,6 +7,7 @@ import org.eclipse.swt.graphics.Color;
 import beauties.common.lib.SystemData;
 import beauties.common.model.Category;
 import beauties.common.model.Item;
+import beauties.common.model.RightType;
 
 
 public abstract class SummaryTableItem {
@@ -66,7 +67,10 @@ class SummaryTableItemOriginal extends SummaryTableItem {
 
 	@Override
 	public	Color getEntryColor() {
-		return SystemData.getColorBlue();
+		if (SystemData.getRightType() == RightType.Main) {
+			return SystemData.getColorBlue();
+		}
+		return null;
 	}
 
 	@Override
@@ -148,7 +152,10 @@ class SummaryTableItemCategory extends SummaryTableItem {
 
 	@Override
 	public Color getEntryColor() {
-		return SystemData.getColorYellow();
+		if (SystemData.getRightType() == RightType.Main) {
+			return SystemData.getColorYellow();
+		}
+		return null;
 	}
 
 	@Override
@@ -174,7 +181,8 @@ class SummaryTableItemNormalItem extends SummaryTableItem {
 
 	@Override
 	public Color getEntryColor() {
-		return SystemData.getColorGray();
+//		return SystemData.getColorGray();
+		return null;
 	}
 
 	@Override

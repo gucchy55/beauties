@@ -43,7 +43,7 @@ public class BeautiesMain extends ApplicationWindow {
 	private Composite mLeftComposite;
 	private Composite mRightComposite;
 
-	private RightType mRightType = RightType.Main;
+//	private RightType mRightType = RightType.Main;
 	private EnumMap<RightType, Button> mRightTypeMap;
 
 	private static final int mLeftWidthHint = 100;
@@ -164,8 +164,8 @@ public class BeautiesMain extends ApplicationWindow {
 			mRightTypeMap.put(wType, wButton);
 			wButton.addSelectionListener(createSelectionAdapter(wType));
 		}
-		mRightTypeMap.get(mRightType).setSelection(true);
-		mRightTypeMap.get(mRightType).setBackground(SystemData.getColorYellow());
+		mRightTypeMap.get(SystemData.getRightType()).setSelection(true);
+		mRightTypeMap.get(SystemData.getRightType()).setBackground(SystemData.getColorYellow());
 	}
 
 	private SelectionAdapter createSelectionAdapter(final RightType wType) {
@@ -173,7 +173,7 @@ public class BeautiesMain extends ApplicationWindow {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Button wButton = (Button) e.getSource();
-				if (mRightType.equals(wType)) {
+				if (SystemData.getRightType().equals(wType)) {
 					wButton.setSelection(true);
 					return;
 				}
@@ -193,7 +193,7 @@ public class BeautiesMain extends ApplicationWindow {
 	}
 
 	private void createRightComposite() {
-		switch (mRightType) {
+		switch (SystemData.getRightType()) {
 		case Annual:
 			mRightComposite = new CompositeAnnualMain(mMainComposite);
 			break;
@@ -217,12 +217,13 @@ public class BeautiesMain extends ApplicationWindow {
 	}
 
 	private void updateRight(RightType pRightType) {
-		mRightTypeMap.get(mRightType).setBackground(null);
-		mRightTypeMap.get(mRightType).setSelection(false);
-		mRightType = pRightType;
+		mRightTypeMap.get(SystemData.getRightType()).setBackground(null);
+		mRightTypeMap.get(SystemData.getRightType()).setSelection(false);
+//		mRightType = pRightType;
+		SystemData.setRightType(pRightType);
 
-		mRightTypeMap.get(mRightType).setBackground(SystemData.getColorYellow());
-		mRightTypeMap.get(mRightType).setSelection(true);
+		mRightTypeMap.get(SystemData.getRightType()).setBackground(SystemData.getColorYellow());
+		mRightTypeMap.get(SystemData.getRightType()).setSelection(true);
 		
 		if (mRightComposite != null) {
 			mRightComposite.dispose();
