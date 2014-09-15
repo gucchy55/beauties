@@ -48,7 +48,7 @@ class TreeContentProvider implements ITreeContentProvider {
 	public Object[] getChildren(Object element) {
 		ConfigItem wItem = (ConfigItem) element;
 		if (wItem.hasItem()) {
-			List<?> wList = (List<?>) wItem.getChildren();
+			List<?> wList = wItem.getChildren();
 			return wList.toArray();
 		}
 		return new Object[0];

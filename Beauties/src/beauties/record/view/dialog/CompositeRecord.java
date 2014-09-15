@@ -20,6 +20,7 @@ import org.eclipse.swt.widgets.Spinner;
 
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
+import beauties.common.lib.Util;
 import beauties.common.model.Book;
 import beauties.common.model.Category;
 import beauties.common.model.IncomeExpenseType;
@@ -78,7 +79,6 @@ class CompositeRecord extends Composite {
 		mIncomeExpenseType = pRecordTableItem.getItem().getCategory().getIncomeExpenseType();
 		mItem = mRecordTableItem.getItem();
 		initLayout();
-//		initWidgets();
 		setWidgets();
 		setListeners();
 	}
@@ -112,6 +112,8 @@ class CompositeRecord extends Composite {
 		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
 		GridData wGridData = new GridData(GridData.FILL_HORIZONTAL);
 		mNoteCombo.setLayoutData(wGridData);
+
+		Util.generateContentProposal(mNoteCombo, mVisibleComboItemCount);
 	}
 
 	private void initValueSpinners() {
@@ -186,21 +188,25 @@ class CompositeRecord extends Composite {
 	
 	private void setListeners() {
 		mBookCombo.getCombo().addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				modifyBook();
 			}
 		});
 		mIncomeExpenseCombo.getCombo().addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				modifyIncomeExpense();
 			}
 		});
 		mCategoryCombo.getCombo().addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				modifyCategory();
 			}
 		});
 		mItemCombo.getCombo().addSelectionListener(new SelectionAdapter() {
+			@Override
 			public void widgetSelected(SelectionEvent e) {
 				modifyItem();
 			}
@@ -238,10 +244,8 @@ class CompositeRecord extends Composite {
 		if (!"".equals(mRecordTableItem.getNote())) {
 			mNoteItems.set(0, mRecordTableItem.getNote());
 			mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
-//			mNoteCombo.setItem(0, mRecordTableItem.getNote());
 		}
 		mNoteCombo.select(0);
-//		System.out.println(mNoteCombo.getItem(0));
 	}
 
 	private void modifyBook() {
@@ -321,12 +325,10 @@ class CompositeRecord extends Composite {
 	}
 
 	private void updateNoteCombo() {
-//		System.out.println("updateNoteCombo");
 		String wNote = mNoteCombo.getText();
 		mNoteItems = DbUtil.getNotes(mItem);
 		mNoteItems.add(0, wNote);
 		mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
-//		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
 		mNoteCombo.setVisibleItemCount(mVisibleComboItemCount);
 	}
@@ -346,7 +348,6 @@ class CompositeRecord extends Composite {
 			mNoteItems.add(0, "");
 			mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
 		}
-//		mNoteCombo.setItem(0, "");
 		mNoteCombo.select(0);
 		mItemCombo.getCombo().setFocus();
 	}

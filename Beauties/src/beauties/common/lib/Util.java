@@ -2,8 +2,10 @@ package beauties.common.lib;
 
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Collection;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Locale;
 
@@ -11,11 +13,33 @@ import java.util.Locale;
 //import org.eclipse.swt.events.FocusListener;
 //import org.eclipse.swt.widgets.Shell;
 
+
+
+
+
+
+
+
+
+
+
+import org.eclipse.jface.bindings.keys.KeyStroke;
+import org.eclipse.jface.bindings.keys.ParseException;
+import org.eclipse.jface.fieldassist.ComboContentAdapter;
+import org.eclipse.jface.fieldassist.ContentProposalAdapter;
+import org.eclipse.jface.fieldassist.IContentProposal;
+import org.eclipse.jface.fieldassist.IContentProposalProvider;
+import org.eclipse.jface.fieldassist.IControlContentAdapter;
+import org.eclipse.swt.widgets.Combo;
+
 import beauties.common.model.AnnualDateRange;
 import beauties.common.model.DateRange;
 
 
 public class Util {
+	
+	private static Collection<KeyStroke> mProposalKeyStrokes;
+	private static IControlContentAdapter mControlContentAdapter;
 
 	private Util() {
 	}
@@ -146,46 +170,69 @@ public class Util {
 //		};
 //	}
 
-//	public static IContentProposal[] createProposals(final String pContent,
-//			final int pPosition, String[] pCandidates, int pMaxCount) {
-//
-//		if (pContent.length() == 0 || pPosition < pContent.length()) {
-//			return new IContentProposal[] {};
-//		}
-//
-//		List<IContentProposal> wProposalList = new ArrayList<IContentProposal>();
-//		for (int i = 0; i < pCandidates.length; i++) {
-//			if (pCandidates[i].length() <= pPosition || !pCandidates[i].startsWith(pContent))
-//				continue;
-//			final String wCandidate = pCandidates[i];
-//			// if (!wCandidate.startsWith(pContent))
-//			// continue;
-//			wProposalList.add(new IContentProposal() {
-//
-//				@Override
-//				public String getLabel() {
-//					return wCandidate;
-//				}
-//
-//				@Override
-//				public String getDescription() {
-//					return null;
-//				}
-//
-//				@Override
-//				public int getCursorPosition() {
-//					return wCandidate.length();
-//				}
-//
-//				@Override
-//				public String getContent() {
-//					return wCandidate.substring(pPosition);
-//				}
-//			});
-//			if (wProposalList.size() > pMaxCount)
-//				break;
-//		}
-//
-//		return (IContentProposal[]) wProposalList.toArray(new IContentProposal[0]);
-//	}
+	private static IContentProposal[] createProposals(final String pContent,
+			final int pPosition, String[] pCandidates, int pMaxCount) {
+
+		if (pContent.length() == 0 || pPosition < pContent.length()) {
+			return new IContentProposal[] {};
+		}
+
+		List<IContentProposal> wProposalList = new ArrayList<IContentProposal>();
+		for (String wCandidate : pCandidates) {
+			if (wCandidate.length() <= pPosition || !wCandidate.startsWith(pContent)) {
+				continue;
+			}
+			wProposalList.add(new IContentProposal() {
+				@Override
+				public String getLabel() {
+					return wCandidate;
+				}
+
+				@Override
+				public String getDescription() {
+					return null;
+				}
+
+				@Override
+				public int getCursorPosition() {
+					return wCandidate.length();
+				}
+
+				@Override
+				public String getContent() {
+					return wCandidate.substring(pPosition);
+				}
+			});
+			if (wProposalList.size() > pMaxCount) {
+				break;
+			}
+		}
+		return wProposalList.toArray(new IContentProposal[0]);
+	}
+	
+	private static Collection<KeyStroke> getProposalKeyStrokes () {
+		if (mProposalKeyStrokes == null) {
+			mProposalKeyStrokes = new HashSet<>();
+			try {
+				mProposalKeyStrokes.add(KeyStroke.getInstance("Ctrl+;"));
+				mProposalKeyStrokes.add(KeyStroke.getInstance("COMMAND+;"));
+			} catch (ParseException e) {
+				e.printStackTrace();
+			}
+			mProposalKeyStrokes.remove(null);
+		}
+		return mProposalKeyStrokes;
+	}
+	
+	public static void generateContentProposal(Combo pCombo, int pMaxCount) {
+		IContentProposalProvider wContentProvider = 
+				(contents, position) -> createProposals(contents, position, pCombo.getItems(), pMaxCount);
+		if (mControlContentAdapter == null) {
+			mControlContentAdapter = new ComboContentAdapter();
+		}
+		for (KeyStroke wKeyStroke : Util.getProposalKeyStrokes()) {
+			new ContentProposalAdapter(pCombo, mControlContentAdapter, wContentProvider, wKeyStroke, null);
+		}
+	}
+	
 }

@@ -16,6 +16,7 @@ import org.eclipse.swt.widgets.Spinner;
 
 import beauties.common.lib.DbUtil;
 import beauties.common.lib.SystemData;
+import beauties.common.lib.Util;
 import beauties.common.model.Book;
 import beauties.common.model.Item;
 import beauties.common.view.MyComboViewer;
@@ -28,7 +29,6 @@ import beauties.record.model.RecordTableItemForMove;
 class CompositeMove extends Composite {
 
 	private Book mBook; // Selected on this Dialog
-//	private static final int mMoveIncomeItemId = DbUtil.getMoveIncomeItemId();
 
 	private RecordTableItem mIncomeRecord;
 	private RecordTableItem mExpenseRecord;
@@ -37,7 +37,6 @@ class CompositeMove extends Composite {
 	private Collection<Book> mBooks;
 
 	// Map of ComboIndex & ID
-//	private List<Integer> mBookIdList = new ArrayList<Integer>();
 
 	private MyComboViewer<Book> mBookFromCombo;
 	private MyComboViewer<Book> mBookToCombo;
@@ -103,6 +102,8 @@ class CompositeMove extends Composite {
 		mNoteCombo = new Combo(this, SWT.DROP_DOWN | SWT.FILL);
 		GridData wGridData = new GridData(GridData.FILL_HORIZONTAL);
 		mNoteCombo.setLayoutData(wGridData);
+
+		Util.generateContentProposal(mNoteCombo, mVisibleComboItemCount);
 	}
 
 	private void createValueSpinners() {
@@ -119,7 +120,6 @@ class CompositeMove extends Composite {
 
 		mValueSpinner = new Spinner(wValuesRowComp, SWT.BORDER);
 		mValueSpinner.setValues(0, 0, Integer.MAX_VALUE, 0, 100, 10);
-//		mValueSpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
 
 		Label wSpaceLabel = new Label(wValuesRowComp, SWT.NONE);
 		wSpaceLabel.setText("    ");
@@ -128,17 +128,11 @@ class CompositeMove extends Composite {
 		wFrequencyLabel.setText("回数");
 
 		mFrequencySpinner = new Spinner(wValuesRowComp, SWT.BORDER);
-//		mFrequencySpinner.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
 	}
 
 	private void setBookCombos() {
 		mBookFromCombo.setInput(mBooks);
 		mBookToCombo.setInput(mBooks);
-//		for (Book wBook : mBooks) {
-//			mBookIdList.add(wBook.getId());
-//			mBookFromCombo.add(wBook.getName());
-//			mBookToCombo.add(wBook.getName());
-//		}
 		mBookToCombo.setSelection(mBook);
 		for (Book wBook : mBooks) {
 			if (!wBook.equals(mBook)) {
@@ -168,7 +162,6 @@ class CompositeMove extends Composite {
 		Label wDateLabel = new Label(this, SWT.NONE);
 		wDateLabel.setText("日付");
 		mDateTime = new DateTime(this, SWT.DATE | SWT.BORDER | SWT.DROP_DOWN);
-//		mDateTime.addFocusListener(Util.getFocusListenerToDisableIme(getShell(), SWT.NONE));
 	}
 
 	private void initWidgets() {
@@ -191,7 +184,6 @@ class CompositeMove extends Composite {
 		if (!"".equals(mIncomeRecord.getNote())) {
 			mNoteItems.set(0, mIncomeRecord.getNote());
 			mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
-//			mNoteCombo.setItem(0, mIncomeRecord.getNote());
 		}
 		
 		mNoteCombo.select(0);
@@ -199,11 +191,9 @@ class CompositeMove extends Composite {
 	}
 
 	private void updateNoteCombo() {
-//		String wNote = mNoteCombo.getText();
 		mNoteItems = DbUtil.getNoteMove();
 		mNoteItems.add(0, "");
 		mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
-//		mNoteCombo.add(wNote, 0);
 		mNoteCombo.select(0);
 		mNoteCombo.setVisibleItemCount(mVisibleComboItemCount);
 	}
@@ -222,17 +212,7 @@ class CompositeMove extends Composite {
 				&& !mBookFromCombo.getSelectedItem().equals(mBookToCombo.getSelectedItem());
 	}
 
-//	private int getSelectedFromBookId() {
-//		return mBookIdList.get(mBookFromCombo.getSelectionIndex());
-//	}
-//
-//	private int getSelectedToBookId() {
-//		return mBookIdList.get(mBookToCombo.getSelectionIndex());
-//	}
-
 	private RecordTableItemForMove createNewMoveItem() {
-//		Book wBook = Book.getBook(getSelectedToBookId());
-		
 		return new RecordTableItemForMove(mBookFromCombo.getSelectedItem(),
 				new RecordTableItem.Builder(mBookToCombo.getSelectedItem(), Item.getUndefinedItem(),
 						new GregorianCalendar(mDateTime.getYear(), mDateTime.getMonth(), mDateTime
