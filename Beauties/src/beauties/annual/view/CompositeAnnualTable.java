@@ -86,6 +86,42 @@ class CompositeAnnualTable extends Composite {
 		// 選択がシンクロするようリスナーを設定
 		mRowHeaderTableViewer.getTable().addSelectionListener(mSelectionAdapterForRowHeader);
 		mMainTableViewer.getTable().addSelectionListener(mSelectionAdapterForMainTable);
+		
+		addSyncScrollListener(mRowHeaderTableViewer.getTable(), mMainTableViewer.getTable());
+		addSyncScrollListener(mMainTableViewer.getTable(), mRowHeaderTableViewer.getTable());
+
+//		mRowHeaderTableViewer.getTable().addListener(
+//				SWT.Traverse, event -> 
+//				mMainTableViewer.getTable().setTopIndex(mRowHeaderTableViewer.getTable().getTopIndex()));
+//		mMainTableViewer.getTable().addListener(
+//				SWT.Traverse, event -> 
+//				mRowHeaderTableViewer.getTable().setTopIndex(mMainTableViewer.getTable().getTopIndex()));
+//		mRowHeaderTableViewer.getTable().getVerticalBar().addSelectionListener(
+//				new SelectionAdapter() {
+//					@Override
+//					public void widgetSelected(SelectionEvent e) {
+//						mMainTableViewer.getTable().setTopIndex(mRowHeaderTableViewer.getTable().getTopIndex());
+//					}
+//				});
+//		mMainTableViewer.getTable().getVerticalBar().addSelectionListener(
+//				new SelectionAdapter() {
+//					@Override
+//					public void widgetSelected(SelectionEvent e) {
+//						mRowHeaderTableViewer.getTable().setTopIndex(mMainTableViewer.getTable().getTopIndex());
+//					}
+//				});
+	}
+
+	private void addSyncScrollListener(Table pTable1, Table pTable2) {
+		pTable1.addListener(SWT.MouseWheel, e -> {
+			e.doit = false;
+			if (e.count >= 0) {
+				pTable1.setTopIndex(pTable1.getTopIndex() - 1);
+			} else {
+				pTable1.setTopIndex(pTable1.getTopIndex() + 1);
+			}
+			pTable2.setTopIndex(pTable1.getTopIndex());
+		});
 	}
 
 	private void createMainTable() {
