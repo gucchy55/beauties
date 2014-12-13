@@ -5,6 +5,7 @@ import org.eclipse.swt.SWT;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
 
+import beauties.common.lib.SystemData;
 import beauties.common.view.CompositePeriodBookTab;
 import beauties.common.view.MyGridData;
 import beauties.common.view.MyGridLayout;
@@ -43,7 +44,8 @@ public class CompositeEntry extends Composite {
 		GridData wGridDataSummary = new MyGridData(GridData.END, GridData.FILL, false, false)
 				.getMyGridData();
 		wGridDataSummary.horizontalSpan = 1;
-		wGridDataSummary.widthHint = 230;
+//		wGridDataSummary.widthHint = 230;
+		wGridDataSummary.widthHint = SystemData.getRecordWidthSummaryItem() + SystemData.getRecordWidthSummaryValue() + 3;
 
 		mCompositePeriodBookTab = new CompositePeriodBookTab(mCTL);
 		mCompositePeriodBookTab.setLayoutData(wGridDataBook);
