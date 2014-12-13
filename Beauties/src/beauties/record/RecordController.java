@@ -138,11 +138,11 @@ public class RecordController implements IPeriodBookTabController {
 	}
 
 	public boolean showBookColumn() {
-		return mBook.isAllBook() || getSearchResult();
+		return mBook.isAllBook() || getSearchResult() || mHistoryResult;
 	}
 
 	public boolean showYear() {
-		return !getMonthPeriod() || getSearchResult();
+		return !getMonthPeriod() || getSearchResult() || mHistoryResult;
 	}
 
 	public Shell getShell() {
