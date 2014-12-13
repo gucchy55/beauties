@@ -31,6 +31,9 @@ public class CompositeEntry extends Composite {
 		this.setLayout(new MyGridLayout(3, false).getMyGridLayout());
 		this.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, true, true).getMyGridData());
 
+		GridData wGridDataBook = new MyGridData(GridData.BEGINNING, GridData.BEGINNING, false, false).getMyGridData();
+		wGridDataBook.horizontalSpan = 1;
+
 		GridData wGridDataAction = new MyGridData(GridData.END, GridData.BEGINNING, false, false).getMyGridData();
 		wGridDataAction.horizontalSpan = 2;
 
@@ -43,6 +46,7 @@ public class CompositeEntry extends Composite {
 		wGridDataSummary.widthHint = 230;
 
 		mCompositePeriodBookTab = new CompositePeriodBookTab(mCTL);
+		mCompositePeriodBookTab.setLayoutData(wGridDataBook);
 		mCompositeActionTab = new CompositeActionTab(mCTL);
 		mCompositeActionTab.setLayoutData(wGridDataAction);
 		mCompositeRecordTable = new CompositeRecordTable(mCTL);
@@ -68,6 +72,16 @@ public class CompositeEntry extends Composite {
 		mCompositeRecordTable.setFocus();
 	}
 	
+	public void updateViewForHistory(boolean pHistory) {
+		mCompositePeriodBookTab.setVisible(!pHistory);
+		mCompositeSummaryTable.setVisible(!pHistory);
+		if (!pHistory)
+			return;
+		mCompositeActionTab.updateForHistory();
+		mCompositeRecordTable.updateForSearch();
+		mCompositeRecordTable.setFocus();
+	}
+
 	public RecordTableItem getSelectedRecordItem() {
 		return mCompositeRecordTable.getSelectedRecordItem();
 	}

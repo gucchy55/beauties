@@ -4,8 +4,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
+import java.util.regex.Pattern;
 
 import org.eclipse.jface.dialogs.IDialogConstants;
+import org.eclipse.jface.dialogs.IInputValidator;
 import org.eclipse.jface.dialogs.InputDialog;
 import org.eclipse.jface.window.Window;
 import org.eclipse.swt.widgets.Composite;
@@ -30,6 +32,7 @@ public class RecordController implements IPeriodBookTabController {
 
 	private boolean mMonthPeriod = true;
 	private boolean mSearchResult = false;
+	private boolean mHistoryResult = false;
 
 	private CompositeEntry mCompositeEntry;
 
@@ -73,6 +76,11 @@ public class RecordController implements IPeriodBookTabController {
 	public void changeBook() {
 		updateTableItemsForBookChange();
 		mCompositeEntry.updateView();
+	}
+
+	public void updateItemsForHistory(int pCnt) {
+		mRecordTableItems  = DbUtil.getLatestRecordTableItems(pCnt);
+		mSummaryTableItems = null;
 	}
 
 	public void updateItemsForSearch(String pQuery) {
@@ -124,6 +132,11 @@ public class RecordController implements IPeriodBookTabController {
 		mCompositeEntry.updateViewForSearch(mSearchResult);
 	}
 
+	public void setHistoryResult(boolean pHistoryResult) {
+		this.mHistoryResult = pHistoryResult;
+		mCompositeEntry.updateViewForHistory(mHistoryResult);
+	}
+
 	public boolean showBookColumn() {
 		return mBook.isAllBook() || getSearchResult();
 	}
@@ -151,6 +164,31 @@ public class RecordController implements IPeriodBookTabController {
 			return false;
 		this.updateItemsForSearch(wInputDialog.getValue());
 		this.setSearchResult(true);
+		return true;
+	}
+	
+	private IInputValidator generateNumValidator() {
+		final IInputValidator wValidator = new IInputValidator() {
+			public String isValid(String wNewText) {
+				if (!Pattern.matches("[0-9]*", wNewText)) {
+					return "半角数字を入力してください";
+				}
+				if ("".equals(wNewText)) {
+					return "";
+				}
+				return null;
+			}
+		};
+		return wValidator;
+	}
+
+	public boolean openHistoryDialog() {
+		InputDialog wInputDialog = new InputDialog(getShell(), "履歴", "表示件数", "20", generateNumValidator());
+		if (wInputDialog.open() != Window.OK)
+			return false;
+
+		this.updateItemsForHistory(Integer.parseInt(wInputDialog.getValue()));
+		this.setHistoryResult(true);
 		return true;
 	}
 

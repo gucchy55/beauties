@@ -75,6 +75,7 @@ public class DbUtil {
 	private final static String mActExpenseCol = "EXPENSE";
 	private final static String mActFreqCol = "FREQUENCY";
 	private final static String mGroupIdCol = "GROUP_ID";
+	private final static String mActTimeStampCol = "time_modified";
 
 	// 共通フラグ等
 	private final static String mDelFlgCol = "DEL_FLG";
@@ -2428,6 +2429,58 @@ public class DbUtil {
 			resultSetHandlingError(e);
 		}
 		
+	}
+
+	public static RecordTableItemCollection getLatestRecordTableItems(int pCnt) {
+		List<RecordTableItem> wRecordTableItemListUp = new ArrayList<RecordTableItem>();
+
+		// select ACT_ID, BOOK_ID, ACT_DT, cbt_act.ITEM_ID, ITEM_NAME, GROUP_ID, INCOME, EXPENSE, FREQUENCY, NOTE_NAME
+		// from cbt_act, cbm_item, cbm_category
+		// where cbm_item.ITEM_ID = cbt_act.ITEM_ID
+		//	and cbm_item.CATEGORY_ID = cbm_category.CATEGORY_ID
+		//	and cbt_act.time_modified = b?		// 1 (String:0)
+		// order by ACT_ID DEST limit ?		// 2 (int)
+		
+		StringBuilder wQueryBuilder = new StringBuilder()
+			.append("select ").append(mActIdCol).append(", ")
+				.append(mBookIdCol).append(", ").append(mActDtCol).append(", ")
+				.append(mActTable).append(".").append(mItemIdCol).append(", ")
+				.append(mItemTable).append(".").append(mItemNameCol).append(", ")
+				.append(mCategoryTable).append(".").append(mCategoryIdCol).append(", ")
+				.append(mCategoryTable).append(".").append(mCategoryNameCol).append(", ")
+				.append(mCategoryTable).append(".").append(mCategoryRexpCol).append(", ")
+				.append(mGroupIdCol).append(", ").append(mActIncomeCol).append(", ")
+				.append(mActExpenseCol).append(", ").append(mActFreqCol).append(", ")
+				.append(mNoteNameCol)
+			.append(" from ").append(mActTable).append(", ").append(mItemTable).append(", ")
+				.append(mCategoryTable)
+			.append(" where ").append(mItemTable).append(".").append(mItemIdCol)
+				.append(" = ").append(mActTable).append(".").append(mItemIdCol)
+				.append(" and ").append(mItemTable).append(".").append(mCategoryIdCol)
+				.append(" = ").append(mCategoryTable).append(".").append(mCategoryIdCol)
+//				.append(" and ").append(mActDtCol).append(" between ? and ?")
+				.append(" and ").append(mActTable).append(".")
+				.append(mDelFlgCol).append(" = b?")
+				.append(" order by ").append(mActTimeStampCol).append(" desc limit ?");
+		
+		try(PreparedStatement wStatement = mDbAccess.getPreparedStatement(wQueryBuilder.toString())) {
+			int i=1;
+			wStatement.setString(i++, "0");	// DEL_FLG
+			wStatement.setInt(i++, pCnt);	// Count
+			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
+				while (wResultSet.next()) {
+					RecordTableItem wRecord = generateRecordTableItem(wResultSet);
+					wRecordTableItemListUp.add(wRecord);
+				}
+			} catch (SQLException e) {
+				resultSetHandlingError(e);
+			}
+
+		} catch (SQLException e) {
+			resultSetHandlingError(e);
+		}
+		
+		return new RecordTableItemCollection(wRecordTableItemListUp, Collections.emptyList());
 	}
 
 	private static void resultSetHandlingError(SQLException e) {

@@ -20,6 +20,7 @@ import beauties.record.RecordController;
 class CompositeActionTab extends Composite {
 
 	private Button mSearchButton;
+	private Button mHistoryButton;
 	private RecordController mCTL;
 
 	public CompositeActionTab(RecordController pCTL) {
@@ -30,15 +31,31 @@ class CompositeActionTab extends Composite {
 		wLayout.setSpacing(SystemData.getHorizontalSpacing());
 		this.setLayout(wLayout.getLayout());
 		
-		createSearchButton();
-
-		createMoveButton();
-
 		createAddButton();
-
+		createMoveButton();
 		createModifyButton();
-
 		createDeleteButton();
+		createSearchButton();
+		createHistoryButton();
+	}
+
+	private void createHistoryButton() {
+		mHistoryButton = new Button(this, SWT.TOGGLE);
+		mHistoryButton.setText("履歴");
+		mHistoryButton.addSelectionListener(new SelectionAdapter() {
+			@Override
+			public void widgetSelected(SelectionEvent e) {
+				Button wButton = (Button)e.getSource();
+				wButton.setBackground(wButton.getSelection() ? SystemData.getColorYellow() : null);
+				if(wButton.getSelection()) {
+        				wButton.setSelection(mCTL.openHistoryDialog());
+				}
+				else {
+					mCTL.setSearchResult(false);
+					mCTL.updateTable();
+				}
+			}
+		});
 	}
 
 	private void createSearchButton() {
@@ -113,6 +130,12 @@ class CompositeActionTab extends Composite {
 	
 	void updateForSearch() {
 		mSearchButton.setSelection(true);
+		mHistoryButton.setSelection(false);
+	}
+	
+	void updateForHistory() {
+		mHistoryButton.setSelection(true);
+		mSearchButton.setSelection(false);
 	}
 
 }
