@@ -164,6 +164,7 @@ public class RecordController implements IPeriodBookTabController {
 			return false;
 		this.updateItemsForSearch(wInputDialog.getValue());
 		this.setSearchResult(true);
+		this.setHistoryResult(false);
 		return true;
 	}
 	
@@ -189,6 +190,7 @@ public class RecordController implements IPeriodBookTabController {
 
 		this.updateItemsForHistory(Integer.parseInt(wInputDialog.getValue()));
 		this.setHistoryResult(true);
+		this.setSearchResult(false);
 		return true;
 	}
 

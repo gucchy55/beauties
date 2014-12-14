@@ -51,7 +51,7 @@ class CompositeActionTab extends Composite {
         				wButton.setSelection(mCTL.openHistoryDialog());
 				}
 				else {
-					mCTL.setSearchResult(false);
+					mCTL.setHistoryResult(false);
 					mCTL.updateTable();
 				}
 			}
