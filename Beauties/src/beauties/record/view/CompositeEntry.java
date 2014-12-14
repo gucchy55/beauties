@@ -70,7 +70,7 @@ public class CompositeEntry extends Composite {
 		if (!pSearch)
 			return;
 		mCompositeActionTab.updateForSearch();
-		mCompositeRecordTable.updateForSearch();
+		mCompositeRecordTable.updateTable();
 		mCompositeRecordTable.setFocus();
 	}
 	
@@ -80,7 +80,7 @@ public class CompositeEntry extends Composite {
 		if (!pHistory)
 			return;
 		mCompositeActionTab.updateForHistory();
-		mCompositeRecordTable.updateForSearch();
+		mCompositeRecordTable.updateTable();
 		mCompositeRecordTable.setFocus();
 	}
 

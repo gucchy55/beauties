@@ -129,12 +129,10 @@ class CompositeActionTab extends Composite {
 	}
 	
 	void updateForSearch() {
-		mSearchButton.setSelection(true);
 		mHistoryButton.setSelection(false);
 	}
 	
 	void updateForHistory() {
-		mHistoryButton.setSelection(true);
 		mSearchButton.setSelection(false);
 	}
 

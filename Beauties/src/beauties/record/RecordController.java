@@ -174,7 +174,7 @@ public class RecordController implements IPeriodBookTabController {
 				if (!Pattern.matches("[0-9]*", wNewText)) {
 					return "半角数字を入力してください";
 				}
-				if ("".equals(wNewText)) {
+				if ("".equals(wNewText) || "0".equals(wNewText)) {
 					return "";
 				}
 				return null;
