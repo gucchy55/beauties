@@ -48,7 +48,7 @@ class CompositeActionTab extends Composite {
 				Button wButton = (Button)e.getSource();
 				wButton.setBackground(wButton.getSelection() ? SystemData.getColorYellow() : null);
 				if(wButton.getSelection()) {
-        				wButton.setSelection(mCTL.openHistoryDialog());
+					wButton.setSelection(mCTL.openHistoryDialog());
 				}
 				else {
 					mCTL.setHistoryResult(false);
