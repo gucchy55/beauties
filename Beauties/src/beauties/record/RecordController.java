@@ -129,11 +129,17 @@ public class RecordController implements IPeriodBookTabController {
 
 	public void setSearchResult(boolean pSearchResult) {
 		this.mSearchResult = pSearchResult;
+		if (mSearchResult) {
+			mHistoryResult = false;
+		}
 		mCompositeEntry.updateViewForSearch(mSearchResult);
 	}
 
 	public void setHistoryResult(boolean pHistoryResult) {
 		this.mHistoryResult = pHistoryResult;
+		if (mHistoryResult) {
+			mSearchResult = false;
+		}
 		mCompositeEntry.updateViewForHistory(mHistoryResult);
 	}
 
@@ -164,7 +170,7 @@ public class RecordController implements IPeriodBookTabController {
 			return false;
 		this.updateItemsForSearch(wInputDialog.getValue());
 		this.setSearchResult(true);
-		this.setHistoryResult(false);
+//		this.setHistoryResult(false);
 		return true;
 	}
 	
@@ -190,7 +196,7 @@ public class RecordController implements IPeriodBookTabController {
 
 		this.updateItemsForHistory(Integer.parseInt(wInputDialog.getValue()));
 		this.setHistoryResult(true);
-		this.setSearchResult(false);
+//		this.setSearchResult(false);
 		return true;
 	}
 
