@@ -52,17 +52,11 @@ public class RecordController implements IPeriodBookTabController {
 
 	private void updateTableItems() {
 		mRecordTableItems = DbUtil.getRecordTableItems(mDateRange, mBook);
-//		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBook);
-//		mRecordItemsUp = wRecordTableItemAll[0];
-//		mRecordItemsBottom = wRecordTableItemAll[1];
 		mSummaryTableItems = DbUtil.getSummaryTableItems(mBook, mDateRange);
 	}
 
 	private void updateTableItemsForBookChange() {
 		mRecordTableItems = DbUtil.getRecordTableItems(mDateRange, mBook);
-//		RecordTableItem[][] wRecordTableItemAll = DbUtil.getRecordTableItems(mDateRange, mBook);
-//		mRecordItemsUp = wRecordTableItemAll[0];
-//		mRecordItemsBottom = wRecordTableItemAll[1];
 		mSummaryTableItems.setItemsNormal(DbUtil.getSummaryTableItemsNormal(mBook, mDateRange));
 	}
 	
