@@ -1,0 +1,86 @@
+buildscript {
+    repositories {
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
+    }
+}
+
+
+plugins {
+  // swt deps
+  id "com.diffplug.gradle.swt.nativedeps" version "3.7.2"
+}
+
+repositories {
+  mavenCentral()
+}
+
+//////////
+// JAVA //
+//////////
+apply plugin: 'java'
+
+sourceSets {
+  main { java {
+      srcDir 'src'
+  } }
+  test { java {
+      srcDir 'test'
+  } }
+}
+sourceCompatibility = VER_JAVA
+targetCompatibility = VER_JAVA
+
+dependencies {
+  // https://mvnrepository.com/artifact/mysql/mysql-connector-java
+  compile 'mysql:mysql-connector-java:latest.release'
+
+  testCompile "junit:junit:${VER_JUNIT}"
+  testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
+}
+
+apply plugin: 'eu.appsatori.fatjar'
+
+fatJar {
+  baseName = 'beauties'
+    manifest {
+      attributes(
+      'Class-Path': '.',
+      'Main-Class': 'beauties.main.BeautiesMain'
+      )
+    }
+	exclude 'META-INF/*.SF'
+	exclude 'META-INF/*.DSA'
+	exclude 'META-INF/*.RSA'
+}
+
+task copyDependencies(type: Copy) {
+   from configurations.compile
+   into 'lib'
+}
+
+/////////////
+// ECLIPSE //
+/////////////
+apply plugin: 'eclipse'
+eclipse {
+  project {
+    natures 'org.eclipse.jdt.core.javanature'
+    natures 'org.eclipse.buildship.core.gradleprojectnature'
+    buildCommand 'org.eclipse.jdt.core.javabuilder'
+    buildCommand 'org.eclipse.buildship.core.gradleprojectbuilder'
+  }
+  classpath {
+    downloadSources true
+    downloadJavadoc true
+  }
+  jdt {
+    sourceCompatibility VER_JAVA
+    targetCompatibility VER_JAVA
+  }
+}
+// always create fresh projects
+tasks.eclipse.dependsOn(cleanEclipse)
