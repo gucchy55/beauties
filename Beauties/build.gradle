@@ -1,17 +1,7 @@
-buildscript {
-    repositories {
-        jcenter()
-    }
-
-    dependencies {
-        classpath 'eu.appsatori:gradle-fatjar-plugin:0.3'
-    }
-}
-
-
 plugins {
   // swt deps
   id "com.diffplug.gradle.swt.nativedeps" version "3.7.2"
+  id "eu.appsatori.fatjar" version "0.3"
 }
 
 repositories {
@@ -35,14 +25,10 @@ sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 
 dependencies {
-  // https://mvnrepository.com/artifact/mysql/mysql-connector-java
   compile 'mysql:mysql-connector-java:latest.release'
-
   testCompile "junit:junit:${VER_JUNIT}"
   testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 }
-
-apply plugin: 'eu.appsatori.fatjar'
 
 fatJar {
   baseName = 'beauties'
@@ -52,9 +38,23 @@ fatJar {
       'Main-Class': 'beauties.main.BeautiesMain'
       )
     }
-	exclude 'META-INF/*.SF'
-	exclude 'META-INF/*.DSA'
-	exclude 'META-INF/*.RSA'
+  exclude 'META-INF/*.SF'
+  exclude 'META-INF/*.DSA'
+  exclude 'META-INF/*.RSA'
+  exclude 'META-INF/INDEX.LIST'
+  exclude 'META-INF/p2.inf'
+//  exclude 'META-INF/services'
+  exclude 'about_files'
+  exclude 'about.html'
+  exclude 'chrome.manifest'
+  exclude 'fragment.properties'
+  exclude 'icons'
+  exclude 'libswt*.jnilib'
+  exclude 'plugin.properties'
+  exclude 'swt.js'
+  exclude 'swt.xpt'
+  exclude 'version.txt'
+  exclude '.api_description'
 }
 
 task copyDependencies(type: Copy) {
