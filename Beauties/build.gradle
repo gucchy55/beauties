@@ -27,7 +27,6 @@ targetCompatibility = VER_JAVA
 dependencies {
   compile 'mysql:mysql-connector-java:latest.release'
   testCompile "junit:junit:${VER_JUNIT}"
-  testCompile "org.assertj:assertj-core:${VER_ASSERTJ}"
 }
 
 fatJar {
@@ -43,7 +42,6 @@ fatJar {
   exclude 'META-INF/*.RSA'
   exclude 'META-INF/INDEX.LIST'
   exclude 'META-INF/p2.inf'
-//  exclude 'META-INF/services'
   exclude 'about_files'
   exclude 'about.html'
   exclude 'chrome.manifest'
