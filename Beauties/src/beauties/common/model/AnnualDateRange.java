@@ -14,11 +14,15 @@ public class AnnualDateRange {
 
 	public AnnualDateRange(List<DateRange> pDateRangeList) {
 		mDateRangeList = pDateRangeList;
-		configureDateRangeList();
+		configureDateRangeList(SystemData.getCutOff());
+	}
+	public AnnualDateRange(List<DateRange> pDateRangeList, int pCutOff) {
+		mDateRangeList = pDateRangeList;
+		configureDateRangeList(pCutOff);
 	}
 
-	private void configureDateRangeList() {
-		Date wStartDateNow = Util.getMonthDateRange(new Date(), SystemData.getCutOff()).getStartDate();
+	private void configureDateRangeList(int pCutOff) {
+		Date wStartDateNow = Util.getMonthDateRange(new Date(), pCutOff).getStartDate();
 
 		if (mDateRangeList.size() < 2 || wStartDateNow.before(mDateRangeList.get(1).getStartDate()))
 			return;

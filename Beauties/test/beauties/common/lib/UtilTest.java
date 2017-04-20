@@ -153,7 +153,7 @@ public class UtilTest extends TestCase {
 		AnnualDateRange wResult = Util.getAnnualDateRangeFromDateRange(wDateRange, wCutOff);
 		assertTrue(wExpectedStart.equals(wResult.getStartDate())
 				&& wExpectedEnd.equals(wResult.getEndDate()));
-		assertTrue(wResult.size() == 14);
+		assertTrue(wResult.size() == 16);
 	}
 
 	public void testGetAnnualDateRange1() {

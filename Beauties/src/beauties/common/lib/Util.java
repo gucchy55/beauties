@@ -124,12 +124,12 @@ public class Util {
 	}
 	
 	public static AnnualDateRange getAnnualDateRange(Date pDate, int pMonths, int pCutOff) {
-		return new AnnualDateRange(getDateRangeListByMonthCnt(pDate, pMonths, pCutOff));
+		return new AnnualDateRange(getDateRangeListByMonthCnt(pDate, pMonths, pCutOff), pCutOff);
 	}
 	
 	public static AnnualDateRange getAnnualDateRangeFromDateRange(DateRange pDateRange,
 			int pCutOff) {
-		return new AnnualDateRange(getMonthDateRangeListFromLongRange(pDateRange, pCutOff));
+		return new AnnualDateRange(getMonthDateRangeListFromLongRange(pDateRange, pCutOff), pCutOff);
 	}
 
 //	private static DateRange getFiscalDateRange(int pCutOff, int pFiscalMonth) {
