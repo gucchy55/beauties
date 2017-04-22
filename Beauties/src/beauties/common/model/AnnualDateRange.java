@@ -9,8 +9,9 @@ import beauties.common.lib.Util;
 
 public class AnnualDateRange {
 	private List<DateRange> mDateRangeList;
-	private int mSumIndex = SystemData.getUndefinedInt();
-	private int mAveIndex = SystemData.getUndefinedInt();
+	private static final int mUndefined = -1;
+	private int mSumIndex = mUndefined;
+	private int mAveIndex = mUndefined;
 
 	public AnnualDateRange(List<DateRange> pDateRangeList) {
 		mDateRangeList = pDateRangeList;
@@ -67,7 +68,7 @@ public class AnnualDateRange {
 	}
 
 	public boolean hasSumIndex() {
-		return mSumIndex != SystemData.getUndefinedInt();
+		return mSumIndex != mUndefined;
 	}
 
 	public int size() {

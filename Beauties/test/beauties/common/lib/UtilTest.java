@@ -8,11 +8,12 @@ import beauties.common.lib.Util;
 import beauties.common.model.AnnualDateRange;
 import beauties.common.model.DateRange;
 
+import static org.junit.Assert.*;
+import org.junit.Test;
 
-import junit.framework.TestCase;
+public class UtilTest {
 
-public class UtilTest extends TestCase {
-
+	@Test
 	public void testGetAdjusentMonth1() {
 		// 2010.1.31 +1Month --> 2010.2.28
 		Date wBaseDate = new GregorianCalendar(2010, 0, 31).getTime();
@@ -20,6 +21,7 @@ public class UtilTest extends TestCase {
 		assertTrue(wExpected.equals(Util.getAdjusentMonth(wBaseDate, 1)));
 	}
 
+	@Test
 	public void testGetAdjusentMonth2() {
 		// 2010.1.31 -2Months --> 2009.11.30
 		Date wBaseDate = new GregorianCalendar(2010, 0, 31).getTime();
@@ -27,6 +29,7 @@ public class UtilTest extends TestCase {
 		assertTrue(wExpected.equals(Util.getAdjusentMonth(wBaseDate, -2)));
 	}
 
+	@Test
 	public void testGetAdjusentDay1() {
 		// 2010.1.31 +1Day --> 2010.2.1
 		Date wBaseDate = new GregorianCalendar(2010, 0, 31).getTime();
@@ -34,6 +37,7 @@ public class UtilTest extends TestCase {
 		assertTrue(wExpected.equals(Util.getAdjusentDay(wBaseDate, 1)));
 	}
 
+	@Test
 	public void testGetAdjusentDay2() {
 		// 2010.3.1 -1Day --> 2010.2.28
 		Date wBaseDate = new GregorianCalendar(2010, 2, 1).getTime();
@@ -41,6 +45,7 @@ public class UtilTest extends TestCase {
 		assertTrue(wExpected.equals(Util.getAdjusentDay(wBaseDate, -1)));
 	}
 
+	@Test
 	public void testGetMonthDateRange() {
 		int wCutOff = 24;
 		// 2010年2月10日 --> 2010.1.25 - 2010.2.24
@@ -52,6 +57,7 @@ public class UtilTest extends TestCase {
 				&& wExpected.getEndDate().equals(wResult.getEndDate()));
 	}
 
+	@Test
 	public void testGetMonthDateRange2() {
 		int wCutOff = 24;
 		// 2010年2月28日 --> 2010.2.25 - 2010.3.24
@@ -63,6 +69,7 @@ public class UtilTest extends TestCase {
 				&& wExpected.getEndDate().equals(wResult.getEndDate()));
 	}
 
+	@Test
 	public void testGetMonthDateRange3() {
 		int wCutOff = 30;
 		// 2010年2月10日 --> 2010.1.31 - 2010.2.28
@@ -74,6 +81,7 @@ public class UtilTest extends TestCase {
 				&& wExpected.getEndDate().equals(wResult.getEndDate()));
 	}
 
+	@Test
 	public void testGetMonthDateRange4() {
 		int wCutOff = 30;
 		// 2010年2月28日12時 --> 2010.1.31 - 2010.2.28
@@ -85,6 +93,7 @@ public class UtilTest extends TestCase {
 				&& wExpected.getEndDate().equals(wResult.getEndDate()));
 	}
 
+	@Test
 	public void testGetMonthDateRange5() {
 		int wCutOff = 24;
 		// 2010年2月25日 --> 2010.2.25 - 2010.3.24
@@ -96,6 +105,7 @@ public class UtilTest extends TestCase {
 				&& wExpected.getEndDate().equals(wResult.getEndDate()));
 	}
 
+	@Test
 	public void testGetMonthDateRange6() {
 		int wCutOff = 31;
 		// 2010年2月25日 --> 2010.2.1 - 2010.2.28
@@ -107,6 +117,7 @@ public class UtilTest extends TestCase {
 				&& wExpected.getEndDate().equals(wResult.getEndDate()));
 	}
 
+	@Test
 	public void testGetMonthDateRange7() {
 		int wCutOff = 31;
 		// 2010年2月1日 --> 2010.2.1 - 2010.2.28
@@ -118,6 +129,7 @@ public class UtilTest extends TestCase {
 				&& wExpected.getEndDate().equals(wResult.getEndDate()));
 	}
 
+	@Test
 	public void testGetAnnualDateRangeFromDateRange1() {
 		int wCutOff = 24;
 		// 2009.11.1 --> 2009.10.25
@@ -137,6 +149,7 @@ public class UtilTest extends TestCase {
 		assertTrue(wResult.size() == (wResult.hasSumIndex() ? 17 : 15));
 	}
 	
+	@Test
 	public void testAnnualDateRangeFromDateRange2() {
 		int wCutOff = 31;
 		// 2009.11.1 --> 2009.11.1
@@ -156,6 +169,7 @@ public class UtilTest extends TestCase {
 		assertTrue(wResult.size() == 16);
 	}
 
+	@Test
 	public void testGetAnnualDateRange1() {
 		int wCutOff = 24;
 		// 2010.12.30
@@ -170,6 +184,7 @@ public class UtilTest extends TestCase {
 				&& wExpectedEnd.equals(wResult.getEndDate()));
 	}
 	
+	@Test
 	public void testGetAnnualDateRange2() {
 		int wCutOff = 31;
 		// 2010.12.30
@@ -185,7 +200,7 @@ public class UtilTest extends TestCase {
 				&& wExpectedEnd.equals(wResultList.getEndDate()));
 	}
 
-
+	@Test
 	public void testGetAnnualDateRangeFiscal1() {
 		int wCutOff = 24;
 		int wFiscalMonth = 1;
@@ -197,6 +212,7 @@ public class UtilTest extends TestCase {
 		assertTrue(wExpectedStart.equals(wResult.getStartDate()) && wExpectedEnd.equals(wResult.getEndDate()));
 	}
 	
+	@Test
 	public void testGetAnnualDateRangeFiscal2() {
 		int wCutOff = 24;
 		int wFiscalMonth = 4;
