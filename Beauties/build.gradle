@@ -1,6 +1,6 @@
 plugins {
   // swt deps
-  id "com.diffplug.gradle.swt.nativedeps" version "3.7.2"
+  id "com.diffplug.gradle.swt.nativedeps" version "3.7.3"
   id "eu.appsatori.fatjar" version "0.3"
 }
 
@@ -25,7 +25,7 @@ sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 
 dependencies {
-  compile 'mysql:mysql-connector-java:latest.release'
+  compile 'mysql:mysql-connector-java:6.0.6'
   testCompile "junit:junit:${VER_JUNIT}"
 }
 
@@ -47,7 +47,7 @@ fatJar {
   exclude 'chrome.manifest'
   exclude 'fragment.properties'
   exclude 'icons'
-  exclude 'libswt*.jnilib'
+//  exclude 'libswt*.jnilib'
   exclude 'plugin.properties'
   exclude 'swt.js'
   exclude 'swt.xpt'
