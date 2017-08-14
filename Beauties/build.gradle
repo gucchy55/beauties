@@ -1,11 +1,11 @@
 plugins {
   // swt deps
-  id "com.diffplug.gradle.swt.nativedeps" version "3.7.3"
-  id "eu.appsatori.fatjar" version "0.3"
+  id 'com.diffplug.gradle.swt.nativedeps' version '3.7.3'
+  id 'com.github.ben-manes.versions' version '0.15.0'
 }
 
 repositories {
-  mavenCentral()
+  jcenter()
 }
 
 //////////
@@ -25,18 +25,20 @@ sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 
 dependencies {
-  compile 'mysql:mysql-connector-java:6.0.6'
-  testCompile "junit:junit:${VER_JUNIT}"
+  compile 'mysql:mysql-connector-java:5.1.+'
+  testCompile 'junit:junit:4.+'
 }
 
-fatJar {
+task fatJar(type: Jar) {
   baseName = 'beauties'
-    manifest {
-      attributes(
+  from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+  with jar
+  manifest {
+    attributes(
       'Class-Path': '.',
       'Main-Class': 'beauties.main.BeautiesMain'
       )
-    }
+  }
   exclude 'META-INF/*.SF'
   exclude 'META-INF/*.DSA'
   exclude 'META-INF/*.RSA'
@@ -47,7 +49,6 @@ fatJar {
   exclude 'chrome.manifest'
   exclude 'fragment.properties'
   exclude 'icons'
-//  exclude 'libswt*.jnilib'
   exclude 'plugin.properties'
   exclude 'swt.js'
   exclude 'swt.xpt'
