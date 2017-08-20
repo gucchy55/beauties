@@ -1350,15 +1350,15 @@ public class DbUtil {
 		StringBuilder wQueryBuilder = new StringBuilder("select ").append(mCategoryTable)
 				.append(".").append(mCategoryRexpCol).append(", ").append(mCategoryTable)
 				.append(".").append(mCategoryIdCol).append(", ").append(mCategoryTable).append(".")
-				.append(mSortKeyCol);
+				.append(mSortKeyCol)
+				.append(", ").append(mCategoryTable).append(".").append(mCategoryNameCol);
+
 		if (pItem)
 			wQueryBuilder.append(", ").append(mItemTable).append(".").append(mSortKeyCol)
 					.append(", ")
 					.append(mItemTable).append(".").append(mItemIdCol).append(", ")
 					.append(mItemTable)
 					.append(".").append(mItemNameCol);
-		else
-			wQueryBuilder.append(", ").append(mCategoryTable).append(".").append(mCategoryNameCol);
 
 		for (int i = 0; i < pAnnualDateRange.size(); i++) {
 			wQueryBuilder.append(", COALESCE(sum(case when ").append(mActDtCol).append(" between ? and ?")
