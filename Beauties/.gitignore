@@ -1,5 +1,7 @@
 /bin/
 /build/
-/.gradle/
 .DS_Store
 /workspace/
+
+.gradle/
+!gradle-wrapper.jar
