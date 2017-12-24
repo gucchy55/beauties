@@ -43,7 +43,6 @@ public class BeautiesMain extends ApplicationWindow {
 	private Composite mLeftComposite;
 	private Composite mRightComposite;
 
-//	private RightType mRightType = RightType.Main;
 	private EnumMap<RightType, Button> mRightTypeMap;
 
 	private static final int mLeftWidthHint = 100;
@@ -178,13 +177,7 @@ public class BeautiesMain extends ApplicationWindow {
 					return;
 				}
 				if (!wType.equals(RightType.Setting)) {
-//					mRightTypeMap.get(mRightType).setBackground(null);
-//					mRightTypeMap.get(mRightType).setSelection(false);
-//					mRightType = wType;
 					updateRight(wType);
-//					wButton.setBackground(SystemData.getColorYellow());
-//					mRightComposite.dispose();
-//					createRightComposite();
 				} else {
 					openConfigDialog();
 				}
@@ -209,17 +202,12 @@ public class BeautiesMain extends ApplicationWindow {
 	private void openConfigDialog() {
 		new PreferenceDialog(getShell(), new MyPreferenceManager()).open();
 		SystemData.crearCache();
-
-//		mRightTypeMap.get(mRightType).setBackground(null);
-//		mRightTypeMap.get(mRightType).setSelection(false);
-
 		updateRight(RightType.Main);
 	}
 
 	private void updateRight(RightType pRightType) {
 		mRightTypeMap.get(SystemData.getRightType()).setBackground(null);
 		mRightTypeMap.get(SystemData.getRightType()).setSelection(false);
-//		mRightType = pRightType;
 		SystemData.setRightType(pRightType);
 
 		mRightTypeMap.get(SystemData.getRightType()).setBackground(SystemData.getColorYellow());
@@ -248,9 +236,6 @@ public class BeautiesMain extends ApplicationWindow {
 	}
 
 	public static void main(String[] args) {
-//		if (args.length > 0) {
-//			new FileLoader(args[0]);
-//		}
 		String wFileName = args.length > 0 ? args[0] : "";
 
 		BeautiesMain wWindow = new BeautiesMain(wFileName);// トップレベル・シェルの作成

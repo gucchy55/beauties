@@ -88,30 +88,11 @@ class CompositeSummaryTable extends Composite {
 
 	void updateTable() {
 		mSummaryTableViewer.removeSelectionChangedListener(mSelectionChangedListener);
-//		mSummaryTableViewer.setContentProvider(new SummaryTableContentProvider());
-//		mSummaryTableViewer.setInput(mCTL.getSummaryTableItems());
-//		mSummaryTableViewer.setLabelProvider(new SummaryTableLabelProvider());
 		mSummaryTableViewer.setInput(mCTL.getSummaryTableItems());
 		mSummaryTableViewer.addSelectionChangedListener(mSelectionChangedListener);
 		mSummaryTableViewer.refresh();
 	}
 }
-
-//class SummaryTableContentProvider implements IStructuredContentProvider {
-//	@Override
-//	public Object[] getElements(Object inputElement) {
-//		SummaryTableItem[] wSummaryTableItems = (SummaryTableItem[]) inputElement;
-//		return wSummaryTableItems;
-//	}
-//
-//	@Override
-//	public void dispose() {
-//	}
-//
-//	@Override
-//	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-//	}
-//}
 
 class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
 	@Override

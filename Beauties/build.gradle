@@ -1,6 +1,6 @@
 plugins {
   // swt deps
-  id 'com.diffplug.gradle.swt.nativedeps' version '3.8.1'
+  id 'com.diffplug.gradle.swt.nativedeps' version '3.9.0'
   id 'com.github.ben-manes.versions' version '0.17.0'
 }
 
