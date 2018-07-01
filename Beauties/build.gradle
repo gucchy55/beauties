@@ -1,7 +1,7 @@
 plugins {
   // swt deps
-  id 'com.diffplug.gradle.swt.nativedeps' version '3.9.0'
-  id 'com.github.ben-manes.versions' version '0.17.0'
+  id 'com.diffplug.gradle.swt.nativedeps' version '3.14.0'
+  id 'com.github.ben-manes.versions' version '0.20.0'
 }
 
 repositories {
@@ -25,7 +25,7 @@ sourceCompatibility = VER_JAVA
 targetCompatibility = VER_JAVA
 
 dependencies {
-  compile 'mysql:mysql-connector-java:5.1.+'
+  compile 'mysql:mysql-connector-java:latest.release'
   testCompile 'junit:junit:4.+'
 }
 
