@@ -164,7 +164,6 @@ public class BeautiesMain extends ApplicationWindow {
 			wButton.addSelectionListener(createSelectionAdapter(wType));
 		}
 		mRightTypeMap.get(SystemData.getRightType()).setSelection(true);
-		mRightTypeMap.get(SystemData.getRightType()).setBackground(SystemData.getColorYellow());
 	}
 
 	private SelectionAdapter createSelectionAdapter(final RightType wType) {
@@ -206,11 +205,9 @@ public class BeautiesMain extends ApplicationWindow {
 	}
 
 	private void updateRight(RightType pRightType) {
-		mRightTypeMap.get(SystemData.getRightType()).setBackground(null);
 		mRightTypeMap.get(SystemData.getRightType()).setSelection(false);
 		SystemData.setRightType(pRightType);
 
-		mRightTypeMap.get(SystemData.getRightType()).setBackground(SystemData.getColorYellow());
 		mRightTypeMap.get(SystemData.getRightType()).setSelection(true);
 		
 		if (mRightComposite != null) {

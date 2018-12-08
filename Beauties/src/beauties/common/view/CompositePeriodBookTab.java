@@ -98,8 +98,6 @@ public class CompositePeriodBookTab extends Composite {
 	private void createBookNameComp() {
 		mBookNameComp = new CompositeBookNames(this, mCTL.getBook());
 		mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setSelection(true);
-		mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setBackground(
-				SystemData.getColorYellow());
 
 		for (Map.Entry<Book, Button> entry : mBookNameComp.getBookButtonMap().entrySet()) {
 			final Book wBook = entry.getKey();
@@ -114,8 +112,6 @@ public class CompositePeriodBookTab extends Composite {
 					mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setSelection(false);
 					mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setBackground(null);
 					mCTL.setBook(wBook);
-					mBookNameComp.getBookButtonMap().get(mCTL.getBook()).setBackground(
-							SystemData.getColorYellow());
 					mCTL.updateTable();
 				}
 			});

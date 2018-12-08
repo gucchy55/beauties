@@ -46,7 +46,6 @@ class CompositeActionTab extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Button wButton = (Button)e.getSource();
-				wButton.setBackground(wButton.getSelection() ? SystemData.getColorYellow() : null);
 				if(wButton.getSelection()) {
 					wButton.setSelection(mCTL.openHistoryDialog());
 				}
@@ -65,7 +64,6 @@ class CompositeActionTab extends Composite {
 			@Override
 			public void widgetSelected(SelectionEvent e) {
 				Button wButton = (Button)e.getSource();
-				wButton.setBackground(wButton.getSelection() ? SystemData.getColorYellow() : null);
 				if(wButton.getSelection()) 
 					wButton.setSelection(mCTL.openSearchDialog());
 				else {
