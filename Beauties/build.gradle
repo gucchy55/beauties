@@ -1,6 +1,6 @@
 plugins {
   // swt deps
-  id 'com.diffplug.gradle.swt.nativedeps' version '3.17.1'
+  id 'com.diffplug.gradle.swt.nativedeps' version '3.17.3'
   id 'com.github.ben-manes.versions' version '0.20.0'
 }
 
@@ -28,6 +28,12 @@ dependencies {
   compile 'mysql:mysql-connector-java:latest.release'
   testCompile 'junit:junit:4.+'
 }
+
+def defaultEncoding = 'UTF-8'
+    tasks.withType(AbstractCompile) each { it.options.encoding = defaultEncoding }
+    compileTestJava {
+        options.encoding = defaultEncoding
+    }
 
 task fatJar(type: Jar) {
   baseName = 'beauties'
