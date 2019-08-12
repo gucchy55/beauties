@@ -13,7 +13,6 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
 import org.eclipse.swt.widgets.TableColumn;
 
@@ -138,7 +137,7 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 	public Color getForeground(Object pElement, int pColumnIndex) {
 		SummaryTableItem wItem = (SummaryTableItem) pElement;
 		if (pColumnIndex == 1 && wItem.getValue() < 0) {
-			return new Color(Display.getCurrent(), 255, 0, 0);
+			return SystemData.getColorRedFore();
 		}
 		return null;
 

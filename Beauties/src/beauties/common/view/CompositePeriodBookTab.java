@@ -12,7 +12,6 @@ import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.Label;
 
-import beauties.common.lib.SystemData;
 import beauties.common.model.Book;
 
 public class CompositePeriodBookTab extends Composite {

@@ -88,7 +88,7 @@ class SummaryTableItemAppearedProfit extends SummaryTableItem {
 
 	@Override
 	public Color getEntryColor() {
-		return SystemData.getColorRed();
+		return SystemData.getColorGreen();
 	}
 
 	@Override
@@ -106,7 +106,7 @@ class SummaryTableItemAppearedIncome extends SummaryTableItem {
 	
 	@Override
 	public Color getEntryColor() {
-		return SystemData.getColorGreen();
+		return SystemData.getColorRed();
 	}
 
 	@Override
@@ -125,7 +125,7 @@ class SummaryTableItemAppearedExpense extends SummaryTableItem {
 	
 	@Override
 	public Color getEntryColor() {
-		return SystemData.getColorGreen();
+		return SystemData.getColorRed();
 	}
 
 	@Override
@@ -139,12 +139,6 @@ class SummaryTableItemCategory extends SummaryTableItem {
 	
 	private final Category mCategory;
 
-//	@Deprecated
-//	SummaryTableItemCategory(String pName, long pValue, Category pCategory) {
-//		super(pName, pValue);
-//		mCategory = pCategory;
-//	}
-	
 	SummaryTableItemCategory(Category pCategory, long pValue) {
 		super(pCategory, pValue);
 		mCategory = pCategory;
@@ -169,11 +163,6 @@ class SummaryTableItemNormalItem extends SummaryTableItem {
 	
 	private final Item mItem;
 
-//	@Deprecated
-//	SummaryTableItemNormalItem(String pName, long pValue, Item pItem) {
-//		super("  " + pName, pValue);
-//		mItem = pItem;
-//	}
 	public SummaryTableItemNormalItem(Item pItem, long pValue) {
 		super(pItem, pValue);
 		mItem = pItem;
@@ -181,7 +170,6 @@ class SummaryTableItemNormalItem extends SummaryTableItem {
 
 	@Override
 	public Color getEntryColor() {
-//		return SystemData.getColorGray();
 		return null;
 	}
 

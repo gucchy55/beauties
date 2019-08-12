@@ -18,9 +18,8 @@ import org.eclipse.swt.graphics.Color;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
-import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Table;
-import org.eclipse.swt.widgets.TableColumn; //import org.eclipse.swt.widgets.TableItem;
+import org.eclipse.swt.widgets.TableColumn;
 import org.eclipse.swt.widgets.TableItem;
 
 import beauties.annual.AnnualController;
@@ -90,26 +89,6 @@ class CompositeAnnualTable extends Composite {
 		addSyncScrollListener(mRowHeaderTableViewer.getTable(), mMainTableViewer.getTable());
 		addSyncScrollListener(mMainTableViewer.getTable(), mRowHeaderTableViewer.getTable());
 
-//		mRowHeaderTableViewer.getTable().addListener(
-//				SWT.Traverse, event -> 
-//				mMainTableViewer.getTable().setTopIndex(mRowHeaderTableViewer.getTable().getTopIndex()));
-//		mMainTableViewer.getTable().addListener(
-//				SWT.Traverse, event -> 
-//				mRowHeaderTableViewer.getTable().setTopIndex(mMainTableViewer.getTable().getTopIndex()));
-//		mRowHeaderTableViewer.getTable().getVerticalBar().addSelectionListener(
-//				new SelectionAdapter() {
-//					@Override
-//					public void widgetSelected(SelectionEvent e) {
-//						mMainTableViewer.getTable().setTopIndex(mRowHeaderTableViewer.getTable().getTopIndex());
-//					}
-//				});
-//		mMainTableViewer.getTable().getVerticalBar().addSelectionListener(
-//				new SelectionAdapter() {
-//					@Override
-//					public void widgetSelected(SelectionEvent e) {
-//						mRowHeaderTableViewer.getTable().setTopIndex(mMainTableViewer.getTable().getTopIndex());
-//					}
-//				});
 	}
 
 	private void addSyncScrollListener(Table pTable1, Table pTable2) {
@@ -171,17 +150,6 @@ class CompositeAnnualTable extends Composite {
 		mRowHeaderTableViewer.setInput(mCTL.getRowHeaderList());
 		mRowHeaderTableViewer.setLabelProvider(new HeaderTableLabelProvider());
 	}
-
-	// void updateTable() {
-	// removeListeners();
-	// mRowHeaderTableViewer.setInput(mCTL.getRowHeaderList());
-	// mRowHeaderTableViewer.refresh();
-	// mMainTableViewer.setInput((SummaryTableItem[][])
-	// mCTL.getSummaryTableItems()
-	// .toArray(new SummaryTableItem[0][]));
-	// mRowHeaderTableViewer.refresh();
-	// addListeners();
-	// }
 
 	void recreateMainTable() {
 		removeListeners();
@@ -339,7 +307,7 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		SummaryTableItem wItem = wItems[pColumnIndex];
 		if (wItem.getValue() < 0)
 			// 赤字
-			return new Color(Display.getCurrent(), 255, 0, 0);
+			return SystemData.getColorRedFore();
 
 		return null;
 	}
