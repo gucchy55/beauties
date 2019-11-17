@@ -21,7 +21,7 @@ For run:
 ```sh
 gradle fatJar
 ```
---> `build/libs/beauties.jar
+--> build/libs/beauties.jar
 
 2. Setup MySQL
 
