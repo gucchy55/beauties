@@ -31,6 +31,8 @@ In case dbname = beauties
 mysql -u <username> -p beauties < mysql/beauties.sql
 ```
 
+Refer to mysql/my.cnf 
+
 3. Edit beauties.properties
 
 [DB] section:
