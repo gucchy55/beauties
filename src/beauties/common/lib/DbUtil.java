@@ -44,7 +44,7 @@ public class DbUtil {
 	private final static int mMaxLengthToRecordNote = 30;
 
 	// Systemテーブル関連
-	private final static String mSystemTable = "system";
+	private final static String mSystemTable = "setting";
 	private final static String mSystemValueCol = "NUM_VALUE";
 	private final static String mSystemIDCol = "SID";
 	private final static String mCutOff = "CUTOFF_DT";
