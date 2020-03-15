@@ -1,7 +1,7 @@
 plugins {
   // swt deps
-  id 'com.diffplug.gradle.swt.nativedeps' version '3.18.1'
-  id 'com.github.ben-manes.versions' version '0.27.0'
+  id 'com.diffplug.gradle.swt.nativedeps' version '3.21.0'
+  id 'com.github.ben-manes.versions' version '0.28.0'
 }
 
 repositories {
@@ -36,6 +36,7 @@ def defaultEncoding = 'UTF-8'
     }
 
 task fatJar(type: Jar) {
+  group = 'jar'
   baseName = 'beauties'
   from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
   with jar
