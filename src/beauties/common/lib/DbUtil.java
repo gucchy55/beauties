@@ -1301,6 +1301,7 @@ public class DbUtil {
 			}
 			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
 				while (wResultSet.next()) {
+					wResultSet.getInt(mItemIdCol);
 					if (wResultSet.wasNull()) {
 						wAppearedIncome = wResultSet.getLong("INCOME");
 						wAppearedExpense = wResultSet.getLong("EXPENSE");
