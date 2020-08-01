@@ -452,7 +452,6 @@ public class DbUtil {
 			}
 			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
 				while (wResultSet.next()) {
-//					wResultList.add(wResultSet.getInt(mItemIdCol));
 					wResultList.add(getItem(wResultSet, getCategory(wResultSet, pIncomeExpenseType)));
 				}
 			} catch (SQLException e) {
@@ -559,7 +558,6 @@ public class DbUtil {
 			}
 			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
 				while (wResultSet.next()) {
-//					wResultList.add(wResultSet.getInt(mCategoryIdCol));
 					wResultList.add(getCategory(wResultSet, pIncomeExpenseType));
 				}
 			} catch (SQLException e) {
@@ -1303,7 +1301,6 @@ public class DbUtil {
 			}
 			try (ResultSet wResultSet = mDbAccess.executeQuery(wStatement)) {
 				while (wResultSet.next()) {
-					wResultSet.getInt(mItemTable + "." + mItemIdCol);
 					if (wResultSet.wasNull()) {
 						wAppearedIncome = wResultSet.getLong("INCOME");
 						wAppearedExpense = wResultSet.getLong("EXPENSE");
@@ -1521,8 +1518,8 @@ public class DbUtil {
 				}
 
 				while (hasResults) {
-					int wId = pItem ? wResultSet.getInt(mItemTable + "." + mItemIdCol) : wResultSet
-							.getInt(mCategoryTable + "." + mCategoryIdCol);
+					int wId = pItem ? wResultSet.getInt(mItemIdCol) : wResultSet
+							.getInt(mCategoryIdCol);
 
 					// 集計行
 					if (wId == 0)
