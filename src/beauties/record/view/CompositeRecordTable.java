@@ -163,18 +163,4 @@ class CompositeRecordTable extends Composite {
 			for (ViewerFilter vf : mTableBottom.getFilters())
 				mTableBottom.removeFilter(vf);
 	}
-
-//	void updateForSearch() {
-//		updateTable();
-//	}
-	
-//	void removeListers() {
-//		mTableUp.removeListeners();
-//		mTableBottom.removeListeners();
-//	}
-//	void addListeners() {
-//		mTableUp.addListeners();
-//		mTableBottom.addListeners();
-//	}
-	
 }

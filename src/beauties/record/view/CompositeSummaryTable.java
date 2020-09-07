@@ -1,15 +1,18 @@
 package beauties.record.view;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.ISelectionChangedListener;
 import org.eclipse.jface.viewers.IStructuredSelection;
 import org.eclipse.jface.viewers.ITableColorProvider;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.SelectionChangedEvent;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.graphics.Color;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -93,7 +96,8 @@ class CompositeSummaryTable extends Composite {
 	}
 }
 
-class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
+class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider, ITableFontProvider {
+
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
@@ -141,6 +145,12 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 		}
 		return null;
 
+	}
+
+	@Override
+	public Font getFont(Object pElement, int pColumnIndex) {
+		if (pColumnIndex == 1) return JFaceResources.getFont(JFaceResources.TEXT_FONT);
+		return null;
 	}
 
 }

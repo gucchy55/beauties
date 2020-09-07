@@ -4,8 +4,10 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
+import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
+import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -14,6 +16,7 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
+import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -226,23 +229,7 @@ class RecordTableViewer extends TableViewer {
 	}
 }
 
-//class TableContentProvider implements IStructuredContentProvider {
-//	@Override
-//	public Object[] getElements(Object inputElement) {
-//		RecordTableItem[] wRecordTableItems = (RecordTableItem[]) inputElement;
-//		return wRecordTableItems;
-//	}
-//
-//	@Override
-//	public void dispose() {
-//	}
-//
-//	@Override
-//	public void inputChanged(Viewer viewer, Object oldInput, Object newInput) {
-//	}
-//}
-
-class TableLabelProvider implements ITableLabelProvider {
+class TableLabelProvider implements ITableLabelProvider, ITableFontProvider {
 	private static DateFormat mDateFormat = new SimpleDateFormat("MM/dd");
 	private static DateFormat mDateFormatLong = new SimpleDateFormat("yyyy/MM/dd");
 	private RecordController mCTL;
@@ -307,29 +294,9 @@ class TableLabelProvider implements ITableLabelProvider {
 		return SystemData.getFormatedFigures(pValue);
 	}
 
+	@Override
+	public Font getFont(Object arg0, int pColumnIndex) {
+		if (pColumnIndex >= 2 && pColumnIndex <= 5) return JFaceResources.getFont(JFaceResources.TEXT_FONT);
+		return null;
+	}
 }
-
-// class IdFilter extends ViewerFilter {
-//
-// private CompositeEntry mCompositeEntry;
-//
-// public IdFilter(CompositeEntry pCompositeEntry) {
-// mCompositeEntry = pCompositeEntry;
-// }
-//
-// public boolean select(Viewer pViewer, Object pParent, Object pElement) {
-// RecordTableItem wRecord = (RecordTableItem) pElement;
-// if (mCompositeEntry.getCategoryId() != SystemData.getUndefinedInt()) {
-// return (wRecord.getCategoryId() == mCompositeEntry.getCategoryId());
-// } else if (mCompositeEntry.getItemId() != SystemData.getUndefinedInt()) {
-// return (wRecord.getItemId() == mCompositeEntry.getItemId());
-// } else if (mCompositeEntry.isAllIncome()) {
-// return (wRecord.isIncome());
-// } else if (mCompositeEntry.isAllExpense()) {
-// return (wRecord.isExpense());
-// } else {
-// return true;
-// }
-// }
-//
-// }
