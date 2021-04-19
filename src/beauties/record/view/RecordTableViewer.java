@@ -125,13 +125,8 @@ class RecordTableViewer extends TableViewer {
 		return new MouseAdapter() {
 			@Override
 			public void mouseDoubleClick(MouseEvent event) {
-//		return new IDoubleClickListener() {
-//			@Override
-//			public void doubleClick(DoubleClickEvent event) {
-//				IStructuredSelection sel = (IStructuredSelection) event.getSelection();
-//				RecordTableItem wRecord = (RecordTableItem) sel.getFirstElement();
 				RecordTableItem wRecord = mCTL.getSelectedRecordItem();
-				if (wRecord.isBalanceRow()) {
+				if (wRecord == null || wRecord.isBalanceRow()) {
 					return;
 				}
 				if (wRecord.isMoveItem()) {
