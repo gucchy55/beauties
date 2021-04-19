@@ -1,7 +1,7 @@
 plugins {
   // swt deps
-  id 'com.diffplug.swt.nativedeps' version '3.24.0'
-  id 'com.github.ben-manes.versions' version '0.30.0'
+  id 'com.diffplug.swt.nativedeps' version '3.27.0'
+  id 'com.github.ben-manes.versions' version '0.38.0'
 }
 
 repositories {
