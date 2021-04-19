@@ -28,7 +28,7 @@ class DbAccess {
 		mDb = SystemData.getDbName();
 		mUser = SystemData.getDbUser();
 		mPass = SystemData.getDbPass();
-		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb + "?useServerPrepStmts=true&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=JST";
+		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb + "?useServerPrepStmts=true&useSSL=false&allowPublicKeyRetrieval=true";
 
 		try {
 			mCon = DriverManager.getConnection(mUrl, mUser, mPass);
