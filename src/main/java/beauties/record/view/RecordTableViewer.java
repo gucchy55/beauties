@@ -4,10 +4,8 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Collection;
 
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ArrayContentProvider;
 import org.eclipse.jface.viewers.ILabelProviderListener;
-import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.swt.SWT;
@@ -16,7 +14,6 @@ import org.eclipse.swt.events.KeyListener;
 import org.eclipse.swt.events.MouseAdapter;
 import org.eclipse.swt.events.MouseEvent;
 import org.eclipse.swt.events.MouseListener;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -43,7 +40,6 @@ class RecordTableViewer extends TableViewer {
 	private TableColumn mDateCol;
 
 	private KeyListener mKeyListener;
-//	private IDoubleClickListener mDoubleClickListener;
 	private MouseListener mDoubleClickListener;
 	
 	RecordTableViewer(Composite pComp, RecordController pCTL) {
@@ -100,7 +96,6 @@ class RecordTableViewer extends TableViewer {
 
 		mRecordTableItems = pRecordTableItems;
 
-//		this.setContentProvider(new TableContentProvider());
 		this.setContentProvider(ArrayContentProvider.getInstance());
 		this.setInput(mRecordTableItems);
 
@@ -113,14 +108,8 @@ class RecordTableViewer extends TableViewer {
 	private void addListeners() {
 		this.getTable().addKeyListener(mKeyListener);
 		this.getTable().addMouseListener(mDoubleClickListener);
-//		addDoubleClickListener(mDoubleClickListener);
 	}
 	
-//	void removeListeners() {
-//		removeDoubleClickListener(mDoubleClickListener);
-//		this.getTable().removeKeyListener(mKeyListener);
-//	}
-
 	private MouseListener getDoubleClickListener() {
 		return new MouseAdapter() {
 			@Override
@@ -183,14 +172,6 @@ class RecordTableViewer extends TableViewer {
 	private boolean keyEventForModify(KeyEvent e) {
 		if (!mCTL.hasSelectedRecordTableItem())
 			return false;
-		// Enterキーが押されたら変更ダイアログ
-//		if (e.character == SWT.CR) {
-//			if (mCTL.getSelectedRecordItem().isMoveItem())
-//				new OpenDialogModifyMove(mCTL).run();
-//			else
-//				new OpenDialogModifyRecord(mCTL).run();
-//			return true;
-//		}
 
 		// DELキーが押されたら削除（確認ダイアログ）
 		if (e.character == SWT.DEL) {
@@ -209,11 +190,6 @@ class RecordTableViewer extends TableViewer {
 		mBookCol.setWidth(mCTL.showBookColumn() ? SystemData.getRecordWidthBook() : 0);
 		mBookCol.setResizable(mCTL.showBookColumn());
 		mDateCol.setWidth(mCTL.showYear() ? SystemData.getRecordWidthDateYear() : SystemData.getRecordWidthDate());
-		// for (TableColumn wColumn : this.getTable().getColumns()) {
-		// if (!wColumn.getResizable())
-		// continue;
-		// wColumn.pack();
-		// }
 	}
 
 	void updateTableItem(Collection<RecordTableItem> pRecordTableItems) {
@@ -224,7 +200,7 @@ class RecordTableViewer extends TableViewer {
 	}
 }
 
-class TableLabelProvider implements ITableLabelProvider, ITableFontProvider {
+class TableLabelProvider implements ITableLabelProvider {
 	private static DateFormat mDateFormat = new SimpleDateFormat("MM/dd");
 	private static DateFormat mDateFormatLong = new SimpleDateFormat("yyyy/MM/dd");
 	private RecordController mCTL;
@@ -289,9 +265,4 @@ class TableLabelProvider implements ITableLabelProvider, ITableFontProvider {
 		return SystemData.getFormatedFigures(pValue);
 	}
 
-	@Override
-	public Font getFont(Object arg0, int pColumnIndex) {
-		if (pColumnIndex >= 2 && pColumnIndex <= 5) return JFaceResources.getFont(JFaceResources.TEXT_FONT);
-		return null;
-	}
 }

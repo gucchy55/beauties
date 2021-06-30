@@ -2,11 +2,9 @@ package beauties.annual.view;
 
 import java.util.List;
 
-import org.eclipse.jface.resource.JFaceResources;
 import org.eclipse.jface.viewers.ILabelProviderListener;
 import org.eclipse.jface.viewers.IStructuredContentProvider;
 import org.eclipse.jface.viewers.ITableColorProvider;
-import org.eclipse.jface.viewers.ITableFontProvider;
 import org.eclipse.jface.viewers.ITableLabelProvider;
 import org.eclipse.jface.viewers.TableViewer;
 import org.eclipse.jface.viewers.Viewer;
@@ -17,7 +15,6 @@ import org.eclipse.swt.dnd.Transfer;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.graphics.Color;
-import org.eclipse.swt.graphics.Font;
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.layout.GridData;
 import org.eclipse.swt.widgets.Composite;
@@ -205,7 +202,7 @@ class HeaderTableContentProvider implements IStructuredContentProvider {
 	}
 }
 
-class HeaderTableLabelProvider implements ITableLabelProvider, ITableColorProvider, ITableFontProvider {
+class HeaderTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
 
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
@@ -246,11 +243,6 @@ class HeaderTableLabelProvider implements ITableLabelProvider, ITableColorProvid
 		return null;
 	}
 
-	@Override
-	public Font getFont(Object arg0, int pColumnIndex) {
-		return JFaceResources.getFont(JFaceResources.TEXT_FONT);
-	}
-
 }
 
 class SummaryTableContentProvider implements IStructuredContentProvider {
@@ -269,7 +261,7 @@ class SummaryTableContentProvider implements IStructuredContentProvider {
 	}
 }
 
-class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider, ITableFontProvider {
+class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvider {
 	@Override
 	public Image getColumnImage(Object element, int columnIndex) {
 		return null;
@@ -318,11 +310,6 @@ class SummaryTableLabelProvider implements ITableLabelProvider, ITableColorProvi
 			return SystemData.getColorRedFore();
 
 		return null;
-	}
-
-	@Override
-	public Font getFont(Object arg0, int arg1) {
-		return JFaceResources.getFont(JFaceResources.TEXT_FONT);
 	}
 
 }
