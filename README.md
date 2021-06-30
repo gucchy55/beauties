@@ -19,7 +19,7 @@ For run:
 1. Build
 
 ```sh
-gradle fatJar
+gradle shadowJar
 ```
 --> build/libs/beauties.jar
 
