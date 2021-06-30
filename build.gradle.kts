@@ -25,3 +25,7 @@ eclipseMavenCentral {
         useNativesForRunningPlatform()
     }
 }
+
+tasks.wrapper {
+  gradleVersion = "7.1"
+}
