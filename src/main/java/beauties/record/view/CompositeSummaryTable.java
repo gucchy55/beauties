@@ -45,11 +45,10 @@ class CompositeSummaryTable extends Composite {
 	}
 
 	private TableViewer createSummaryTable() {
-		TableViewer wSummaryTableViewer = new TableViewer(this, SWT.FULL_SELECTION | SWT.BORDER
-				| SWT.VIRTUAL);
+		TableViewer wSummaryTableViewer = new TableViewer(this, SWT.FULL_SELECTION | SWT.BORDER );
 		Table wTable = wSummaryTableViewer.getTable();
 
-		wTable.setLayoutData(new MyGridData(GridData.FILL, GridData.FILL, false, true)
+		wTable.setLayoutData(new MyGridData(GridData.BEGINNING, GridData.BEGINNING, true, true)
 				.getMyGridData());
 
 		// 線を表示する

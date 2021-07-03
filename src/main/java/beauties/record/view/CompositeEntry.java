@@ -44,8 +44,7 @@ public class CompositeEntry extends Composite {
 		GridData wGridDataSummary = new MyGridData(GridData.END, GridData.FILL, false, false)
 				.getMyGridData();
 		wGridDataSummary.horizontalSpan = 1;
-//		wGridDataSummary.widthHint = 230;
-		wGridDataSummary.widthHint = SystemData.getRecordWidthSummaryItem() + SystemData.getRecordWidthSummaryValue() + 3;
+		wGridDataSummary.widthHint = SystemData.getRecordWidthSummaryItem() + SystemData.getRecordWidthSummaryValue() + 13;
 
 		mCompositePeriodBookTab = new CompositePeriodBookTab(mCTL);
 		mCompositePeriodBookTab.setLayoutData(wGridDataBook);
