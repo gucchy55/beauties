@@ -1,6 +1,6 @@
 plugins {
   application
-  id("com.diffplug.eclipse.mavencentral") version "3.31.0"
+  id("com.diffplug.eclipse.mavencentral") version "3.33.1"
   id("com.github.johnrengelman.shadow") version "7.0.0"
   id("com.github.ben-manes.versions") version "0.39.0"
 }
