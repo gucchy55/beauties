@@ -1,8 +1,8 @@
 plugins {
   application
-  id("com.diffplug.eclipse.mavencentral") version "3.33.1"
-  id("com.github.johnrengelman.shadow") version "7.0.0"
-  id("com.github.ben-manes.versions") version "0.39.0"
+  id("com.diffplug.eclipse.mavencentral") version "3.34.1"
+  id("com.github.johnrengelman.shadow") version "7.1.2"
+  id("com.github.ben-manes.versions") version "0.40.0"
 }
 
 java {
@@ -24,7 +24,7 @@ dependencies {
 }
 
 eclipseMavenCentral {
-    release("4.20.0") {
+    release("4.21.0") {
         implementationNative("org.eclipse.swt")
         implementation("org.eclipse.jface")
         useNativesForRunningPlatform()
