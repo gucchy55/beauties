@@ -1,3 +1,5 @@
+import org.gradle.internal.os.OperatingSystem
+
 plugins {
     application
     id("dev.equo.p2deps") version "1.7.8"
@@ -54,4 +56,10 @@ tasks.jar {
 // ビルド時に依存関係を自動コピー
 tasks.build {
     dependsOn(copyDependencies)
+}
+
+tasks.named<JavaExec>("run") {
+    if (OperatingSystem.current().isMacOsX) {
+        jvmArgs = listOf("-XstartOnFirstThread")
+    }
 }
