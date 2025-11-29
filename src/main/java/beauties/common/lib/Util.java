@@ -7,21 +7,6 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Locale;
-
-//import org.eclipse.swt.events.FocusEvent;
-//import org.eclipse.swt.events.FocusListener;
-//import org.eclipse.swt.widgets.Shell;
-
-
-
-
-
-
-
-
-
-
 
 import org.eclipse.jface.bindings.keys.KeyStroke;
 import org.eclipse.jface.bindings.keys.ParseException;
@@ -63,9 +48,13 @@ public class Util {
 	}
 
 	public static String getDayOfTheWeekShort(Date pDate) {
-		Calendar wCal = Calendar.getInstance();
-		wCal.setTime(pDate);
-		return wCal.getDisplayName(Calendar.DAY_OF_WEEK, Calendar.SHORT, Locale.getDefault());
+        String[] daysOfWeek = {"日", "月", "火", "水", "木", "金", "土"};
+
+        Calendar cal = Calendar.getInstance();
+        cal.setTime(pDate);
+        int dayOfWeek = cal.get(Calendar.DAY_OF_WEEK);
+
+        return daysOfWeek[dayOfWeek - 1];
 	}
 
 	public static DateRange getMonthDateRange(Date pDate, int pCutOff) {
@@ -159,17 +148,6 @@ public class Util {
 		return new DateRange(wFirstDate.getTime(), wEndDate);
 	}
 	
-//	public static FocusListener getFocusListenerToDisableIme(final Shell pShell, final int pMode) {
-//		return new FocusListener() {
-//			public void focusGained(FocusEvent event) {
-//				pShell.setImeInputMode(pMode);
-//			}
-//
-//			public void focusLost(FocusEvent event) {
-//			}
-//		};
-//	}
-
 	private static IContentProposal[] createProposals(final String pContent,
 			final int pPosition, String[] pCandidates, int pMaxCount) {
 
