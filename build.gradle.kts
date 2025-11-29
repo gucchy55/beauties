@@ -1,7 +1,7 @@
 plugins {
     application
     id("dev.equo.p2deps") version "1.7.8"
-    id("com.github.ben-manes.versions") version "0.52.0"
+    id("com.github.ben-manes.versions") version "0.53.0"
 }
 
 java {
@@ -25,7 +25,7 @@ dependencies {
 
 p2deps {
     into("implementation") {
-        p2repo("https://download.eclipse.org/eclipse/updates/4.36/R-4.36-202505281830/")
+        p2repo("https://download.eclipse.org/eclipse/updates/4.37/R-4.37-202509050730/")
         install("org.eclipse.swt.cocoa.macosx.aarch64")
         install("org.eclipse.jface")
     }
