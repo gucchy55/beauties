@@ -1,0 +1,16 @@
+[versions]
+gradle = "9.1.0"
+java = "25"
+p2deps = "1.7.8"
+versions-plugin = "0.53.0"
+junit = "4.+"
+mysql = "latest.release"
+eclipse-repo = "https://download.eclipse.org/eclipse/updates/4.37/R-4.37-202509050730/"
+eclipse-swt = "org.eclipse.swt.cocoa.macosx.aarch64"
+mainClass = "beauties.main.BeautiesMain"
+
+[libraries]
+# 必要に応じてライブラリ定義を追加できます
+
+[plugins]
+# 必要に応じてプラグイン定義を追加できます

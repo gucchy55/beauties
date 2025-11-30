@@ -2,13 +2,13 @@ import org.gradle.internal.os.OperatingSystem
 
 plugins {
     application
-    id("dev.equo.p2deps") version "1.7.8"
-    id("com.github.ben-manes.versions") version "0.53.0"
+    id("dev.equo.p2deps") version libs.versions.p2deps.get()
+    id("com.github.ben-manes.versions") version libs.versions.versions.plugin.get()
 }
 
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(25)
+        languageVersion = JavaLanguageVersion.of(libs.versions.java.get().toInt())
     }
 }
 
@@ -17,18 +17,18 @@ repositories {
 }
 
 application {
-    mainClass.set("beauties.main.BeautiesMain")
+    mainClass.set(libs.versions.mainClass.get())
 }
 
 dependencies {
-    testImplementation("junit:junit:4.+")
-    implementation("mysql:mysql-connector-java:latest.release")
+    testImplementation("junit:junit:${libs.versions.junit.get()}")
+    implementation("mysql:mysql-connector-java:${libs.versions.mysql.get()}")
 }
 
 p2deps {
     into("implementation") {
-        p2repo("https://download.eclipse.org/eclipse/updates/4.37/R-4.37-202509050730/")
-        install("org.eclipse.swt.cocoa.macosx.aarch64")
+        p2repo(libs.versions.eclipse.repo.get())
+        install(libs.versions.eclipse.swt.get())
         install("org.eclipse.jface")
     }
 }
@@ -43,10 +43,9 @@ val copyDependencies by tasks.registering(Copy::class) {
 // jarタスクをカスタマイズ（Class-Pathマニフェストを設定）
 tasks.jar {
     dependsOn(copyDependencies)
-
     manifest {
         attributes(
-            "Main-Class" to "beauties.main.BeautiesMain",
+            "Main-Class" to libs.versions.mainClass.get(),
             "Class-Path" to configurations.runtimeClasspath.get().files
                 .joinToString(" ") { "lib/${it.name}" }
         )
@@ -62,4 +61,9 @@ tasks.named<JavaExec>("run") {
     if (OperatingSystem.current().isMacOsX) {
         jvmArgs = listOf("-XstartOnFirstThread")
     }
+}
+
+tasks.wrapper {
+    gradleVersion = libs.versions.gradle.get()
+    distributionType = Wrapper.DistributionType.ALL
 }
