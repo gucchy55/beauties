@@ -6,9 +6,14 @@ plugins {
     id("com.github.ben-manes.versions") version libs.versions.versions.plugin.get()
 }
 
+val minJavaVersion = libs.versions.java.get().toInt()
+val currentJavaVersion = JavaVersion.current().majorVersion.toInt()
+
 java {
     toolchain {
-        languageVersion = JavaLanguageVersion.of(libs.versions.java.get().toInt())
+        languageVersion = JavaLanguageVersion.of(
+            maxOf(minJavaVersion, currentJavaVersion)
+        )
     }
 }
 

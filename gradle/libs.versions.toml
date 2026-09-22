@@ -1,11 +1,11 @@
 [versions]
 gradle = "9.1.0"
-java = "25"
+java = "21"
 p2deps = "1.7.8"
-versions-plugin = "0.53.0"
+versions-plugin = "0.54.0"
 junit = "4.+"
 mysql = "latest.release"
-eclipse-repo = "https://download.eclipse.org/eclipse/updates/4.37/R-4.37-202509050730/"
+eclipse-repo = "https://download.eclipse.org/eclipse/updates/4.41/R-4.41-202608281142/"
 eclipse-swt = "org.eclipse.swt.cocoa.macosx.aarch64"
 mainClass = "beauties.main.BeautiesMain"
 
