@@ -28,7 +28,7 @@ class DbAccess {
 		mDb = SystemData.getDbName();
 		mUser = SystemData.getDbUser();
 		mPass = SystemData.getDbPass();
-		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb + "?useServerPrepStmts=true&useSSL=false&allowPublicKeyRetrieval=true&autoReconnect=true";
+		mUrl = "jdbc:mysql://" + mServer + ":" + mDbPort + "/" + mDb + "?useServerPrepStmts=true&useSSL=false&allowPublicKeyRetrieval=true";
 
 		try {
 			mCon = DriverManager.getConnection(mUrl, mUser, mPass);
@@ -81,16 +81,18 @@ class DbAccess {
 		return mResultSet;
 
 	}
-	
+
 	PreparedStatement getPreparedStatement(String pQuery) {
 		try {
+			// 接続が切れていたら再接続
+			if (mCon == null || mCon.isClosed() || !mCon.isValid(3)) {
+				mCon = DriverManager.getConnection(mUrl, mUser, mPass);
+			}
 			return mCon.prepareStatement(pQuery);
 		} catch (SQLException e) {
 			sqlStatementError(e);
 		} catch (Exception e) {
-			
 		}
-		
 		return null;
 	}
 
