@@ -231,7 +231,7 @@ class CompositeRecord extends Composite {
 			mItemCombo.refresh();
 		}
 		mItemCombo.setSelection(mItem);
-		updateNoteCombo();
+		//updateNoteCombo();
 
 		if (mIncomeExpenseType == IncomeExpenseType.INCOME) {
 			mValueSpinner.setSelection(mRecordTableItem.getIncome());
@@ -241,11 +241,13 @@ class CompositeRecord extends Composite {
 
 		mFrequencySpinner.setSelection(mRecordTableItem.getFrequency());
 
-		if (!"".equals(mRecordTableItem.getNote())) {
-			mNoteItems.set(0, mRecordTableItem.getNote());
-			mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
-		}
-		mNoteCombo.select(0);
+		// updateNoteCombo() を呼ぶ代わりに、setWidgets 内で直接構築する
+		String wNote = mRecordTableItem.getNote();
+		mNoteItems = DbUtil.getNotes(mItem);
+		mNoteItems.add(0, wNote == null ? "" : wNote);
+		mNoteCombo.setItems(mNoteItems.toArray(new String[0]));
+		mNoteCombo.setText(wNote == null ? "" : wNote);
+		mNoteCombo.setVisibleItemCount(mVisibleComboItemCount);
 	}
 
 	private void modifyBook() {
